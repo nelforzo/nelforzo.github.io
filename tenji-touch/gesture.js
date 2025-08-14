@@ -15,9 +15,15 @@ class GestureRecognizer {
         if (touchData.gesture) {
             const gestureType = touchData.chained ? 'CHAINED' : 'FINAL';
             console.log(`🎯 ${gestureType} Gesture:`, touchData.gesture);
+            if (window.audioFeedback) {
+                window.audioFeedback.playGestureSound(touchData.gesture);
+            }
         } else {
             const gesture = this.recognizeGesture(touchData);
             console.log('🎯 Gesture Recognized:', gesture);
+            if (window.audioFeedback) {
+                window.audioFeedback.playGestureSound(gesture);
+            }
         }
     }
 
