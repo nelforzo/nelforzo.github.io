@@ -15,8 +15,16 @@
 
         <main>
             <section id="logList">
-                <h2>ログ一覧</h2>
+                <div class="log-list-header">
+                    <h2>ログ一覧</h2>
+                    <button id="downloadBtn" class="btn-download">ダウンロード</button>
+                </div>
                 <div id="logs"></div>
+                <div id="pagination" class="pagination hidden">
+                    <button id="prevBtn" class="pagination-btn">前へ</button>
+                    <span id="pageInfo" class="page-info"></span>
+                    <button id="nextBtn" class="pagination-btn">次へ</button>
+                </div>
             </section>
 
             <!-- 新しいログ入力フォーム -->

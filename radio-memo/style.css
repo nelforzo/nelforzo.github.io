@@ -39,6 +39,18 @@ h2 {
     font-size: 18px;
 }
 
+/* ログリストヘッダー */
+.log-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.log-list-header h2 {
+    margin-bottom: 0;
+}
+
 .btn-primary, .btn-secondary {
     padding: 10px 20px;
     border: none;
@@ -64,6 +76,21 @@ h2 {
 
 .btn-secondary:hover {
     background-color: #7f8c8d;
+}
+
+.btn-download {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    background-color: #27ae60;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.btn-download:hover {
+    background-color: #229954;
 }
 
 main {
@@ -198,27 +225,80 @@ textarea {
     padding: 40px;
 }
 
+/* ページネーションスタイル */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+    padding: 15px;
+}
+
+.pagination-btn {
+    padding: 8px 16px;
+    border: 1px solid #3498db;
+    background-color: #fff;
+    color: #3498db;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background-color: #3498db;
+    color: white;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: #95a5a6;
+    color: #95a5a6;
+}
+
+.page-info {
+    font-size: 14px;
+    color: #555;
+    font-weight: bold;
+}
+
 /* レスポンシブデザイン */
 @media (max-width: 600px) {
     .container {
         padding: 10px;
     }
-    
+
     header {
         flex-direction: column;
         gap: 15px;
         text-align: center;
     }
-    
+
+    .log-list-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .log-list-header h2 {
+        text-align: center;
+    }
+
+    .btn-download {
+        width: 100%;
+    }
+
     .log-header {
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     .form-buttons {
         flex-direction: column;
     }
-    
+
     .btn-primary, .btn-secondary {
         width: 100%;
     }
