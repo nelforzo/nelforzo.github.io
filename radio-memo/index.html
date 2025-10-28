@@ -17,7 +17,11 @@
             <section id="logList">
                 <div class="log-list-header">
                     <h2>ログ一覧</h2>
-                    <button id="downloadBtn" class="btn-download">ダウンロード</button>
+                    <div class="log-list-actions">
+                        <button id="exportBtn" class="btn-export">エクスポート</button>
+                        <button id="importBtn" class="btn-import">インポート</button>
+                        <input type="file" id="importFile" accept=".csv" style="display: none;">
+                    </div>
                 </div>
                 <div id="logs"></div>
                 <div id="pagination" class="pagination hidden">

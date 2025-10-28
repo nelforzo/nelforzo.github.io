@@ -51,6 +51,11 @@ h2 {
     margin-bottom: 0;
 }
 
+.log-list-actions {
+    display: flex;
+    gap: 10px;
+}
+
 .btn-primary, .btn-secondary {
     padding: 10px 20px;
     border: none;
@@ -78,7 +83,7 @@ h2 {
     background-color: #7f8c8d;
 }
 
-.btn-download {
+.btn-export {
     padding: 8px 16px;
     border: none;
     border-radius: 5px;
@@ -89,8 +94,23 @@ h2 {
     transition: background-color 0.3s;
 }
 
-.btn-download:hover {
+.btn-export:hover {
     background-color: #229954;
+}
+
+.btn-import {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    background-color: #e67e22;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.btn-import:hover {
+    background-color: #d35400;
 }
 
 main {
@@ -286,7 +306,12 @@ textarea {
         text-align: center;
     }
 
-    .btn-download {
+    .log-list-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-export, .btn-import {
         width: 100%;
     }
 

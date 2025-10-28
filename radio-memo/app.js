@@ -6,6 +6,27 @@ db.version(1).stores({
     logs: '++id, band, frequency, memo, timestamp'
 });
 
+// バージョン2: UUIDフィールドを追加
+db.version(2).stores({
+    logs: '++id, uuid, band, frequency, memo, timestamp'
+}).upgrade(tx => {
+    // 既存のレコードにUUIDを追加
+    return tx.table('logs').toCollection().modify(log => {
+        if (!log.uuid) {
+            log.uuid = generateUUID();
+        }
+    });
+});
+
+// UUID生成関数
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
 // ページネーション設定
 const ITEMS_PER_PAGE = 10;
 let currentPage = 1;
@@ -40,7 +61,9 @@ function setupEventListeners() {
     const bandSelect = document.getElementById('band');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const importBtn = document.getElementById('importBtn');
+    const importFile = document.getElementById('importFile');
 
     // 新しいログボタン
     newLogBtn.addEventListener('click', showNewLogForm);
@@ -58,8 +81,12 @@ function setupEventListeners() {
     prevBtn.addEventListener('click', goToPreviousPage);
     nextBtn.addEventListener('click', goToNextPage);
 
-    // ダウンロードボタン
-    downloadBtn.addEventListener('click', downloadLogs);
+    // エクスポートボタン
+    exportBtn.addEventListener('click', exportLogs);
+
+    // インポートボタン
+    importBtn.addEventListener('click', () => importFile.click());
+    importFile.addEventListener('change', handleImportFile);
 }
 
 // 新しいログフォームを表示
@@ -140,6 +167,7 @@ async function handleFormSubmit(event) {
 
     const formData = new FormData(event.target);
     const logData = {
+        uuid: generateUUID(),
         band: formData.get('band'),
         frequency: formData.get('frequency'),
         memo: formData.get('memo'),
@@ -272,25 +300,26 @@ async function goToNextPage() {
     }
 }
 
-// ログをCSV形式でダウンロード
-async function downloadLogs() {
+// ログをCSV形式でエクスポート
+async function exportLogs() {
     try {
         // 全てのログを取得（ページネーションなし）
         const allLogs = await db.logs.orderBy('timestamp').reverse().toArray();
 
         if (allLogs.length === 0) {
-            alert('ダウンロードするログがありません。');
+            alert('エクスポートするログがありません。');
             return;
         }
 
-        // CSVヘッダー
-        const headers = ['タイムスタンプ (UTC)', 'バンド', '周波数', '単位', 'メモ'];
+        // CSVヘッダー（UUIDを追加）
+        const headers = ['UUID', 'タイムスタンプ (UTC)', 'バンド', '周波数', '単位', 'メモ'];
         const csvRows = [headers.join(',')];
 
         // CSVデータ行を作成
         allLogs.forEach(log => {
             const unit = getFrequencyUnit(log.band);
             const row = [
+                `"${log.uuid || ''}"`,
                 `"${log.timestamp}"`,
                 `"${log.band}"`,
                 log.frequency,
@@ -312,10 +341,11 @@ async function downloadLogs() {
         const link = document.createElement('a');
         link.href = url;
 
-        // ファイル名を生成（現在の日時を含む）
+        // ファイル名を生成（タイムスタンプ + UUID）
         const now = new Date();
-        const dateString = now.toISOString().slice(0, 19).replace(/:/g, '-');
-        link.download = `radio-memo-${dateString}.csv`;
+        const timestamp = now.toISOString().slice(0, 19).replace(/:/g, '-');
+        const fileUuid = generateUUID();
+        link.download = `radio-memo-export-${timestamp}-${fileUuid}.csv`;
 
         // ダウンロードを実行
         document.body.appendChild(link);
@@ -325,7 +355,164 @@ async function downloadLogs() {
         // URLを解放
         URL.revokeObjectURL(url);
     } catch (error) {
-        console.error('ログのダウンロードに失敗しました:', error);
-        alert('ログのダウンロードに失敗しました。');
+        console.error('ログのエクスポートに失敗しました:', error);
+        alert('ログのエクスポートに失敗しました。');
     }
+}
+
+// インポートファイル処理
+async function handleImportFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // ファイル選択をリセット（同じファイルを再度選択できるように）
+    event.target.value = '';
+
+    try {
+        const text = await file.text();
+        await importLogs(text);
+    } catch (error) {
+        console.error('ファイルの読み込みに失敗しました:', error);
+        alert('ファイルの読み込みに失敗しました。');
+    }
+}
+
+// CSVデータをインポート
+async function importLogs(csvText) {
+    try {
+        // BOMを削除
+        const cleanText = csvText.replace(/^\uFEFF/, '');
+
+        // CSV行を分割
+        const lines = cleanText.split('\n').filter(line => line.trim());
+
+        if (lines.length < 2) {
+            alert('インポートするデータがありません。');
+            return;
+        }
+
+        // ヘッダー行を解析
+        const headers = parseCSVLine(lines[0]);
+
+        // 列インデックスを特定
+        const uuidIndex = headers.indexOf('UUID');
+        const timestampIndex = headers.findIndex(h => h.includes('タイムスタンプ'));
+        const bandIndex = headers.indexOf('バンド');
+        const frequencyIndex = headers.indexOf('周波数');
+        const memoIndex = headers.indexOf('メモ');
+
+        if (timestampIndex === -1 || bandIndex === -1 || frequencyIndex === -1) {
+            alert('CSVファイルの形式が正しくありません。');
+            return;
+        }
+
+        // 既存のログを取得（重複チェック用）
+        const existingLogs = await db.logs.toArray();
+        const existingUUIDs = new Set(existingLogs.map(log => log.uuid).filter(uuid => uuid));
+
+        // 重複チェック用のコンテンツハッシュセットを作成
+        const existingContentHashes = new Set(
+            existingLogs.map(log => createContentHash(log.timestamp, log.frequency, log.memo))
+        );
+
+        // データ行を処理
+        const logsToImport = [];
+        let duplicateCount = 0;
+
+        for (let i = 1; i < lines.length; i++) {
+            const values = parseCSVLine(lines[i]);
+
+            if (values.length < 3) continue; // 不正な行をスキップ
+
+            const uuid = uuidIndex >= 0 ? values[uuidIndex] : '';
+            const timestamp = values[timestampIndex];
+            const band = values[bandIndex];
+            const frequency = parseFloat(values[frequencyIndex]);
+            const memo = memoIndex >= 0 ? values[memoIndex] : '';
+
+            // UUIDでの重複チェック
+            if (uuid && existingUUIDs.has(uuid)) {
+                duplicateCount++;
+                continue;
+            }
+
+            // コンテンツベースの重複チェック
+            const contentHash = createContentHash(timestamp, frequency, memo);
+            if (existingContentHashes.has(contentHash)) {
+                duplicateCount++;
+                continue;
+            }
+
+            // インポートするログを追加
+            const logData = {
+                uuid: uuid || generateUUID(),
+                band: band,
+                frequency: frequency,
+                memo: memo,
+                timestamp: timestamp
+            };
+
+            logsToImport.push(logData);
+
+            // 今回追加するものも重複チェックに追加
+            if (logData.uuid) {
+                existingUUIDs.add(logData.uuid);
+            }
+            existingContentHashes.add(contentHash);
+        }
+
+        // データベースに追加
+        if (logsToImport.length > 0) {
+            await db.logs.bulkAdd(logsToImport);
+            currentPage = 1;
+            await loadLogs();
+        }
+
+        // 結果を表示
+        const message = `インポート完了\n新規追加: ${logsToImport.length}件\n重複スキップ: ${duplicateCount}件`;
+        alert(message);
+
+    } catch (error) {
+        console.error('インポートに失敗しました:', error);
+        alert('インポートに失敗しました。CSVファイルの形式を確認してください。');
+    }
+}
+
+// CSV行をパース（引用符を考慮）
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        const nextChar = line[i + 1];
+
+        if (char === '"') {
+            if (inQuotes && nextChar === '"') {
+                // エスケープされた引用符
+                current += '"';
+                i++;
+            } else {
+                // 引用符の開始/終了
+                inQuotes = !inQuotes;
+            }
+        } else if (char === ',' && !inQuotes) {
+            // フィールドの区切り
+            result.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+
+    // 最後のフィールドを追加
+    result.push(current.trim());
+
+    return result;
+}
+
+// コンテンツベースのハッシュを作成（重複検出用）
+function createContentHash(timestamp, frequency, memo) {
+    return `${timestamp}|${frequency}|${memo || ''}`;
 }
