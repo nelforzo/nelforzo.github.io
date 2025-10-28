@@ -124,15 +124,13 @@ function updateFrequencyUnit() {
 
     // バンドに応じた周波数単位の設定
     switch (band) {
-        case 'AM':
+        case 'LF':
+        case 'MF':
             frequencyUnit.textContent = 'kHz';
             break;
-        case 'FM':
-            frequencyUnit.textContent = 'MHz';
-            break;
-        case 'USB':
-        case 'LSB':
-        case 'CW':
+        case 'HF':
+        case 'VHF':
+        case 'UHF':
             frequencyUnit.textContent = 'MHz';
             break;
         default:
@@ -149,12 +147,12 @@ function formatFrequencyWithUnit(frequency, band) {
 // バンドに応じた周波数単位を取得
 function getFrequencyUnit(band) {
     switch (band) {
-        case 'AM':
+        case 'LF':
+        case 'MF':
             return 'kHz';
-        case 'FM':
-        case 'USB':
-        case 'LSB':
-        case 'CW':
+        case 'HF':
+        case 'VHF':
+        case 'UHF':
             return 'MHz';
         default:
             return 'MHz';
