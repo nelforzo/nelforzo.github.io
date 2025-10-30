@@ -61,6 +61,8 @@ function setupEventListeners() {
     const bandSelect = document.getElementById('band');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsPopover = document.getElementById('settingsPopover');
     const exportBtn = document.getElementById('exportBtn');
     const importBtn = document.getElementById('importBtn');
     const importFile = document.getElementById('importFile');
@@ -81,11 +83,30 @@ function setupEventListeners() {
     prevBtn.addEventListener('click', goToPreviousPage);
     nextBtn.addEventListener('click', goToNextPage);
 
+    // 設定ボタン
+    settingsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        settingsPopover.classList.toggle('hidden');
+    });
+
+    // ポップオーバー外をクリックしたら閉じる
+    document.addEventListener('click', (e) => {
+        if (!settingsPopover.contains(e.target) && e.target !== settingsBtn) {
+            settingsPopover.classList.add('hidden');
+        }
+    });
+
     // エクスポートボタン
-    exportBtn.addEventListener('click', exportLogs);
+    exportBtn.addEventListener('click', () => {
+        exportLogs();
+        settingsPopover.classList.add('hidden');
+    });
 
     // インポートボタン
-    importBtn.addEventListener('click', () => importFile.click());
+    importBtn.addEventListener('click', () => {
+        importFile.click();
+        settingsPopover.classList.add('hidden');
+    });
     importFile.addEventListener('change', handleImportFile);
 }
 

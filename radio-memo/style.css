@@ -55,21 +55,9 @@ h2 {
     font-size: 18px;
 }
 
-/* ログリストヘッダー */
-.log-list-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* ログリストのh2 */
+#logList h2 {
     margin-bottom: 15px;
-}
-
-.log-list-header h2 {
-    margin-bottom: 0;
-}
-
-.log-list-actions {
-    display: flex;
-    gap: 10px;
 }
 
 .btn-primary, .btn-secondary {
@@ -99,34 +87,64 @@ h2 {
     background-color: #7f8c8d;
 }
 
-.btn-export {
-    padding: 8px 16px;
+/* 設定ボタンとポップオーバー */
+.settings-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+.btn-settings {
+    padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
-    background-color: #27ae60;
+    background-color: #95a5a6;
     color: white;
     transition: background-color 0.3s;
 }
 
-.btn-export:hover {
-    background-color: #229954;
+.btn-settings:hover {
+    background-color: #7f8c8d;
 }
 
-.btn-import {
-    padding: 8px 16px;
+.settings-popover {
+    position: absolute;
+    bottom: 100%;
+    margin-bottom: 10px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    min-width: 200px;
+}
+
+.settings-menu-item {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
     border: none;
-    border-radius: 5px;
+    background: none;
+    text-align: left;
     cursor: pointer;
     font-size: 14px;
-    background-color: #e67e22;
-    color: white;
-    transition: background-color 0.3s;
+    color: #333;
+    transition: background-color 0.2s;
 }
 
-.btn-import:hover {
-    background-color: #d35400;
+.settings-menu-item:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.settings-menu-item:last-child {
+    border-radius: 0 0 8px 8px;
+}
+
+.settings-menu-item:hover {
+    background-color: #f5f5f5;
 }
 
 main {
@@ -315,25 +333,6 @@ textarea {
     .ascii-title {
         font-size: 8px;
         line-height: 1.1;
-    }
-
-    .log-list-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-    }
-
-    .log-list-header h2 {
-        text-align: center;
-    }
-
-    .log-list-actions {
-        flex-direction: column;
-        width: 100%;
-    }
-
-    .btn-export, .btn-import {
-        width: 100%;
     }
 
     .log-header {

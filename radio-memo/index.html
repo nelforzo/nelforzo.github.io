@@ -19,20 +19,21 @@
 
         <main>
             <section id="logList">
-                <div class="log-list-header">
-                    <h2>ログ一覧</h2>
-                    <div class="log-list-actions">
-                        <button id="exportBtn" class="btn-export">エクスポート</button>
-                        <button id="importBtn" class="btn-import">インポート</button>
-                        <input type="file" id="importFile" accept=".csv" style="display: none;">
-                    </div>
-                </div>
+                <h2>ログ一覧</h2>
                 <div id="logs"></div>
                 <div id="pagination" class="pagination hidden">
                     <button id="prevBtn" class="pagination-btn">前へ</button>
                     <span id="pageInfo" class="page-info"></span>
                     <button id="nextBtn" class="pagination-btn">次へ</button>
                 </div>
+                <div class="settings-container">
+                    <button id="settingsBtn" class="btn-settings">⚙️ 設定</button>
+                    <div id="settingsPopover" class="settings-popover hidden">
+                        <button id="exportBtn" class="settings-menu-item">📥 エクスポート</button>
+                        <button id="importBtn" class="settings-menu-item">📤 インポート</button>
+                    </div>
+                </div>
+                <input type="file" id="importFile" accept=".csv" style="display: none;">
             </section>
 
             <!-- 新しいログ入力フォーム -->
