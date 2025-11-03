@@ -239,6 +239,7 @@ textarea {
     margin-bottom: 8px;
     flex-wrap: wrap;
     gap: 10px;
+    position: relative;
 }
 
 .log-band {
@@ -266,11 +267,51 @@ textarea {
     font-family: monospace;
 }
 
+.btn-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    opacity: 0.6;
+}
+
+.btn-delete:hover {
+    opacity: 1;
+    background-color: rgba(231, 76, 60, 0.1);
+    transform: scale(1.1);
+}
+
+.btn-delete:active {
+    transform: scale(0.95);
+}
+
 .log-memo {
     color: #555;
     font-style: italic;
     margin-top: 8px;
     line-height: 1.4;
+    /* Text truncation for long comments */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+    max-width: 100%;
+    cursor: pointer;
+    transition: max-height 0.3s ease;
+}
+
+.log-memo:hover {
+    background-color: rgba(52, 152, 219, 0.05);
+    border-radius: 3px;
+}
+
+.log-memo.expanded {
+    -webkit-line-clamp: unset;
+    max-height: none;
 }
 
 .no-logs {

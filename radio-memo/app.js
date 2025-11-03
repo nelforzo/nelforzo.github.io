@@ -241,24 +241,81 @@ async function loadLogs() {
 // ログを表示
 function displayLogs(logs) {
     const logsContainer = document.getElementById('logs');
-    
+
     if (logs.length === 0) {
         logsContainer.innerHTML = '<p class="no-logs">まだログがありません。</p>';
         return;
     }
 
     const logsHTML = logs.map(log => `
-        <div class="log-entry">
+        <div class="log-entry" data-log-id="${log.id}">
             <div class="log-header">
                 <span class="log-band">${escapeHtml(log.band)}</span>
                 <span class="log-frequency">${formatFrequencyWithUnit(escapeHtml(log.frequency), log.band)}</span>
                 <span class="log-timestamp">${formatTimestamp(log.timestamp)}</span>
+                <button class="btn-delete" data-log-id="${log.id}" title="削除">🗑️</button>
             </div>
-            ${log.memo ? `<div class="log-memo">${escapeHtml(log.memo)}</div>` : ''}
+            ${log.memo ? `<div class="log-memo" data-log-id="${log.id}">${escapeHtml(log.memo)}</div>` : ''}
         </div>
     `).join('');
 
     logsContainer.innerHTML = logsHTML;
+
+    // イベントリスナーを設定
+    setupLogEventListeners();
+}
+
+// ログエントリーのイベントリスナーを設定
+function setupLogEventListeners() {
+    // 削除ボタンのイベントリスナー
+    const deleteButtons = document.querySelectorAll('.btn-delete');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const logId = parseInt(e.target.dataset.logId);
+            await deleteLog(logId);
+        });
+    });
+
+    // メモのクリック展開機能
+    const memos = document.querySelectorAll('.log-memo');
+    memos.forEach(memo => {
+        memo.addEventListener('click', (e) => {
+            e.currentTarget.classList.toggle('expanded');
+        });
+    });
+}
+
+// ログを削除
+async function deleteLog(logId) {
+    // 確認ダイアログを表示
+    const confirmed = confirm('このログを削除しますか？\n\nこの操作は取り消せません。');
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        await db.logs.delete(logId);
+
+        // 現在のページのログを再読み込み
+        const remainingLogsOnPage = await db.logs
+            .orderBy('timestamp')
+            .reverse()
+            .offset((currentPage - 1) * ITEMS_PER_PAGE)
+            .limit(ITEMS_PER_PAGE)
+            .count();
+
+        // 現在のページにログが残っていない場合、前のページに戻る
+        if (remainingLogsOnPage === 0 && currentPage > 1) {
+            currentPage--;
+        }
+
+        await loadLogs();
+    } catch (error) {
+        console.error('ログの削除に失敗しました:', error);
+        alert('ログの削除に失敗しました。');
+    }
 }
 
 // HTMLエスケープ

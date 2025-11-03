@@ -14,6 +14,7 @@
 
 #### ログ管理
 - **ログの追加**: バンド、周波数、メモ、UTC時刻を記録
+- **ログの削除**: 各エントリに削除ボタンを配置、確認ダイアログで誤操作を防止
 - **バンド選択**: LF (Long Wave)、MF (Medium Wave)、HF (Short Wave)、VHF、UHFから選択
 - **自動単位変換**:
   - LF/MFバンド: kHz表示
@@ -38,6 +39,8 @@
 
 #### ユーザーインターフェース
 - **レスポンシブデザイン**: モバイルとデスクトップの両方に対応
+- **メモの自動省略**: 長いメモは3行まで表示、クリックで全文表示
+- **長いURL対応**: ShazamリンクなどのURLも画面幅に収まるよう自動改行
 - **設定メニュー**: ページ下部の設定ボタンからエクスポート・インポート機能にアクセス
 - **直感的な操作**: シンプルで分かりやすいUI
 
@@ -73,13 +76,18 @@
 2. **ログを閲覧**
    - ログ一覧で最新10件を表示
    - ページネーションで前後のページに移動
+   - 長いメモはクリックで全文表示
 
-3. **エクスポート**
+3. **ログを削除**
+   - 各ログの削除ボタン（🗑️）をクリック
+   - 確認ダイアログで「OK」を選択
+
+4. **エクスポート**
    - ページ下部の「設定」ボタンをクリック
    - 「エクスポート」を選択
    - CSV形式でダウンロード
 
-4. **インポート**
+5. **インポート**
    - ページ下部の「設定」ボタンをクリック
    - 「インポート」を選択
    - CSVファイルを選択
@@ -108,6 +116,7 @@ Radio Memo is an offline-capable web application for recording and managing radi
 
 #### Log Management
 - **Add Logs**: Record band, frequency, memo, and UTC time
+- **Delete Logs**: Delete button on each entry with confirmation dialog to prevent accidental deletion
 - **Band Selection**: Choose from LF (Long Wave), MF (Medium Wave), HF (Short Wave), VHF, and UHF
 - **Automatic Unit Conversion**:
   - LF/MF bands: kHz display
@@ -132,6 +141,8 @@ Radio Memo is an offline-capable web application for recording and managing radi
 
 #### User Interface
 - **Responsive Design**: Works on both mobile and desktop
+- **Auto-truncating Memos**: Long memos display up to 3 lines, click to expand
+- **Long URL Support**: URLs like Shazam links wrap automatically to fit screen width
 - **Settings Menu**: Access export/import functions via settings button at bottom of page
 - **Intuitive Operation**: Simple and clear UI
 
@@ -167,13 +178,18 @@ Each log record contains:
 2. **View Logs**
    - Log list shows 10 most recent records
    - Use pagination to navigate between pages
+   - Click on long memos to expand and view full text
 
-3. **Export**
+3. **Delete Logs**
+   - Click the delete button (🗑️) on each log entry
+   - Confirm deletion in the dialog
+
+4. **Export**
    - Click "設定" (Settings) button at bottom of page
    - Select "エクスポート" (Export)
    - Download in CSV format
 
-4. **Import**
+5. **Import**
    - Click "設定" (Settings) button at bottom of page
    - Select "インポート" (Import)
    - Choose CSV file
