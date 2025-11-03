@@ -391,13 +391,15 @@ async function exportLogs() {
         // CSVデータ行を作成
         allLogs.forEach(log => {
             const unit = getFrequencyUnit(log.band);
+            // CSVフィールドのエスケープ（引用符を2重にする）
+            const escapeMemo = (text) => (text || '').replace(/"/g, '""');
             const row = [
-                `"${log.uuid || ''}"`,
-                `"${log.timestamp}"`,
-                `"${log.band}"`,
+                `"${(log.uuid || '').replace(/"/g, '""')}"`,
+                `"${log.timestamp.replace(/"/g, '""')}"`,
+                `"${log.band.replace(/"/g, '""')}"`,
                 log.frequency,
-                `"${unit}"`,
-                `"${log.memo || ''}"`
+                `"${unit.replace(/"/g, '""')}"`,
+                `"${escapeMemo(log.memo)}"`
             ];
             csvRows.push(row.join(','));
         });
@@ -456,8 +458,8 @@ async function importLogs(csvText) {
         // BOMを削除
         const cleanText = csvText.replace(/^\uFEFF/, '');
 
-        // CSV行を分割
-        const lines = cleanText.split('\n').filter(line => line.trim());
+        // CSV行を分割（引用符内の改行を考慮）
+        const lines = parseCSVRecords(cleanText);
 
         if (lines.length < 2) {
             alert('インポートするデータがありません。');
@@ -549,6 +551,58 @@ async function importLogs(csvText) {
         console.error('インポートに失敗しました:', error);
         alert('インポートに失敗しました。CSVファイルの形式を確認してください。');
     }
+}
+
+// CSVテキストをレコード（行）に分割（引用符内の改行を考慮）
+function parseCSVRecords(csvText) {
+    const records = [];
+    let currentRecord = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < csvText.length; i++) {
+        const char = csvText[i];
+        const nextChar = csvText[i + 1];
+
+        if (char === '"') {
+            currentRecord += char;
+            if (inQuotes && nextChar === '"') {
+                // エスケープされた引用符
+                currentRecord += '"';
+                i++;
+            } else {
+                // 引用符の開始/終了
+                inQuotes = !inQuotes;
+            }
+        } else if (char === '\n' && !inQuotes) {
+            // 引用符外の改行 = レコードの終わり
+            if (currentRecord.trim()) {
+                records.push(currentRecord);
+            }
+            currentRecord = '';
+        } else if (char === '\r') {
+            // CRLFの場合はCRを無視
+            if (nextChar === '\n') {
+                continue;
+            } else if (!inQuotes) {
+                // CR単独の場合も改行として扱う
+                if (currentRecord.trim()) {
+                    records.push(currentRecord);
+                }
+                currentRecord = '';
+            } else {
+                currentRecord += char;
+            }
+        } else {
+            currentRecord += char;
+        }
+    }
+
+    // 最後のレコードを追加
+    if (currentRecord.trim()) {
+        records.push(currentRecord);
+    }
+
+    return records;
 }
 
 // CSV行をパース（引用符を考慮）
