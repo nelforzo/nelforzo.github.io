@@ -114,12 +114,6 @@ function setupEventListeners() {
 function showNewLogForm() {
     const logList = document.getElementById('logList');
     const newLogForm = document.getElementById('newLogForm');
-    const timestampInput = document.getElementById('timestamp');
-
-    // 現在のUTC時刻を設定
-    const now = new Date();
-    const utcString = now.toISOString().slice(0, 16);
-    timestampInput.value = utcString;
 
     logList.classList.add('hidden');
     newLogForm.classList.remove('hidden');
@@ -185,12 +179,14 @@ async function handleFormSubmit(event) {
     event.preventDefault();
 
     const formData = new FormData(event.target);
+    // 保存時に現在のUTC時刻を自動取得
+    const now = new Date();
     const logData = {
         uuid: generateUUID(),
         band: formData.get('band'),
         frequency: formData.get('frequency'),
         memo: formData.get('memo'),
-        timestamp: formData.get('timestamp')
+        timestamp: now.toISOString()
     };
 
     try {
@@ -328,14 +324,15 @@ function escapeHtml(text) {
 // タイムスタンプフォーマット
 function formatTimestamp(timestamp) {
     const date = new Date(timestamp);
+    // ローカルタイムゾーンで表示（データベースにはUTCで保存）
     return date.toLocaleString('ja-JP', {
-        timeZone: 'UTC',
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
         hour: '2-digit',
-        minute: '2-digit'
-    }) + ' UTC';
+        minute: '2-digit',
+        second: '2-digit'
+    });
 }
 
 // ページネーションコントロールを更新
