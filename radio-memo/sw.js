@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
 const CACHE_NAME = 'radio-memo-v1';
-const urlsToCache = [
+const urls_to_cache = [
     '/',
     '/index.html',
     '/style.css',
@@ -8,18 +8,22 @@ const urlsToCache = [
     'https://unpkg.com/dexie@3.2.4/dist/dexie.js'
 ];
 
-// インストール時のキャッシュ処理
+/**
+ * Install event - caches resources for offline use
+ */
 self.addEventListener('install', function(event) {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(function(cache) {
                 console.log('キャッシュを開きました');
-                return cache.addAll(urlsToCache);
+                return cache.addAll(urls_to_cache);
             })
     );
 });
 
-// フェッチ時のキャッシュ処理
+/**
+ * Fetch event - serves cached resources when available, falls back to network
+ */
 self.addEventListener('fetch', function(event) {
     event.respondWith(
         caches.match(event.request)
@@ -28,7 +32,7 @@ self.addEventListener('fetch', function(event) {
                 if (response) {
                     return response;
                 }
-                
+
                 // キャッシュにない場合はネットワークから取得
                 return fetch(event.request).then(
                     function(response) {
@@ -38,10 +42,10 @@ self.addEventListener('fetch', function(event) {
                         }
 
                         // レスポンスをキャッシュに保存
-                        const responseToCache = response.clone();
+                        const response_to_cache = response.clone();
                         caches.open(CACHE_NAME)
                             .then(function(cache) {
-                                cache.put(event.request, responseToCache);
+                                cache.put(event.request, response_to_cache);
                             });
 
                         return response;
@@ -51,15 +55,17 @@ self.addEventListener('fetch', function(event) {
     );
 });
 
-// アクティベート時の古いキャッシュ削除
+/**
+ * Activate event - cleans up old caches
+ */
 self.addEventListener('activate', function(event) {
     event.waitUntil(
-        caches.keys().then(function(cacheNames) {
+        caches.keys().then(function(cache_names) {
             return Promise.all(
-                cacheNames.map(function(cacheName) {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('古いキャッシュを削除します:', cacheName);
-                        return caches.delete(cacheName);
+                cache_names.map(function(cache_name) {
+                    if (cache_name !== CACHE_NAME) {
+                        console.log('古いキャッシュを削除します:', cache_name);
+                        return caches.delete(cache_name);
                     }
                 })
             );

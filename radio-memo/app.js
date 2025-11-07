@@ -18,6 +18,18 @@ db.version(2).stores({
     });
 });
 
+// バージョン3: callsignフィールドを追加
+db.version(3).stores({
+    logs: '++id, uuid, band, frequency, callsign, memo, timestamp'
+}).upgrade(tx => {
+    // 既存のレコードにcallsignを追加（空文字列で初期化）
+    return tx.table('logs').toCollection().modify(log => {
+        if (!log.callsign) {
+            log.callsign = '';
+        }
+    });
+});
+
 // UUID生成関数
 function generateUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -29,8 +41,8 @@ function generateUUID() {
 
 // ページネーション設定
 const ITEMS_PER_PAGE = 10;
-let currentPage = 1;
-let totalPages = 1;
+let current_page = 1;
+let total_pages = 1;
 
 // Service Worker登録
 if ('serviceWorker' in navigator) {
@@ -48,118 +60,138 @@ document.addEventListener('DOMContentLoaded', function() {
     init();
 });
 
+/**
+ * Initializes the application by loading logs and setting up event listeners
+ */
 async function init() {
     await loadLogs();
     setupEventListeners();
 }
 
-// イベントリスナー設定
+/**
+ * Sets up all event listeners for the application
+ */
 function setupEventListeners() {
-    const newLogBtn = document.getElementById('newLogBtn');
-    const logForm = document.getElementById('logForm');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const bandSelect = document.getElementById('band');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const settingsBtn = document.getElementById('settingsBtn');
-    const settingsPopover = document.getElementById('settingsPopover');
-    const exportBtn = document.getElementById('exportBtn');
-    const importBtn = document.getElementById('importBtn');
-    const importFile = document.getElementById('importFile');
+    const new_log_btn = document.getElementById('newLogBtn');
+    const log_form = document.getElementById('logForm');
+    const cancel_btn = document.getElementById('cancelBtn');
+    const band_select = document.getElementById('band');
+    const prev_btn = document.getElementById('prevBtn');
+    const next_btn = document.getElementById('nextBtn');
+    const settings_btn = document.getElementById('settingsBtn');
+    const settings_popover = document.getElementById('settingsPopover');
+    const export_btn = document.getElementById('exportBtn');
+    const import_btn = document.getElementById('importBtn');
+    const import_file = document.getElementById('importFile');
 
     // 新しいログボタン
-    newLogBtn.addEventListener('click', showNewLogForm);
+    new_log_btn.addEventListener('click', showNewLogForm);
 
     // フォーム送信
-    logForm.addEventListener('submit', handleFormSubmit);
+    log_form.addEventListener('submit', handleFormSubmit);
 
     // キャンセルボタン
-    cancelBtn.addEventListener('click', hideNewLogForm);
+    cancel_btn.addEventListener('click', hideNewLogForm);
 
     // バンド選択変更時の周波数単位更新
-    bandSelect.addEventListener('change', updateFrequencyUnit);
+    band_select.addEventListener('change', updateFrequencyUnit);
 
     // ページネーションボタン
-    prevBtn.addEventListener('click', goToPreviousPage);
-    nextBtn.addEventListener('click', goToNextPage);
+    prev_btn.addEventListener('click', goToPreviousPage);
+    next_btn.addEventListener('click', goToNextPage);
 
     // 設定ボタン
-    settingsBtn.addEventListener('click', (e) => {
+    settings_btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        settingsPopover.classList.toggle('hidden');
+        settings_popover.classList.toggle('hidden');
     });
 
     // ポップオーバー外をクリックしたら閉じる
     document.addEventListener('click', (e) => {
-        if (!settingsPopover.contains(e.target) && e.target !== settingsBtn) {
-            settingsPopover.classList.add('hidden');
+        if (!settings_popover.contains(e.target) && e.target !== settings_btn) {
+            settings_popover.classList.add('hidden');
         }
     });
 
     // エクスポートボタン
-    exportBtn.addEventListener('click', () => {
+    export_btn.addEventListener('click', () => {
         exportLogs();
-        settingsPopover.classList.add('hidden');
+        settings_popover.classList.add('hidden');
     });
 
     // インポートボタン
-    importBtn.addEventListener('click', () => {
-        importFile.click();
-        settingsPopover.classList.add('hidden');
+    import_btn.addEventListener('click', () => {
+        import_file.click();
+        settings_popover.classList.add('hidden');
     });
-    importFile.addEventListener('change', handleImportFile);
+    import_file.addEventListener('change', handleImportFile);
 }
 
-// 新しいログフォームを表示
+/**
+ * Shows the new log form and hides the log list
+ */
 function showNewLogForm() {
-    const logList = document.getElementById('logList');
-    const newLogForm = document.getElementById('newLogForm');
+    const log_list = document.getElementById('logList');
+    const new_log_form = document.getElementById('newLogForm');
 
-    logList.classList.add('hidden');
-    newLogForm.classList.remove('hidden');
+    log_list.classList.add('hidden');
+    new_log_form.classList.remove('hidden');
 }
 
-// フォームを隠す
+/**
+ * Hides the new log form, resets it, and shows the log list
+ */
 function hideNewLogForm() {
-    const logList = document.getElementById('logList');
-    const newLogForm = document.getElementById('newLogForm');
+    const log_list = document.getElementById('logList');
+    const new_log_form = document.getElementById('newLogForm');
     const form = document.getElementById('logForm');
 
     form.reset();
     updateFrequencyUnit(); // リセット時に単位も更新
-    newLogForm.classList.add('hidden');
-    logList.classList.remove('hidden');
+    new_log_form.classList.add('hidden');
+    log_list.classList.remove('hidden');
 }
 
-// バンドに応じた周波数単位の更新
+/**
+ * Updates the frequency unit display based on selected band
+ */
 function updateFrequencyUnit() {
-    const bandSelect = document.getElementById('band');
-    const frequencyUnit = document.getElementById('frequencyUnit');
-    const band = bandSelect.value;
+    const band_select = document.getElementById('band');
+    const frequency_unit = document.getElementById('frequencyUnit');
+    const band = band_select.value;
 
     // バンドに応じた周波数単位の設定
     switch (band) {
         case 'LF':
         case 'MF':
-            frequencyUnit.textContent = 'kHz';
+            frequency_unit.textContent = 'kHz';
             break;
         case 'HF':
         case 'VHF':
         case 'UHF':
-            frequencyUnit.textContent = 'MHz';
+            frequency_unit.textContent = 'MHz';
             break;
         default:
-            frequencyUnit.textContent = 'MHz';
+            frequency_unit.textContent = 'MHz';
     }
 }
 
-// 周波数を単位付きで表示
+/**
+ * Formats frequency with appropriate unit based on band
+ * @param {string} frequency - Frequency value
+ * @param {string} band - Band type (LF, MF, HF, VHF, UHF)
+ * @returns {string} Formatted frequency with unit
+ */
 function formatFrequencyWithUnit(frequency, band) {
     const unit = getFrequencyUnit(band);
     return `${frequency} ${unit}`;
 }
 
-// バンドに応じた周波数単位を取得
+/**
+ * Gets the appropriate frequency unit for a given band
+ * @param {string} band - Band type (LF, MF, HF, VHF, UHF)
+ * @returns {string} Frequency unit (kHz or MHz)
+ */
 function getFrequencyUnit(band) {
     switch (band) {
         case 'LF':
@@ -174,25 +206,29 @@ function getFrequencyUnit(band) {
     }
 }
 
-// フォーム送信処理
+/**
+ * Handles form submission and saves log data to database
+ * @param {Event} event - Form submit event
+ */
 async function handleFormSubmit(event) {
     event.preventDefault();
 
-    const formData = new FormData(event.target);
+    const form_data = new FormData(event.target);
     // 保存時に現在のUTC時刻を自動取得
     const now = new Date();
-    const logData = {
+    const log_data = {
         uuid: generateUUID(),
-        band: formData.get('band'),
-        frequency: formData.get('frequency'),
-        memo: formData.get('memo'),
+        band: form_data.get('band'),
+        frequency: form_data.get('frequency'),
+        callsign: form_data.get('callsign') || '',
+        memo: form_data.get('memo'),
         timestamp: now.toISOString()
     };
 
     try {
-        await db.logs.add(logData);
+        await db.logs.add(log_data);
         // 新しいログが追加されたら1ページ目に戻る
-        currentPage = 1;
+        current_page = 1;
         hideNewLogForm();
         await loadLogs();
     } catch (error) {
@@ -201,25 +237,27 @@ async function handleFormSubmit(event) {
     }
 }
 
-// ログ一覧を読み込み
+/**
+ * Loads logs from database with pagination and displays them
+ */
 async function loadLogs() {
     try {
         // 総ログ数を取得
-        const totalCount = await db.logs.count();
+        const total_count = await db.logs.count();
 
         // 総ページ数を計算
-        totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+        total_pages = Math.ceil(total_count / ITEMS_PER_PAGE);
 
         // 現在のページが総ページ数を超えていたら調整
-        if (currentPage > totalPages && totalPages > 0) {
-            currentPage = totalPages;
+        if (current_page > total_pages && total_pages > 0) {
+            current_page = total_pages;
         }
-        if (currentPage < 1) {
-            currentPage = 1;
+        if (current_page < 1) {
+            current_page = 1;
         }
 
         // 現在のページのログを取得
-        const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+        const offset = (current_page - 1) * ITEMS_PER_PAGE;
         const logs = await db.logs
             .orderBy('timestamp')
             .reverse()
@@ -234,20 +272,24 @@ async function loadLogs() {
     }
 }
 
-// ログを表示
+/**
+ * Displays logs in the log container with pagination
+ * @param {Array} logs - Array of log objects to display
+ */
 function displayLogs(logs) {
-    const logsContainer = document.getElementById('logs');
+    const logs_container = document.getElementById('logs');
 
     if (logs.length === 0) {
-        logsContainer.innerHTML = '<p class="no-logs">まだログがありません。</p>';
+        logs_container.innerHTML = '<p class="no-logs">まだログがありません。</p>';
         return;
     }
 
-    const logsHTML = logs.map(log => `
+    const logs_html = logs.map(log => `
         <div class="log-entry" data-log-id="${log.id}">
             <div class="log-header">
                 <span class="log-band">${escapeHtml(log.band)}</span>
                 <span class="log-frequency">${formatFrequencyWithUnit(escapeHtml(log.frequency), log.band)}</span>
+                ${log.callsign ? `<span class="log-callsign">${escapeHtml(log.callsign)}</span>` : ''}
                 <span class="log-timestamp">${formatTimestamp(log.timestamp)}</span>
                 <button class="btn-delete" data-log-id="${log.id}" title="削除">🗑️</button>
             </div>
@@ -255,21 +297,23 @@ function displayLogs(logs) {
         </div>
     `).join('');
 
-    logsContainer.innerHTML = logsHTML;
+    logs_container.innerHTML = logs_html;
 
     // イベントリスナーを設定
     setupLogEventListeners();
 }
 
-// ログエントリーのイベントリスナーを設定
+/**
+ * Sets up event listeners for log entries (delete and memo expansion)
+ */
 function setupLogEventListeners() {
     // 削除ボタンのイベントリスナー
-    const deleteButtons = document.querySelectorAll('.btn-delete');
-    deleteButtons.forEach(button => {
+    const delete_buttons = document.querySelectorAll('.btn-delete');
+    delete_buttons.forEach(button => {
         button.addEventListener('click', async (e) => {
             e.stopPropagation();
-            const logId = parseInt(e.target.dataset.logId);
-            await deleteLog(logId);
+            const log_id = parseInt(e.target.dataset.logId);
+            await deleteLog(log_id);
         });
     });
 
@@ -282,8 +326,11 @@ function setupLogEventListeners() {
     });
 }
 
-// ログを削除
-async function deleteLog(logId) {
+/**
+ * Deletes a log entry from the database
+ * @param {number} log_id - ID of the log to delete
+ */
+async function deleteLog(log_id) {
     // 確認ダイアログを表示
     const confirmed = confirm('このログを削除しますか？\n\nこの操作は取り消せません。');
 
@@ -292,19 +339,19 @@ async function deleteLog(logId) {
     }
 
     try {
-        await db.logs.delete(logId);
+        await db.logs.delete(log_id);
 
         // 現在のページのログを再読み込み
-        const remainingLogsOnPage = await db.logs
+        const remaining_logs_on_page = await db.logs
             .orderBy('timestamp')
             .reverse()
-            .offset((currentPage - 1) * ITEMS_PER_PAGE)
+            .offset((current_page - 1) * ITEMS_PER_PAGE)
             .limit(ITEMS_PER_PAGE)
             .count();
 
         // 現在のページにログが残っていない場合、前のページに戻る
-        if (remainingLogsOnPage === 0 && currentPage > 1) {
-            currentPage--;
+        if (remaining_logs_on_page === 0 && current_page > 1) {
+            current_page--;
         }
 
         await loadLogs();
@@ -314,14 +361,22 @@ async function deleteLog(logId) {
     }
 }
 
-// HTMLエスケープ
+/**
+ * Escapes HTML special characters to prevent XSS
+ * @param {string} text - Text to escape
+ * @returns {string} Escaped HTML string
+ */
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
 
-// タイムスタンプフォーマット
+/**
+ * Formats timestamp for display in local timezone
+ * @param {string} timestamp - ISO timestamp string
+ * @returns {string} Formatted date string in Japanese format
+ */
 function formatTimestamp(timestamp) {
     const date = new Date(timestamp);
     // ローカルタイムゾーンで表示（データベースにはUTCで保存）
@@ -335,81 +390,90 @@ function formatTimestamp(timestamp) {
     });
 }
 
-// ページネーションコントロールを更新
+/**
+ * Updates pagination controls based on current page and total pages
+ */
 function updatePaginationControls() {
     const pagination = document.getElementById('pagination');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const pageInfo = document.getElementById('pageInfo');
+    const prev_btn = document.getElementById('prevBtn');
+    const next_btn = document.getElementById('nextBtn');
+    const page_info = document.getElementById('pageInfo');
 
     // ログが存在し、複数ページがある場合のみページネーションを表示
-    if (totalPages > 1) {
+    if (total_pages > 1) {
         pagination.classList.remove('hidden');
-        pageInfo.textContent = `${currentPage} / ${totalPages}`;
+        page_info.textContent = `${current_page} / ${total_pages}`;
 
         // 前へボタンの有効/無効
-        prevBtn.disabled = currentPage === 1;
+        prev_btn.disabled = current_page === 1;
 
         // 次へボタンの有効/無効
-        nextBtn.disabled = currentPage === totalPages;
+        next_btn.disabled = current_page === total_pages;
     } else {
         pagination.classList.add('hidden');
     }
 }
 
-// 前のページへ移動
+/**
+ * Navigates to the previous page
+ */
 async function goToPreviousPage() {
-    if (currentPage > 1) {
-        currentPage--;
+    if (current_page > 1) {
+        current_page--;
         await loadLogs();
     }
 }
 
-// 次のページへ移動
+/**
+ * Navigates to the next page
+ */
 async function goToNextPage() {
-    if (currentPage < totalPages) {
-        currentPage++;
+    if (current_page < total_pages) {
+        current_page++;
         await loadLogs();
     }
 }
 
-// ログをCSV形式でエクスポート
+/**
+ * Exports all logs to CSV format
+ */
 async function exportLogs() {
     try {
         // 全てのログを取得（ページネーションなし）
-        const allLogs = await db.logs.orderBy('timestamp').reverse().toArray();
+        const all_logs = await db.logs.orderBy('timestamp').reverse().toArray();
 
-        if (allLogs.length === 0) {
+        if (all_logs.length === 0) {
             alert('エクスポートするログがありません。');
             return;
         }
 
-        // CSVヘッダー（UUIDを追加）
-        const headers = ['UUID', 'タイムスタンプ (UTC)', 'バンド', '周波数', '単位', 'メモ'];
-        const csvRows = [headers.join(',')];
+        // CSVヘッダー（callsignを追加）
+        const headers = ['UUID', 'タイムスタンプ (UTC)', 'バンド', '周波数', '単位', 'コールサイン', 'メモ'];
+        const csv_rows = [headers.join(',')];
 
         // CSVデータ行を作成
-        allLogs.forEach(log => {
+        all_logs.forEach(log => {
             const unit = getFrequencyUnit(log.band);
             // CSVフィールドのエスケープ（引用符を2重にする）
-            const escapeMemo = (text) => (text || '').replace(/"/g, '""');
+            const escapeText = (text) => (text || '').replace(/"/g, '""');
             const row = [
-                `"${(log.uuid || '').replace(/"/g, '""')}"`,
-                `"${log.timestamp.replace(/"/g, '""')}"`,
-                `"${log.band.replace(/"/g, '""')}"`,
+                `"${escapeText(log.uuid)}"`,
+                `"${escapeText(log.timestamp)}"`,
+                `"${escapeText(log.band)}"`,
                 log.frequency,
-                `"${unit.replace(/"/g, '""')}"`,
-                `"${escapeMemo(log.memo)}"`
+                `"${escapeText(unit)}"`,
+                `"${escapeText(log.callsign)}"`,
+                `"${escapeText(log.memo)}"`
             ];
-            csvRows.push(row.join(','));
+            csv_rows.push(row.join(','));
         });
 
         // CSV文字列を生成
-        const csvContent = csvRows.join('\n');
+        const csv_content = csv_rows.join('\n');
 
         // BOM付きでUTF-8エンコード（Excel対応）
         const bom = '\uFEFF';
-        const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob([bom + csv_content], { type: 'text/csv;charset=utf-8;' });
 
         // ダウンロードリンクを作成
         const url = URL.createObjectURL(blob);
@@ -419,8 +483,8 @@ async function exportLogs() {
         // ファイル名を生成（タイムスタンプ + UUID）
         const now = new Date();
         const timestamp = now.toISOString().slice(0, 19).replace(/:/g, '-');
-        const fileUuid = generateUUID();
-        link.download = `radio-memo-export-${timestamp}-${fileUuid}.csv`;
+        const file_uuid = generateUUID();
+        link.download = `radio-memo-export-${timestamp}-${file_uuid}.csv`;
 
         // ダウンロードを実行
         document.body.appendChild(link);
@@ -435,7 +499,10 @@ async function exportLogs() {
     }
 }
 
-// インポートファイル処理
+/**
+ * Handles CSV file import from file input
+ * @param {Event} event - File input change event
+ */
 async function handleImportFile(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -452,14 +519,17 @@ async function handleImportFile(event) {
     }
 }
 
-// CSVデータをインポート
-async function importLogs(csvText) {
+/**
+ * Imports logs from CSV text data
+ * @param {string} csv_text - CSV text content to import
+ */
+async function importLogs(csv_text) {
     try {
         // BOMを削除
-        const cleanText = csvText.replace(/^\uFEFF/, '');
+        const clean_text = csv_text.replace(/^\uFEFF/, '');
 
         // CSV行を分割（引用符内の改行を考慮）
-        const lines = parseCSVRecords(cleanText);
+        const lines = parseCSVRecords(clean_text);
 
         if (lines.length < 2) {
             alert('インポートするデータがありません。');
@@ -470,81 +540,107 @@ async function importLogs(csvText) {
         const headers = parseCSVLine(lines[0]);
 
         // 列インデックスを特定
-        const uuidIndex = headers.indexOf('UUID');
-        const timestampIndex = headers.findIndex(h => h.includes('タイムスタンプ'));
-        const bandIndex = headers.indexOf('バンド');
-        const frequencyIndex = headers.indexOf('周波数');
-        const memoIndex = headers.indexOf('メモ');
+        const uuid_index = headers.indexOf('UUID');
+        const timestamp_index = headers.findIndex(h => h.includes('タイムスタンプ'));
+        const band_index = headers.indexOf('バンド');
+        const frequency_index = headers.indexOf('周波数');
+        const callsign_index = headers.indexOf('コールサイン');
+        const memo_index = headers.indexOf('メモ');
 
-        if (timestampIndex === -1 || bandIndex === -1 || frequencyIndex === -1) {
+        if (timestamp_index === -1 || band_index === -1 || frequency_index === -1) {
             alert('CSVファイルの形式が正しくありません。');
             return;
         }
 
         // 既存のログを取得（重複チェック用）
-        const existingLogs = await db.logs.toArray();
-        const existingUUIDs = new Set(existingLogs.map(log => log.uuid).filter(uuid => uuid));
+        const existing_logs = await db.logs.toArray();
+        const existing_uuids = new Set(existing_logs.map(log => log.uuid).filter(uuid => uuid));
 
         // 重複チェック用のコンテンツハッシュセットを作成
-        const existingContentHashes = new Set(
-            existingLogs.map(log => createContentHash(log.timestamp, log.frequency, log.memo))
+        const existing_content_hashes = new Set(
+            existing_logs.map(log => createContentHash(log.timestamp, log.frequency, log.memo))
         );
 
         // データ行を処理
-        const logsToImport = [];
-        let duplicateCount = 0;
+        const logs_to_import = [];
+        let duplicate_count = 0;
+        const debug_info = []; // デバッグ情報
 
         for (let i = 1; i < lines.length; i++) {
             const values = parseCSVLine(lines[i]);
 
             if (values.length < 3) continue; // 不正な行をスキップ
 
-            const uuid = uuidIndex >= 0 ? values[uuidIndex] : '';
-            const timestamp = values[timestampIndex];
-            const band = values[bandIndex];
-            const frequency = parseFloat(values[frequencyIndex]);
-            const memo = memoIndex >= 0 ? values[memoIndex] : '';
+            const uuid = uuid_index >= 0 ? values[uuid_index] : '';
+            const timestamp = values[timestamp_index];
+            const band = values[band_index];
+            const frequency = parseFloat(values[frequency_index]);
+            const callsign = callsign_index >= 0 ? values[callsign_index] : '';
+            const memo = memo_index >= 0 ? values[memo_index] : '';
 
             // UUIDでの重複チェック
-            if (uuid && existingUUIDs.has(uuid)) {
-                duplicateCount++;
+            if (uuid && existing_uuids.has(uuid)) {
+                duplicate_count++;
+                debug_info.push({
+                    type: 'UUID重複',
+                    uuid: uuid.substring(0, 8) + '...',
+                    band: band,
+                    frequency: frequency,
+                    memo_length: memo.length
+                });
                 continue;
             }
 
             // コンテンツベースの重複チェック
-            const contentHash = createContentHash(timestamp, frequency, memo);
-            if (existingContentHashes.has(contentHash)) {
-                duplicateCount++;
+            const content_hash = createContentHash(timestamp, frequency, memo);
+            if (existing_content_hashes.has(content_hash)) {
+                duplicate_count++;
+                debug_info.push({
+                    type: 'コンテンツ重複',
+                    uuid: uuid.substring(0, 8) + '...',
+                    band: band,
+                    frequency: frequency,
+                    memo_length: memo.length
+                });
                 continue;
             }
 
             // インポートするログを追加
-            const logData = {
+            const log_data = {
                 uuid: uuid || generateUUID(),
                 band: band,
                 frequency: frequency,
+                callsign: callsign,
                 memo: memo,
                 timestamp: timestamp
             };
 
-            logsToImport.push(logData);
+            logs_to_import.push(log_data);
 
             // 今回追加するものも重複チェックに追加
-            if (logData.uuid) {
-                existingUUIDs.add(logData.uuid);
+            if (log_data.uuid) {
+                existing_uuids.add(log_data.uuid);
             }
-            existingContentHashes.add(contentHash);
+            existing_content_hashes.add(content_hash);
         }
 
         // データベースに追加
-        if (logsToImport.length > 0) {
-            await db.logs.bulkAdd(logsToImport);
-            currentPage = 1;
+        if (logs_to_import.length > 0) {
+            await db.logs.bulkAdd(logs_to_import);
+            current_page = 1;
             await loadLogs();
         }
 
+        // デバッグ情報をコンソールに出力
+        if (debug_info.length > 0) {
+            console.log('=== 重複検出の詳細 ===');
+            debug_info.forEach((info, idx) => {
+                console.log(`${idx + 1}. [${info.type}] ${info.band} ${info.frequency} | UUID: ${info.uuid} | Memo: ${info.memo_length}文字`);
+            });
+        }
+
         // 結果を表示
-        const message = `インポート完了\n新規追加: ${logsToImport.length}件\n重複スキップ: ${duplicateCount}件`;
+        const message = `インポート完了\n新規追加: ${logs_to_import.length}件\n重複スキップ: ${duplicate_count}件`;
         alert(message);
 
     } catch (error) {
@@ -553,78 +649,86 @@ async function importLogs(csvText) {
     }
 }
 
-// CSVテキストをレコード（行）に分割（引用符内の改行を考慮）
-function parseCSVRecords(csvText) {
+/**
+ * Parses CSV text into records (rows), handling quotes and multiline fields
+ * @param {string} csv_text - CSV text to parse
+ * @returns {Array<string>} Array of CSV record strings
+ */
+function parseCSVRecords(csv_text) {
     const records = [];
-    let currentRecord = '';
-    let inQuotes = false;
+    let current_record = '';
+    let in_quotes = false;
 
-    for (let i = 0; i < csvText.length; i++) {
-        const char = csvText[i];
-        const nextChar = csvText[i + 1];
+    for (let i = 0; i < csv_text.length; i++) {
+        const char = csv_text[i];
+        const next_char = csv_text[i + 1];
 
         if (char === '"') {
-            currentRecord += char;
-            if (inQuotes && nextChar === '"') {
+            current_record += char;
+            if (in_quotes && next_char === '"') {
                 // エスケープされた引用符
-                currentRecord += '"';
+                current_record += '"';
                 i++;
             } else {
                 // 引用符の開始/終了
-                inQuotes = !inQuotes;
+                in_quotes = !in_quotes;
             }
-        } else if (char === '\n' && !inQuotes) {
+        } else if (char === '\n' && !in_quotes) {
             // 引用符外の改行 = レコードの終わり
-            if (currentRecord.trim()) {
-                records.push(currentRecord);
+            if (current_record.trim()) {
+                records.push(current_record);
             }
-            currentRecord = '';
+            current_record = '';
         } else if (char === '\r') {
             // CRLFの場合はCRを無視
-            if (nextChar === '\n') {
+            if (next_char === '\n') {
                 continue;
-            } else if (!inQuotes) {
+            } else if (!in_quotes) {
                 // CR単独の場合も改行として扱う
-                if (currentRecord.trim()) {
-                    records.push(currentRecord);
+                if (current_record.trim()) {
+                    records.push(current_record);
                 }
-                currentRecord = '';
+                current_record = '';
             } else {
-                currentRecord += char;
+                current_record += char;
             }
         } else {
-            currentRecord += char;
+            current_record += char;
         }
     }
 
     // 最後のレコードを追加
-    if (currentRecord.trim()) {
-        records.push(currentRecord);
+    if (current_record.trim()) {
+        records.push(current_record);
     }
 
     return records;
 }
 
-// CSV行をパース（引用符を考慮）
+/**
+ * Parses a single CSV line into fields, handling quoted values
+ * @param {string} line - CSV line to parse
+ * @returns {Array<string>} Array of field values
+ */
 function parseCSVLine(line) {
     const result = [];
     let current = '';
-    let inQuotes = false;
+    let in_quotes = false;
 
     for (let i = 0; i < line.length; i++) {
         const char = line[i];
-        const nextChar = line[i + 1];
+        const next_char = line[i + 1];
 
         if (char === '"') {
-            if (inQuotes && nextChar === '"') {
+            if (in_quotes && next_char === '"') {
                 // エスケープされた引用符
                 current += '"';
                 i++;
             } else {
                 // 引用符の開始/終了
-                inQuotes = !inQuotes;
+                in_quotes = !in_quotes;
             }
-        } else if (char === ',' && !inQuotes) {
+        } else if (char === ',' && !in_quotes) {
             // フィールドの区切り
             result.push(current.trim());
             current = '';
@@ -639,7 +743,13 @@ function parseCSVLine(line) {
     return result;
 }
 
-// コンテンツベースのハッシュを作成（重複検出用）
+/**
+ * Creates a content-based hash for duplicate detection
+ * @param {string} timestamp - Log timestamp
+ * @param {number} frequency - Frequency value
+ * @param {string} memo - Memo text
+ * @returns {string} Hash string for duplicate detection
+ */
 function createContentHash(timestamp, frequency, memo) {
     return `${timestamp}|${frequency}|${memo || ''}`;
 }

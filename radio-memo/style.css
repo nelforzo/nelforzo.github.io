@@ -261,6 +261,16 @@ textarea {
     font-size: 12px;
 }
 
+.log-callsign {
+    font-family: monospace;
+    background-color: #2ecc71;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
 .log-timestamp {
     font-size: 12px;
     color: #7f8c8d;
