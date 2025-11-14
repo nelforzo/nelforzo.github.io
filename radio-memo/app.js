@@ -30,6 +30,18 @@ db.version(3).stores({
     });
 });
 
+// バージョン4: rstフィールドを追加（信号強度報告）
+db.version(4).stores({
+    logs: '++id, uuid, band, frequency, callsign, rst, memo, timestamp'
+}).upgrade(tx => {
+    // 既存のレコードにrstを追加（空文字列で初期化）
+    return tx.table('logs').toCollection().modify(log => {
+        if (!log.rst) {
+            log.rst = '';
+        }
+    });
+});
+
 // UUID生成関数
 function generateUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -76,6 +88,7 @@ function setupEventListeners() {
     const log_form = document.getElementById('logForm');
     const cancel_btn = document.getElementById('cancelBtn');
     const band_select = document.getElementById('band');
+    const frequency_input = document.getElementById('frequency');
     const prev_btn = document.getElementById('prevBtn');
     const next_btn = document.getElementById('nextBtn');
     const settings_btn = document.getElementById('settingsBtn');
@@ -95,6 +108,9 @@ function setupEventListeners() {
 
     // バンド選択変更時の周波数単位更新
     band_select.addEventListener('change', updateFrequencyUnit);
+
+    // 周波数入力のフォーマット（blur時に自動的に3桁の小数点に統一）
+    frequency_input.addEventListener('blur', formatFrequencyInput);
 
     // ページネーションボタン
     prev_btn.addEventListener('click', goToPreviousPage);
@@ -177,6 +193,25 @@ function updateFrequencyUnit() {
 }
 
 /**
+ * Formats the frequency input to always show 3 decimal places
+ * Called on blur event to automatically format user input
+ */
+function formatFrequencyInput() {
+    const frequency_input = document.getElementById('frequency');
+    const value = frequency_input.value.trim();
+
+    if (value === '') return; // 空欄の場合は何もしない
+
+    const num = parseFloat(value);
+
+    // 有効な数値かチェック
+    if (!isNaN(num)) {
+        // 3桁の小数点に統一してフォーマット
+        frequency_input.value = num.toFixed(3);
+    }
+}
+
+/**
  * Formats frequency with appropriate unit based on band
  * @param {string} frequency - Frequency value
  * @param {string} band - Band type (LF, MF, HF, VHF, UHF)
@@ -216,11 +251,17 @@ async function handleFormSubmit(event) {
     const form_data = new FormData(event.target);
     // 保存時に現在のUTC時刻を自動取得
     const now = new Date();
+
+    // 周波数を3桁の小数点にフォーマット
+    const frequency_raw = form_data.get('frequency');
+    const frequency_formatted = parseFloat(frequency_raw).toFixed(3);
+
     const log_data = {
         uuid: generateUUID(),
         band: form_data.get('band'),
-        frequency: form_data.get('frequency'),
+        frequency: frequency_formatted,
         callsign: form_data.get('callsign') || '',
+        rst: form_data.get('rst') || '',
         memo: form_data.get('memo'),
         timestamp: now.toISOString()
     };
@@ -290,6 +331,7 @@ function displayLogs(logs) {
                 <span class="log-band">${escapeHtml(log.band)}</span>
                 <span class="log-frequency">${formatFrequencyWithUnit(escapeHtml(log.frequency), log.band)}</span>
                 ${log.callsign ? `<span class="log-callsign">${escapeHtml(log.callsign)}</span>` : ''}
+                ${log.rst ? `<span class="log-rst">RST: ${escapeHtml(log.rst)}</span>` : ''}
                 <span class="log-timestamp">${formatTimestamp(log.timestamp)}</span>
                 <button class="btn-delete" data-log-id="${log.id}" title="削除">🗑️</button>
             </div>
@@ -447,8 +489,8 @@ async function exportLogs() {
             return;
         }
 
-        // CSVヘッダー（callsignを追加）
-        const headers = ['UUID', 'タイムスタンプ (UTC)', 'バンド', '周波数', '単位', 'コールサイン', 'メモ'];
+        // CSVヘッダー（callsign、rstを追加）
+        const headers = ['UUID', 'タイムスタンプ (UTC)', 'バンド', '周波数', '単位', 'コールサイン', 'RST', 'メモ'];
         const csv_rows = [headers.join(',')];
 
         // CSVデータ行を作成
@@ -463,6 +505,7 @@ async function exportLogs() {
                 log.frequency,
                 `"${escapeText(unit)}"`,
                 `"${escapeText(log.callsign)}"`,
+                `"${escapeText(log.rst)}"`,
                 `"${escapeText(log.memo)}"`
             ];
             csv_rows.push(row.join(','));
@@ -545,6 +588,7 @@ async function importLogs(csv_text) {
         const band_index = headers.indexOf('バンド');
         const frequency_index = headers.indexOf('周波数');
         const callsign_index = headers.indexOf('コールサイン');
+        const rst_index = headers.indexOf('RST');
         const memo_index = headers.indexOf('メモ');
 
         if (timestamp_index === -1 || band_index === -1 || frequency_index === -1) {
@@ -576,6 +620,7 @@ async function importLogs(csv_text) {
             const band = values[band_index];
             const frequency = parseFloat(values[frequency_index]);
             const callsign = callsign_index >= 0 ? values[callsign_index] : '';
+            const rst = rst_index >= 0 ? values[rst_index] : '';
             const memo = memo_index >= 0 ? values[memo_index] : '';
 
             // UUIDでの重複チェック
@@ -611,6 +656,7 @@ async function importLogs(csv_text) {
                 band: band,
                 frequency: frequency,
                 callsign: callsign,
+                rst: rst,
                 memo: memo,
                 timestamp: timestamp
             };
