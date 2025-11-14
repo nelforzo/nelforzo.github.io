@@ -38,15 +38,11 @@ h1 {
 .ascii-title {
     font-size: 14px;
     line-height: 1.2;
-    color: #3498db;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    color: #333;
+    text-shadow: none;
     margin: 0;
     padding: 0;
     font-weight: bold;
-    background: linear-gradient(135deg, #3498db, #2ecc71);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }
 
 h2 {
@@ -62,29 +58,29 @@ h2 {
 
 .btn-primary, .btn-secondary {
     padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
+    border: 1px solid #333;
+    border-radius: 0;
     cursor: pointer;
     font-size: 14px;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
+    background: none;
+    color: #333;
 }
 
 .btn-primary {
-    background-color: #3498db;
-    color: white;
+    text-decoration: underline;
 }
 
 .btn-primary:hover {
-    background-color: #2980b9;
+    background-color: #f5f5f5;
 }
 
 .btn-secondary {
-    background-color: #95a5a6;
-    color: white;
+    text-decoration: none;
 }
 
 .btn-secondary:hover {
-    background-color: #7f8c8d;
+    background-color: #f5f5f5;
 }
 
 /* 設定ボタンとポップオーバー */
@@ -97,17 +93,18 @@ h2 {
 
 .btn-settings {
     padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
+    border: 1px solid #333;
+    border-radius: 0;
     cursor: pointer;
     font-size: 14px;
-    background-color: #95a5a6;
-    color: white;
-    transition: background-color 0.3s;
+    background: none;
+    color: #333;
+    transition: all 0.3s;
+    text-decoration: underline;
 }
 
 .btn-settings:hover {
-    background-color: #7f8c8d;
+    background-color: #f5f5f5;
 }
 
 .settings-popover {
@@ -202,20 +199,21 @@ select option {
 }
 
 .frequency-unit {
-    background-color: #34495e;
-    color: white;
+    background: none;
+    color: #333;
     padding: 10px 15px;
-    border-radius: 4px;
+    border-radius: 0;
     font-size: 16px; /* Match input field font-size for visual consistency */
     font-weight: bold;
     min-width: 60px;
     text-align: center;
+    border: 1px solid #333;
 }
 
 input:focus, textarea:focus, select:focus {
     outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+    border-color: #333;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 }
 
 textarea {
@@ -256,38 +254,41 @@ textarea {
 
 .log-band {
     font-weight: bold;
-    color: #2c3e50;
-    background-color: #3498db;
-    color: white;
+    color: #333;
+    background: none;
     padding: 4px 8px;
-    border-radius: 3px;
+    border-radius: 0;
     font-size: 12px;
+    border: 1px solid #333;
 }
 
 .log-frequency {
-    background-color: #e74c3c;
-    color: white;
+    background: none;
+    color: #333;
     padding: 4px 8px;
-    border-radius: 3px;
+    border-radius: 0;
     font-size: 12px;
+    border: 1px solid #333;
 }
 
 .log-callsign {
-    background-color: #2ecc71;
-    color: white;
+    background: none;
+    color: #333;
     padding: 4px 8px;
-    border-radius: 3px;
+    border-radius: 0;
     font-size: 12px;
     font-weight: bold;
+    border: 1px solid #333;
 }
 
 .log-rst {
-    background-color: #f39c12;
-    color: white;
+    background: none;
+    color: #333;
     padding: 4px 8px;
-    border-radius: 3px;
+    border-radius: 0;
     font-size: 12px;
     font-weight: bold;
+    border: 1px solid #333;
 }
 
 .log-timestamp {
@@ -297,23 +298,22 @@ textarea {
 
 .btn-delete {
     background: none;
-    border: none;
+    border: 1px solid #333;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 12px;
     padding: 4px 8px;
-    border-radius: 4px;
+    border-radius: 0;
     transition: all 0.2s;
-    opacity: 0.6;
+    color: #333;
+    text-decoration: underline;
 }
 
 .btn-delete:hover {
-    opacity: 1;
-    background-color: rgba(231, 76, 60, 0.1);
-    transform: scale(1.1);
+    background-color: #f5f5f5;
 }
 
 .btn-delete:active {
-    transform: scale(0.95);
+    background-color: #e0e0e0;
 }
 
 .log-memo {
@@ -333,8 +333,8 @@ textarea {
 }
 
 .log-memo:hover {
-    background-color: rgba(52, 152, 219, 0.05);
-    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 0;
 }
 
 .log-memo.expanded {
@@ -361,25 +361,26 @@ textarea {
 
 .pagination-btn {
     padding: 8px 16px;
-    border: 1px solid #3498db;
+    border: 1px solid #333;
     background-color: #fff;
-    color: #3498db;
-    border-radius: 4px;
+    color: #333;
+    border-radius: 0;
     cursor: pointer;
     font-size: 14px;
     transition: all 0.3s;
+    text-decoration: underline;
 }
 
 .pagination-btn:hover:not(:disabled) {
-    background-color: #3498db;
-    color: white;
+    background-color: #f5f5f5;
 }
 
 .pagination-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    border-color: #95a5a6;
-    color: #95a5a6;
+    border-color: #999;
+    color: #999;
+    text-decoration: none;
 }
 
 .page-info {
@@ -430,10 +431,10 @@ footer {
 }
 
 footer a {
-    color: #3498db;
-    text-decoration: none;
+    color: #333;
+    text-decoration: underline;
 }
 
 footer a:hover {
-    text-decoration: underline;
+    background-color: #f5f5f5;
 }

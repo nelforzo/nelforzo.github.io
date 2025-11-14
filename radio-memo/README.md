@@ -38,6 +38,7 @@
 - **PWA対応**: インストール可能なプログレッシブウェブアプリ
 
 #### ユーザーインターフェース
+- **ミニマリストデザイン**: テキスト中心の装飾のないUI、モノスペースフォント採用
 - **レスポンシブデザイン**: モバイルとデスクトップの両方に対応
 - **メモの自動省略**: 長いメモは3行まで表示、クリックで全文表示
 - **長いURL対応**: ShazamリンクなどのURLも画面幅に収まるよう自動改行
@@ -79,7 +80,7 @@
    - 長いメモはクリックで全文表示
 
 3. **ログを削除**
-   - 各ログの削除ボタン（🗑️）をクリック
+   - 各ログの削除ボタンをクリック
    - 確認ダイアログで「OK」を選択
 
 4. **エクスポート**
@@ -140,6 +141,7 @@ Radio Memo is an offline-capable web application for recording and managing radi
 - **PWA Ready**: Installable Progressive Web Application
 
 #### User Interface
+- **Minimalist Design**: Text-focused interface with no visual decorations, monospaced font throughout
 - **Responsive Design**: Works on both mobile and desktop
 - **Auto-truncating Memos**: Long memos display up to 3 lines, click to expand
 - **Long URL Support**: URLs like Shazam links wrap automatically to fit screen width
@@ -181,7 +183,7 @@ Each log record contains:
    - Click on long memos to expand and view full text
 
 3. **Delete Logs**
-   - Click the delete button (🗑️) on each log entry
+   - Click the delete button on each log entry
    - Confirm deletion in the dialog
 
 4. **Export**
