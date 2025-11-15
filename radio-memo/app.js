@@ -271,15 +271,15 @@ function detectBandFromFrequency() {
         // バンド変更時に単位表示も更新
         updateFrequencyUnit();
 
-        // 単位が変わった場合、周波数の値を調整
+        // 単位が変わった場合、周波数の値を調整（フォーマットなし）
         const new_unit = frequency_unit.textContent;
         if (current_unit !== new_unit) {
             if (new_unit === 'kHz' && current_unit === 'MHz') {
-                // MHzからkHzに変換
-                frequency_input.value = (num * 1000).toFixed(3);
+                // MHzからkHzに変換（フォーマットせず生の値）
+                frequency_input.value = num * 1000;
             } else if (new_unit === 'MHz' && current_unit === 'kHz') {
-                // kHzからMHzに変換
-                frequency_input.value = (num / 1000).toFixed(3);
+                // kHzからMHzに変換（フォーマットせず生の値）
+                frequency_input.value = num / 1000;
             }
         }
     }
