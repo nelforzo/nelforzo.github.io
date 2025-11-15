@@ -195,16 +195,21 @@ select option {
 .frequency-input-group input {
     flex: 1;
     margin-right: 10px;
+    width: auto; /* Override general input width: 100% for proper flex behavior */
+    min-width: 0; /* Allow flex item to shrink below content size if needed */
 }
 
 .frequency-unit-selector {
+    flex-shrink: 0; /* Prevent unit selector from shrinking */
+    width: auto; /* Size based on content */
     background: #fff;
     color: #000;
-    padding: 10px 15px;
+    padding: 10px 12px;
     border-radius: 0;
     font-size: 16px;
     font-weight: bold;
-    min-width: 80px;
+    min-width: 70px; /* Compact width - just enough for "MHz" or "kHz" */
+    max-width: 70px; /* Prevent expansion */
     text-align: center;
     border: 1px solid #000;
     cursor: pointer;
