@@ -59,11 +59,7 @@ let total_pages = 1;
 // Service Worker登録
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-        navigator.serviceWorker.register('./sw.js').then(function(registration) {
-            console.log('Service Worker登録成功:', registration.scope);
-        }, function(err) {
-            console.log('Service Worker登録失敗:', err);
-        });
+        navigator.serviceWorker.register('./sw.js');
     });
 }
 
@@ -87,8 +83,8 @@ function setupEventListeners() {
     const new_log_btn = document.getElementById('newLogBtn');
     const log_form = document.getElementById('logForm');
     const cancel_btn = document.getElementById('cancelBtn');
-    const band_select = document.getElementById('band');
     const frequency_input = document.getElementById('frequency');
+    const frequency_unit = document.getElementById('frequencyUnit');
     const prev_btn = document.getElementById('prevBtn');
     const next_btn = document.getElementById('nextBtn');
     const settings_btn = document.getElementById('settingsBtn');
@@ -106,15 +102,13 @@ function setupEventListeners() {
     // キャンセルボタン
     cancel_btn.addEventListener('click', hideNewLogForm);
 
-    // バンド選択変更時の周波数単位更新
-    band_select.addEventListener('change', updateFrequencyUnit);
-
     // 周波数入力のフォーマット（blur時に自動的に3桁の小数点に統一）
     frequency_input.addEventListener('blur', formatFrequencyInput);
 
-    // 周波数入力時の自動バンド検出
+    // 周波数と単位変更時の自動バンド検出
     frequency_input.addEventListener('input', detectBandFromFrequency);
     frequency_input.addEventListener('blur', detectBandFromFrequency);
+    frequency_unit.addEventListener('change', detectBandFromFrequency);
 
     // ページネーションボタン
     prev_btn.addEventListener('click', goToPreviousPage);
@@ -167,33 +161,8 @@ function hideNewLogForm() {
     const form = document.getElementById('logForm');
 
     form.reset();
-    updateFrequencyUnit(); // リセット時に単位も更新
     new_log_form.classList.add('hidden');
     log_list.classList.remove('hidden');
-}
-
-/**
- * Updates the frequency unit display based on selected band
- */
-function updateFrequencyUnit() {
-    const band_select = document.getElementById('band');
-    const frequency_unit = document.getElementById('frequencyUnit');
-    const band = band_select.value;
-
-    // バンドに応じた周波数単位の設定
-    switch (band) {
-        case 'LF':
-        case 'MF':
-            frequency_unit.textContent = 'kHz';
-            break;
-        case 'HF':
-        case 'VHF':
-        case 'UHF':
-            frequency_unit.textContent = 'MHz';
-            break;
-        default:
-            frequency_unit.textContent = 'MHz';
-    }
 }
 
 /**
@@ -216,29 +185,35 @@ function formatFrequencyInput() {
 }
 
 /**
- * Detects and automatically selects the appropriate band based on frequency input
- * Handles both kHz and MHz units based on currently selected band
+ * Detects and automatically calculates the appropriate band based on frequency and unit
+ * Updates the read-only band display field
  */
 function detectBandFromFrequency() {
     const frequency_input = document.getElementById('frequency');
-    const band_select = document.getElementById('band');
+    const band_display = document.getElementById('band');
     const frequency_unit = document.getElementById('frequencyUnit');
 
     const value = frequency_input.value.trim();
 
-    if (value === '') return; // 空欄の場合は何もしない
+    if (value === '') {
+        band_display.value = '';
+        return;
+    }
 
     const num = parseFloat(value);
 
     // 有効な数値かチェック
-    if (isNaN(num) || num <= 0) return;
+    if (isNaN(num) || num <= 0) {
+        band_display.value = '';
+        return;
+    }
 
-    // 現在の単位を取得
-    const current_unit = frequency_unit.textContent;
+    // 選択された単位を取得
+    const unit = frequency_unit.value;
 
     // 周波数をMHzに変換（統一的な比較のため）
     let frequency_mhz;
-    if (current_unit === 'kHz') {
+    if (unit === 'kHz') {
         frequency_mhz = num / 1000; // kHzからMHzに変換
     } else {
         frequency_mhz = num; // 既にMHz
@@ -264,25 +239,8 @@ function detectBandFromFrequency() {
         detected_band = 'UHF';
     }
 
-    // バンドが検出された場合、自動的に選択を更新
-    if (detected_band && band_select.value !== detected_band) {
-        band_select.value = detected_band;
-
-        // バンド変更時に単位表示も更新
-        updateFrequencyUnit();
-
-        // 単位が変わった場合、周波数の値を調整（フォーマットなし）
-        const new_unit = frequency_unit.textContent;
-        if (current_unit !== new_unit) {
-            if (new_unit === 'kHz' && current_unit === 'MHz') {
-                // MHzからkHzに変換（フォーマットせず生の値）
-                frequency_input.value = num * 1000;
-            } else if (new_unit === 'MHz' && current_unit === 'kHz') {
-                // kHzからMHzに変換（フォーマットせず生の値）
-                frequency_input.value = num / 1000;
-            }
-        }
-    }
+    // バンド表示フィールドを更新
+    band_display.value = detected_band;
 }
 
 /**
@@ -347,7 +305,6 @@ async function handleFormSubmit(event) {
         hideNewLogForm();
         await loadLogs();
     } catch (error) {
-        console.error('ログの保存に失敗しました:', error);
         alert('ログの保存に失敗しました。');
     }
 }
@@ -383,7 +340,7 @@ async function loadLogs() {
         displayLogs(logs);
         updatePaginationControls();
     } catch (error) {
-        console.error('ログの読み込みに失敗しました:', error);
+        // ログ読み込みエラーは静かに処理（データベースの初期化失敗などは稀）
     }
 }
 
@@ -472,7 +429,6 @@ async function deleteLog(log_id) {
 
         await loadLogs();
     } catch (error) {
-        console.error('ログの削除に失敗しました:', error);
         alert('ログの削除に失敗しました。');
     }
 }
@@ -611,7 +567,6 @@ async function exportLogs() {
         // URLを解放
         URL.revokeObjectURL(url);
     } catch (error) {
-        console.error('ログのエクスポートに失敗しました:', error);
         alert('ログのエクスポートに失敗しました。');
     }
 }
@@ -631,7 +586,6 @@ async function handleImportFile(event) {
         const text = await file.text();
         await importLogs(text);
     } catch (error) {
-        console.error('ファイルの読み込みに失敗しました:', error);
         alert('ファイルの読み込みに失敗しました。');
     }
 }
@@ -682,7 +636,6 @@ async function importLogs(csv_text) {
         // データ行を処理
         const logs_to_import = [];
         let duplicate_count = 0;
-        const debug_info = []; // デバッグ情報
 
         for (let i = 1; i < lines.length; i++) {
             const values = parseCSVLine(lines[i]);
@@ -700,13 +653,6 @@ async function importLogs(csv_text) {
             // UUIDでの重複チェック
             if (uuid && existing_uuids.has(uuid)) {
                 duplicate_count++;
-                debug_info.push({
-                    type: 'UUID重複',
-                    uuid: uuid.substring(0, 8) + '...',
-                    band: band,
-                    frequency: frequency,
-                    memo_length: memo.length
-                });
                 continue;
             }
 
@@ -714,13 +660,6 @@ async function importLogs(csv_text) {
             const content_hash = createContentHash(timestamp, frequency, memo);
             if (existing_content_hashes.has(content_hash)) {
                 duplicate_count++;
-                debug_info.push({
-                    type: 'コンテンツ重複',
-                    uuid: uuid.substring(0, 8) + '...',
-                    band: band,
-                    frequency: frequency,
-                    memo_length: memo.length
-                });
                 continue;
             }
 
@@ -751,20 +690,11 @@ async function importLogs(csv_text) {
             await loadLogs();
         }
 
-        // デバッグ情報をコンソールに出力
-        if (debug_info.length > 0) {
-            console.log('=== 重複検出の詳細 ===');
-            debug_info.forEach((info, idx) => {
-                console.log(`${idx + 1}. [${info.type}] ${info.band} ${info.frequency} | UUID: ${info.uuid} | Memo: ${info.memo_length}文字`);
-            });
-        }
-
         // 結果を表示
         const message = `インポート完了\n新規追加: ${logs_to_import.length}件\n重複スキップ: ${duplicate_count}件`;
         alert(message);
 
     } catch (error) {
-        console.error('インポートに失敗しました:', error);
         alert('インポートに失敗しました。CSVファイルの形式を確認してください。');
     }
 }

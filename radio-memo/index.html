@@ -53,7 +53,7 @@
                         <button id="importBtn" class="settings-menu-item">インポート</button>
                     </div>
                 </div>
-                <input type="file" id="importFile" accept=".csv" style="display: none;">
+                <input type="file" id="importFile" accept=".csv" class="hidden-file-input">
             </section>
 
             <!-- 新しいログ入力フォーム -->
@@ -61,22 +61,18 @@
                 <h2>新しいログを追加</h2>
                 <form id="logForm">
                     <div class="form-group">
-                        <label for="band">バンド:</label>
-                        <select id="band" name="band" required>
-                            <option value="">選択してください</option>
-                            <option value="LF">LF (Long Wave)</option>
-                            <option value="MF">MF (Medium Wave)</option>
-                            <option value="HF">HF (Short Wave)</option>
-                            <option value="VHF">VHF</option>
-                            <option value="UHF">UHF</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label for="frequency">周波数:</label>
                         <div class="frequency-input-group">
                             <input type="number" id="frequency" name="frequency" step="0.001" required>
-                            <span id="frequencyUnit" class="frequency-unit">MHz</span>
+                            <select id="frequencyUnit" name="frequencyUnit" class="frequency-unit-selector">
+                                <option value="MHz">MHz</option>
+                                <option value="kHz">kHz</option>
+                            </select>
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="band">バンド (自動):</label>
+                        <input type="text" id="band" name="band" readonly class="band-display" placeholder="周波数を入力すると自動的に設定されます">
                     </div>
                     <div class="form-group">
                         <label for="callsign">コールサイン:</label>

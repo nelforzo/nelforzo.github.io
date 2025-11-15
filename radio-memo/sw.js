@@ -1,5 +1,5 @@
 // Service Worker for offline functionality
-const CACHE_NAME = 'radio-memo-v3';
+const CACHE_NAME = 'radio-memo-v5';
 const urls_to_cache = [
     './',
     './index.html',
@@ -15,7 +15,6 @@ self.addEventListener('install', function(event) {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(function(cache) {
-                console.log('キャッシュを開きました');
                 return cache.addAll(urls_to_cache);
             })
             .then(function() {
@@ -57,8 +56,7 @@ self.addEventListener('fetch', function(event) {
                         return response;
                     }
                 ).catch(function(error) {
-                    // ネットワークエラーをログに記録
-                    console.log('Fetch failed; returning offline page instead.', error);
+                    // ネットワークエラー時は例外をスロー
                     throw error;
                 });
             })
@@ -74,7 +72,6 @@ self.addEventListener('activate', function(event) {
             return Promise.all(
                 cache_names.map(function(cache_name) {
                     if (cache_name !== CACHE_NAME) {
-                        console.log('古いキャッシュを削除します:', cache_name);
                         return caches.delete(cache_name);
                     }
                 })

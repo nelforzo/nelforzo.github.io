@@ -51,11 +51,6 @@ h2 {
     font-size: 18px;
 }
 
-/* ログリストのh2 */
-#logList h2 {
-    margin-bottom: 15px;
-}
-
 .btn-primary, .btn-secondary {
     padding: 10px 20px;
     border: 1px solid #000;
@@ -156,6 +151,10 @@ main {
     display: none;
 }
 
+.hidden-file-input {
+    display: none;
+}
+
 /* フォームスタイル */
 .form-group {
     margin-bottom: 15px;
@@ -198,16 +197,30 @@ select option {
     margin-right: 10px;
 }
 
-.frequency-unit {
-    background: none;
+.frequency-unit-selector {
+    background: #fff;
     color: #000;
     padding: 10px 15px;
     border-radius: 0;
-    font-size: 16px; /* Match input field font-size for visual consistency */
+    font-size: 16px;
     font-weight: bold;
-    min-width: 60px;
+    min-width: 80px;
     text-align: center;
     border: 1px solid #000;
+    cursor: pointer;
+    font-family: 'Courier New', Consolas, Monaco, 'Liberation Mono', 'Lucida Console', monospace;
+}
+
+.frequency-unit-selector:focus {
+    outline: 2px solid #000;
+    outline-offset: 2px;
+}
+
+.band-display {
+    background-color: #f5f5f5;
+    color: #000;
+    cursor: not-allowed;
+    font-weight: bold;
 }
 
 input:focus, textarea:focus, select:focus {
@@ -312,10 +325,7 @@ textarea {
     right: 15px;
 }
 
-.btn-delete:hover {
-    background-color: #e0e0e0;
-}
-
+.btn-delete:hover,
 .btn-delete:active {
     background-color: #e0e0e0;
 }
