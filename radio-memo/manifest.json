@@ -1,6 +1,6 @@
 {
   "name": "RADIO MEMO",
-  "short_name": "RADIO MEMO",
+  "short_name": "~RM~",
   "description": "Amateur radio logging application for tracking contacts and frequencies",
   "start_url": "/",
   "display": "standalone",

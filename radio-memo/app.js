@@ -247,11 +247,12 @@ function detectBandFromFrequency() {
  * Formats frequency with appropriate unit based on band
  * @param {string} frequency - Frequency value
  * @param {string} band - Band type (LF, MF, HF, VHF, UHF)
- * @returns {string} Formatted frequency with unit
+ * @returns {string} Formatted frequency with unit (always 3 decimal places)
  */
 function formatFrequencyWithUnit(frequency, band) {
     const unit = getFrequencyUnit(band);
-    return `${frequency} ${unit}`;
+    const frequency_num = parseFloat(frequency);
+    return `${frequency_num.toFixed(3)} ${unit}`;
 }
 
 /**
