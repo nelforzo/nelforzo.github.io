@@ -112,6 +112,10 @@ function setupEventListeners() {
     // 周波数入力のフォーマット（blur時に自動的に3桁の小数点に統一）
     frequency_input.addEventListener('blur', formatFrequencyInput);
 
+    // 周波数入力時の自動バンド検出
+    frequency_input.addEventListener('input', detectBandFromFrequency);
+    frequency_input.addEventListener('blur', detectBandFromFrequency);
+
     // ページネーションボタン
     prev_btn.addEventListener('click', goToPreviousPage);
     next_btn.addEventListener('click', goToNextPage);
@@ -208,6 +212,76 @@ function formatFrequencyInput() {
     if (!isNaN(num)) {
         // 3桁の小数点に統一してフォーマット
         frequency_input.value = num.toFixed(3);
+    }
+}
+
+/**
+ * Detects and automatically selects the appropriate band based on frequency input
+ * Handles both kHz and MHz units based on currently selected band
+ */
+function detectBandFromFrequency() {
+    const frequency_input = document.getElementById('frequency');
+    const band_select = document.getElementById('band');
+    const frequency_unit = document.getElementById('frequencyUnit');
+
+    const value = frequency_input.value.trim();
+
+    if (value === '') return; // 空欄の場合は何もしない
+
+    const num = parseFloat(value);
+
+    // 有効な数値かチェック
+    if (isNaN(num) || num <= 0) return;
+
+    // 現在の単位を取得
+    const current_unit = frequency_unit.textContent;
+
+    // 周波数をMHzに変換（統一的な比較のため）
+    let frequency_mhz;
+    if (current_unit === 'kHz') {
+        frequency_mhz = num / 1000; // kHzからMHzに変換
+    } else {
+        frequency_mhz = num; // 既にMHz
+    }
+
+    // 周波数範囲に基づいてバンドを自動検出
+    let detected_band = '';
+
+    if (frequency_mhz >= 0.03 && frequency_mhz < 0.3) {
+        // LF (Longwave): 30-300 kHz (0.03-0.3 MHz)
+        detected_band = 'LF';
+    } else if (frequency_mhz >= 0.3 && frequency_mhz < 3) {
+        // MF (Mediumwave): 300-3000 kHz (0.3-3 MHz)
+        detected_band = 'MF';
+    } else if (frequency_mhz >= 3 && frequency_mhz < 30) {
+        // HF (Shortwave): 3-30 MHz
+        detected_band = 'HF';
+    } else if (frequency_mhz >= 30 && frequency_mhz < 300) {
+        // VHF: 30-300 MHz
+        detected_band = 'VHF';
+    } else if (frequency_mhz >= 300 && frequency_mhz < 3000) {
+        // UHF: 300-3000 MHz
+        detected_band = 'UHF';
+    }
+
+    // バンドが検出された場合、自動的に選択を更新
+    if (detected_band && band_select.value !== detected_band) {
+        band_select.value = detected_band;
+
+        // バンド変更時に単位表示も更新
+        updateFrequencyUnit();
+
+        // 単位が変わった場合、周波数の値を調整
+        const new_unit = frequency_unit.textContent;
+        if (current_unit !== new_unit) {
+            if (new_unit === 'kHz' && current_unit === 'MHz') {
+                // MHzからkHzに変換
+                frequency_input.value = (num * 1000).toFixed(3);
+            } else if (new_unit === 'MHz' && current_unit === 'kHz') {
+                // kHzからMHzに変換
+                frequency_input.value = (num / 1000).toFixed(3);
+            }
+        }
     }
 }
 

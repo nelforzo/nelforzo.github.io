@@ -1,6 +1,6 @@
 {
-  "name": "ラジオメモ - Radio Memo",
-  "short_name": "ラジオメモ",
+  "name": "RADIO MEMO",
+  "short_name": "RADIO MEMO",
   "description": "Amateur radio logging application for tracking contacts and frequencies",
   "start_url": "/",
   "display": "standalone",
