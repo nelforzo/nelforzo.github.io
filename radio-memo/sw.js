@@ -1,10 +1,10 @@
 // Service Worker for offline functionality
-const CACHE_NAME = 'radio-memo-v1';
+const CACHE_NAME = 'radio-memo-v2';
 const urls_to_cache = [
-    '/',
-    '/index.html',
-    '/style.css',
-    '/app.js',
+    './',
+    './index.html',
+    './style.css',
+    './app.js',
     'https://unpkg.com/dexie@3.2.4/dist/dexie.js'
 ];
 
@@ -17,6 +17,10 @@ self.addEventListener('install', function(event) {
             .then(function(cache) {
                 console.log('キャッシュを開きました');
                 return cache.addAll(urls_to_cache);
+            })
+            .then(function() {
+                // 即座にアクティベートするため待機をスキップ
+                return self.skipWaiting();
             })
     );
 });
@@ -37,26 +41,32 @@ self.addEventListener('fetch', function(event) {
                 return fetch(event.request).then(
                     function(response) {
                         // レスポンスが有効でない場合はそのまま返す
-                        if(!response || response.status !== 200 || response.type !== 'basic') {
+                        if(!response || response.status !== 200) {
                             return response;
                         }
 
-                        // レスポンスをキャッシュに保存
-                        const response_to_cache = response.clone();
-                        caches.open(CACHE_NAME)
-                            .then(function(cache) {
-                                cache.put(event.request, response_to_cache);
-                            });
+                        // CORSリソースもキャッシュに保存（外部CDNのライブラリ用）
+                        if (response.type === 'basic' || response.type === 'cors') {
+                            const response_to_cache = response.clone();
+                            caches.open(CACHE_NAME)
+                                .then(function(cache) {
+                                    cache.put(event.request, response_to_cache);
+                                });
+                        }
 
                         return response;
                     }
-                );
+                ).catch(function(error) {
+                    // ネットワークエラーをログに記録
+                    console.log('Fetch failed; returning offline page instead.', error);
+                    throw error;
+                });
             })
     );
 });
 
 /**
- * Activate event - cleans up old caches
+ * Activate event - cleans up old caches and takes control of clients
  */
 self.addEventListener('activate', function(event) {
     event.waitUntil(
@@ -69,6 +79,9 @@ self.addEventListener('activate', function(event) {
                     }
                 })
             );
+        }).then(function() {
+            // すべてのページを即座に制御下に置く
+            return self.clients.claim();
         })
     );
 });

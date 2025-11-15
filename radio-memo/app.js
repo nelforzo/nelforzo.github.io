@@ -59,7 +59,7 @@ let total_pages = 1;
 // Service Worker登録
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+        navigator.serviceWorker.register('./sw.js').then(function(registration) {
             console.log('Service Worker登録成功:', registration.scope);
         }, function(err) {
             console.log('Service Worker登録失敗:', err);
