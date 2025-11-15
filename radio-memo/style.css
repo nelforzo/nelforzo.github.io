@@ -236,6 +236,7 @@ textarea {
     padding: 15px;
     margin-bottom: 10px;
     transition: box-shadow 0.3s;
+    position: relative;
 }
 
 .log-entry:hover {
@@ -244,12 +245,12 @@ textarea {
 
 .log-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: 8px;
     flex-wrap: wrap;
     gap: 10px;
-    position: relative;
+    padding-right: 70px;
 }
 
 .log-band {
@@ -306,6 +307,9 @@ textarea {
     transition: all 0.2s;
     color: #000;
     text-decoration: underline;
+    position: absolute;
+    top: 15px;
+    right: 15px;
 }
 
 .btn-delete:hover {
@@ -409,6 +413,12 @@ textarea {
     .log-header {
         flex-direction: column;
         align-items: flex-start;
+        padding-right: 70px;
+    }
+
+    .btn-delete {
+        top: 10px;
+        right: 10px;
     }
 
     .form-buttons {

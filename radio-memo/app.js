@@ -407,9 +407,9 @@ function displayLogs(logs) {
                 ${log.callsign ? `<span class="log-callsign">${escapeHtml(log.callsign)}</span>` : ''}
                 ${log.rst ? `<span class="log-rst">RST: ${escapeHtml(log.rst)}</span>` : ''}
                 <span class="log-timestamp">${formatTimestamp(log.timestamp)}</span>
-                <button class="btn-delete" data-log-id="${log.id}" title="削除">削除</button>
             </div>
             ${log.memo ? `<div class="log-memo" data-log-id="${log.id}">${escapeHtml(log.memo)}</div>` : ''}
+            <button class="btn-delete" data-log-id="${log.id}" title="削除">削除</button>
         </div>
     `).join('');
 
