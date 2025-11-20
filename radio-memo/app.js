@@ -42,6 +42,18 @@ db.version(4).stores({
     });
 });
 
+// バージョン5: qthフィールドを追加（局の位置情報）
+db.version(5).stores({
+    logs: '++id, uuid, band, frequency, callsign, qth, rst, memo, timestamp'
+}).upgrade(tx => {
+    // 既存のレコードにqthを追加（空文字列で初期化）
+    return tx.table('logs').toCollection().modify(log => {
+        if (!log.qth) {
+            log.qth = '';
+        }
+    });
+});
+
 // UUID生成関数
 function generateUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -294,6 +306,7 @@ async function handleFormSubmit(event) {
         band: form_data.get('band'),
         frequency: frequency_formatted,
         callsign: form_data.get('callsign') || '',
+        qth: form_data.get('qth') || '',
         rst: form_data.get('rst') || '',
         memo: form_data.get('memo'),
         timestamp: now.toISOString()
@@ -363,6 +376,7 @@ function displayLogs(logs) {
                 <span class="log-band">${escapeHtml(log.band)}</span>
                 <span class="log-frequency">${formatFrequencyWithUnit(escapeHtml(log.frequency), log.band)}</span>
                 ${log.callsign ? `<span class="log-callsign">${escapeHtml(log.callsign)}</span>` : ''}
+                ${log.qth ? `<span class="log-qth">QTH: ${escapeHtml(log.qth)}</span>` : ''}
                 ${log.rst ? `<span class="log-rst">RST: ${escapeHtml(log.rst)}</span>` : ''}
                 <span class="log-timestamp">${formatTimestamp(log.timestamp)}</span>
             </div>
@@ -520,8 +534,8 @@ async function exportLogs() {
             return;
         }
 
-        // CSVヘッダー（callsign、rstを追加）
-        const headers = ['UUID', 'タイムスタンプ (UTC)', 'バンド', '周波数', '単位', 'コールサイン', 'RST', 'メモ'];
+        // CSVヘッダー（callsign、qth、rstを追加）
+        const headers = ['UUID', 'タイムスタンプ (UTC)', 'バンド', '周波数', '単位', 'コールサイン', 'QTH', 'RST', 'メモ'];
         const csv_rows = [headers.join(',')];
 
         // CSVデータ行を作成
@@ -536,6 +550,7 @@ async function exportLogs() {
                 log.frequency,
                 `"${escapeText(unit)}"`,
                 `"${escapeText(log.callsign)}"`,
+                `"${escapeText(log.qth)}"`,
                 `"${escapeText(log.rst)}"`,
                 `"${escapeText(log.memo)}"`
             ];
@@ -617,6 +632,7 @@ async function importLogs(csv_text) {
         const band_index = headers.indexOf('バンド');
         const frequency_index = headers.indexOf('周波数');
         const callsign_index = headers.indexOf('コールサイン');
+        const qth_index = headers.indexOf('QTH');
         const rst_index = headers.indexOf('RST');
         const memo_index = headers.indexOf('メモ');
 
@@ -648,6 +664,7 @@ async function importLogs(csv_text) {
             const band = values[band_index];
             const frequency = parseFloat(values[frequency_index]);
             const callsign = callsign_index >= 0 ? values[callsign_index] : '';
+            const qth = qth_index >= 0 ? values[qth_index] : '';
             const rst = rst_index >= 0 ? values[rst_index] : '';
             const memo = memo_index >= 0 ? values[memo_index] : '';
 
@@ -670,6 +687,7 @@ async function importLogs(csv_text) {
                 band: band,
                 frequency: frequency,
                 callsign: callsign,
+                qth: qth,
                 rst: rst,
                 memo: memo,
                 timestamp: timestamp
