@@ -248,6 +248,8 @@ textarea {
 
 /* ログエントリースタイル */
 .log-entry {
+    display: flex;
+    flex-direction: column;
     background-color: #fff;
     border: 1px solid #000;
     border-radius: 6px;
@@ -320,7 +322,11 @@ textarea {
 }
 
 .log-timestamp-row {
+    display: block;
+    width: 100%;
     margin-bottom: 8px;
+    padding-right: 70px;
+    box-sizing: border-box;
 }
 
 .log-timestamp {
