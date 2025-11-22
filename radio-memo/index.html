@@ -70,17 +70,14 @@
                             </select>
                         </div>
                     </div>
+                    <input type="hidden" id="band" name="band">
                     <div class="form-group">
-                        <label for="band">バンド (自動):</label>
-                        <input type="text" id="band" name="band" readonly class="band-display" placeholder="周波数を入力すると自動的に設定されます">
-                    </div>
-                    <div class="form-group">
-                        <label for="callsign">コールサイン:</label>
+                        <label for="callsign">相手局コールサイン:</label>
                         <input type="text" id="callsign" name="callsign" placeholder="例: JA1ABC">
                     </div>
                     <div class="form-group">
-                        <label for="qth">QTH:</label>
-                        <input type="text" id="qth" name="qth" placeholder="例: Tokyo, Japan">
+                        <label for="qth">相手局QTH:</label>
+                        <input type="text" id="qth" name="qth" placeholder="例: 東京都港区">
                     </div>
                     <div class="form-group">
                         <label for="rst">信号強度 (RST):</label>
@@ -111,7 +108,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="memo">メモ:</label>
+                        <label for="memo">備考:</label>
                         <textarea id="memo" name="memo" rows="3"></textarea>
                     </div>
                     <div class="form-buttons">
