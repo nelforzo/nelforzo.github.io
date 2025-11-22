@@ -13,7 +13,7 @@
 ### 主な機能
 
 #### ログ管理
-- **ログの追加**: バンド、周波数、メモ、UTC時刻を記録
+- **ログの追加**: バンド、周波数、コールサイン、QTH、RSレポート、メモ、UTC時刻を記録
 - **ログの削除**: 各エントリに削除ボタンを配置、確認ダイアログで誤操作を防止
 - **バンド選択**: LF (Long Wave)、MF (Medium Wave)、HF (Short Wave)、VHF、UHFから選択
 - **自動単位変換**:
@@ -61,7 +61,10 @@
 - **UUID**: 一意識別子（重複検出に使用）
 - **バンド**: LF、MF、HF、VHF、UHF
 - **周波数**: 数値（単位は自動判定）
-- **メモ**: 任意のテキスト（受信内容、信号強度など）
+- **コールサイン**: 相手局の識別符号
+- **QTH**: 相手局の位置情報
+- **RSレポート**: 信号強度（RS形式、59〜51）
+- **メモ**: 任意のテキスト
 - **タイムスタンプ**: UTC時刻
 
 ### 使い方
@@ -116,7 +119,7 @@ Radio Memo is an offline-capable web application for recording and managing radi
 ### Key Features
 
 #### Log Management
-- **Add Logs**: Record band, frequency, memo, and UTC time
+- **Add Logs**: Record band, frequency, callsign, QTH, RS report, memo, and UTC time
 - **Delete Logs**: Delete button on each entry with confirmation dialog to prevent accidental deletion
 - **Band Selection**: Choose from LF (Long Wave), MF (Medium Wave), HF (Short Wave), VHF, and UHF
 - **Automatic Unit Conversion**:
@@ -164,7 +167,10 @@ Each log record contains:
 - **UUID**: Unique identifier (used for duplicate detection)
 - **Band**: LF, MF, HF, VHF, or UHF
 - **Frequency**: Numeric value (unit automatically determined)
-- **Memo**: Optional text (reception details, signal strength, etc.)
+- **Callsign**: Station identification
+- **QTH**: Station location
+- **RS Report**: Signal strength (RS format, 59-51)
+- **Memo**: Optional text
 - **Timestamp**: UTC time
 
 ### Usage
