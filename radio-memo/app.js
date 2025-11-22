@@ -372,13 +372,15 @@ function displayLogs(logs) {
 
     const logs_html = logs.map(log => `
         <div class="log-entry" data-log-id="${log.id}">
+            <div class="log-timestamp-row">
+                <span class="log-timestamp">${formatTimestamp(log.timestamp)}</span>
+            </div>
             <div class="log-header">
-                <span class="log-band">${escapeHtml(log.band)}</span>
                 <span class="log-frequency">${formatFrequencyWithUnit(escapeHtml(log.frequency), log.band)}</span>
+                <span class="log-band">${escapeHtml(log.band)}</span>
                 ${log.callsign ? `<span class="log-callsign">${escapeHtml(log.callsign)}</span>` : ''}
                 ${log.qth ? `<span class="log-qth">相手局QTH: ${escapeHtml(log.qth)}</span>` : ''}
                 ${log.rst ? `<span class="log-rst">RSレポート: ${escapeHtml(log.rst)}</span>` : ''}
-                <span class="log-timestamp">${formatTimestamp(log.timestamp)}</span>
             </div>
             ${log.memo ? `<div class="log-memo" data-log-id="${log.id}">${escapeHtml(log.memo)}</div>` : ''}
             <button class="btn-delete" data-log-id="${log.id}" title="削除">削除</button>
