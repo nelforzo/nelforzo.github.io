@@ -1,5 +1,5 @@
 // Service Worker for offline functionality
-const CACHE_NAME = 'radio-memo-v10';
+const CACHE_NAME = 'radio-memo-v13';
 const urls_to_cache = [
     './',
     './index.html',

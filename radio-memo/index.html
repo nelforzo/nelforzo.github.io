@@ -70,48 +70,32 @@
                             </select>
                         </div>
                     </div>
+                    <input type="hidden" id="band" name="band">
                     <div class="form-group">
-                        <label for="band">バンド (自動):</label>
-                        <input type="text" id="band" name="band" readonly class="band-display" placeholder="周波数を入力すると自動的に設定されます">
-                    </div>
-                    <div class="form-group">
-                        <label for="callsign">コールサイン:</label>
+                        <label for="callsign">相手局コールサイン:</label>
                         <input type="text" id="callsign" name="callsign" placeholder="例: JA1ABC">
                     </div>
                     <div class="form-group">
-                        <label for="qth">QTH:</label>
+                        <label for="qth">相手局QTH:</label>
                         <input type="text" id="qth" name="qth" placeholder="例: 東京都港区">
                     </div>
                     <div class="form-group">
-                        <label for="rst">信号強度 (RST):</label>
+                        <label for="rst">RSレポート:</label>
                         <select id="rst" name="rst">
                             <option value="">選択してください</option>
-                            <optgroup label="Phone (音声) - RS形式">
-                                <option value="59">59 - 完璧な信号</option>
-                                <option value="58">58 - 強い信号</option>
-                                <option value="57">57 - かなり良好</option>
-                                <option value="56">56 - 良好</option>
-                                <option value="55">55 - まあまあ</option>
-                                <option value="54">54 - やや弱い</option>
-                                <option value="53">53 - 弱い</option>
-                                <option value="52">52 - かなり弱い</option>
-                                <option value="51">51 - 非常に弱い</option>
-                            </optgroup>
-                            <optgroup label="CW/Digital - RST形式">
-                                <option value="599">599 - 完璧な信号</option>
-                                <option value="589">589 - 強い信号</option>
-                                <option value="579">579 - かなり良好</option>
-                                <option value="569">569 - 良好</option>
-                                <option value="559">559 - まあまあ</option>
-                                <option value="549">549 - やや弱い</option>
-                                <option value="539">539 - 弱い</option>
-                                <option value="529">529 - かなり弱い</option>
-                                <option value="519">519 - 非常に弱い</option>
-                            </optgroup>
+                            <option value="59">59 - 完璧な信号</option>
+                            <option value="58">58 - 強い信号</option>
+                            <option value="57">57 - かなり良好</option>
+                            <option value="56">56 - 良好</option>
+                            <option value="55">55 - まあまあ</option>
+                            <option value="54">54 - やや弱い</option>
+                            <option value="53">53 - 弱い</option>
+                            <option value="52">52 - かなり弱い</option>
+                            <option value="51">51 - 非常に弱い</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="memo">メモ:</label>
+                        <label for="memo">備考:</label>
                         <textarea id="memo" name="memo" rows="3"></textarea>
                     </div>
                     <div class="form-buttons">
