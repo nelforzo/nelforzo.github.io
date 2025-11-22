@@ -375,9 +375,11 @@ function displayLogs(logs) {
             <div class="log-timestamp-row">
                 <span class="log-timestamp">${formatTimestamp(log.timestamp)}</span>
             </div>
-            <div class="log-header">
-                <span class="log-frequency">${formatFrequencyWithUnit(escapeHtml(log.frequency), log.band)}</span>
+            <div class="log-band-freq-row">
                 <span class="log-band">${escapeHtml(log.band)}</span>
+                <span class="log-frequency">${formatFrequencyWithUnit(escapeHtml(log.frequency), log.band)}</span>
+            </div>
+            <div class="log-header">
                 ${log.callsign ? `<span class="log-callsign">${escapeHtml(log.callsign)}</span>` : ''}
                 ${log.qth ? `<span class="log-qth">相手局QTH: ${escapeHtml(log.qth)}</span>` : ''}
                 ${log.rst ? `<span class="log-rst">RSレポート: ${escapeHtml(log.rst)}</span>` : ''}

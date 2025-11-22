@@ -335,6 +335,16 @@ textarea {
     font-weight: bold;
 }
 
+.log-band-freq-row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding-right: 70px;
+    box-sizing: border-box;
+}
+
 .btn-delete {
     background: none;
     border: 1px solid #000;
