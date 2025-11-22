@@ -13,12 +13,10 @@
 ### 主な機能
 
 #### ログ管理
-- **ログの追加**: バンド、周波数、コールサイン、QTH、RSレポート、メモ、UTC時刻を記録
+- **ログの追加**: 周波数、相手局コールサイン、相手局QTH、RSレポート、備考、UTC時刻を記録
 - **ログの削除**: 各エントリに削除ボタンを配置、確認ダイアログで誤操作を防止
-- **バンド選択**: LF (Long Wave)、MF (Medium Wave)、HF (Short Wave)、VHF、UHFから選択
-- **自動単位変換**:
-  - LF/MFバンド: kHz表示
-  - HF/VHF/UHFバンド: MHz表示
+- **周波数入力**: 周波数を入力し、単位（MHz/kHz）を選択（デフォルトはMHz）
+- **自動バンド判定**: 入力された周波数と単位からバンド（LF/MF/HF/VHF/UHF）を自動計算し、一覧表示時に表示
 - **UTC時刻記録**: ログ作成時のUTC時刻を自動設定
 - **ページネーション**: 最新10件ずつ表示
 
@@ -59,21 +57,22 @@
 各ログレコードには以下の情報が含まれます：
 
 - **UUID**: 一意識別子（重複検出に使用）
-- **バンド**: LF、MF、HF、VHF、UHF
-- **周波数**: 数値（単位は自動判定）
-- **コールサイン**: 相手局の識別符号
-- **QTH**: 相手局の位置情報
-- **RSレポート**: 信号強度（RS形式、59〜51）
-- **メモ**: 任意のテキスト
+- **バンド**: LF、MF、HF、VHF、UHF（周波数から自動計算）
+- **周波数**: 数値と単位（MHz/kHz）
+- **相手局コールサイン**: 相手局の識別符号
+- **相手局QTH**: 相手局の位置情報
+- **RSレポート**: 信号強度（RS形式、59〜51、フォン用）
+- **備考**: 任意のテキスト
 - **タイムスタンプ**: UTC時刻
 
 ### 使い方
 
 1. **新しいログを追加**
    - 「新しいログ」ボタンをクリック
-   - バンドを選択（周波数単位が自動調整されます）
    - 周波数を入力
-   - メモを入力（オプション）
+   - 単位を選択（MHz/kHz、デフォルトはMHz）
+   - バンドは周波数から自動計算されます
+   - 相手局コールサイン、相手局QTH、RSレポート、備考を入力（オプション）
    - UTC時刻が自動設定されます
    - 「保存」をクリック
 
@@ -119,12 +118,10 @@ Radio Memo is an offline-capable web application for recording and managing radi
 ### Key Features
 
 #### Log Management
-- **Add Logs**: Record band, frequency, callsign, QTH, RS report, memo, and UTC time
+- **Add Logs**: Record frequency, callsign, QTH, RS report, memo, and UTC time
 - **Delete Logs**: Delete button on each entry with confirmation dialog to prevent accidental deletion
-- **Band Selection**: Choose from LF (Long Wave), MF (Medium Wave), HF (Short Wave), VHF, and UHF
-- **Automatic Unit Conversion**:
-  - LF/MF bands: kHz display
-  - HF/VHF/UHF bands: MHz display
+- **Frequency Input**: Enter frequency and select unit (MHz/kHz, default is MHz)
+- **Automatic Band Detection**: Band (LF/MF/HF/VHF/UHF) is automatically calculated from frequency and unit, displayed in list view
 - **UTC Time Recording**: Automatically sets UTC time when creating logs
 - **Pagination**: Display 10 most recent records per page
 
@@ -165,11 +162,11 @@ Radio Memo is an offline-capable web application for recording and managing radi
 Each log record contains:
 
 - **UUID**: Unique identifier (used for duplicate detection)
-- **Band**: LF, MF, HF, VHF, or UHF
-- **Frequency**: Numeric value (unit automatically determined)
-- **Callsign**: Station identification
-- **QTH**: Station location
-- **RS Report**: Signal strength (RS format, 59-51)
+- **Band**: LF, MF, HF, VHF, or UHF (automatically calculated from frequency)
+- **Frequency**: Numeric value with unit (MHz/kHz)
+- **Callsign**: Remote station identification
+- **QTH**: Remote station location
+- **RS Report**: Signal strength (RS format, 59-51, phone only)
 - **Memo**: Optional text
 - **Timestamp**: UTC time
 
@@ -177,9 +174,10 @@ Each log record contains:
 
 1. **Add New Log**
    - Click "新しいログ" (New Log) button
-   - Select band (frequency unit adjusts automatically)
    - Enter frequency
-   - Enter memo (optional)
+   - Select unit (MHz/kHz, default is MHz)
+   - Band is automatically calculated from frequency
+   - Enter callsign, QTH, RS report, and memo (optional)
    - UTC time is set automatically
    - Click "保存" (Save)
 
