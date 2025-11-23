@@ -159,9 +159,11 @@ function setupEventListeners() {
 function showNewLogForm() {
     const log_list = document.getElementById('logList');
     const new_log_form = document.getElementById('newLogForm');
+    const new_log_btn = document.getElementById('newLogBtn');
 
     log_list.classList.add('hidden');
     new_log_form.classList.remove('hidden');
+    new_log_btn.classList.add('hidden');
 }
 
 /**
@@ -171,10 +173,12 @@ function hideNewLogForm() {
     const log_list = document.getElementById('logList');
     const new_log_form = document.getElementById('newLogForm');
     const form = document.getElementById('logForm');
+    const new_log_btn = document.getElementById('newLogBtn');
 
     form.reset();
     new_log_form.classList.add('hidden');
     log_list.classList.remove('hidden');
+    new_log_btn.classList.remove('hidden');
 }
 
 /**
