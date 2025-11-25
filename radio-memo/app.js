@@ -396,7 +396,7 @@ function displayLogs(logs) {
     const logs_container = document.getElementById('logs');
 
     if (logs.length === 0) {
-        logs_container.innerHTML = '<p class="no-logs">まだログがありません。</p>';
+        logs_container.innerHTML = '<p class="no-logs">交信ログがまだありません。<br>上の「新しいログ」ボタンから最初のログを作成できます。</p>';
         return;
     }
 
