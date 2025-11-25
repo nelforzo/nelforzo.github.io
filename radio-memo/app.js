@@ -56,6 +56,11 @@ db.version(5).stores({
 
 // UUID生成関数
 function generateUUID() {
+    // モダンブラウザではcrypto.randomUUID()を使用（暗号学的に安全）
+    if (crypto.randomUUID) {
+        return crypto.randomUUID();
+    }
+    // 古いブラウザ用のフォールバック
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         const r = Math.random() * 16 | 0;
         const v = c === 'x' ? r : (r & 0x3 | 0x8);
@@ -67,6 +72,7 @@ function generateUUID() {
 const ITEMS_PER_PAGE = 10;
 let current_page = 1;
 let total_pages = 1;
+let cached_total_count = null; // キャッシュされたログ総数（パフォーマンス最適化）
 
 // Service Worker登録
 if ('serviceWorker' in navigator) {
@@ -118,7 +124,6 @@ function setupEventListeners() {
     frequency_input.addEventListener('blur', formatFrequencyInput);
 
     // 周波数と単位変更時の自動バンド検出
-    frequency_input.addEventListener('input', detectBandFromFrequency);
     frequency_input.addEventListener('blur', detectBandFromFrequency);
     frequency_unit.addEventListener('change', detectBandFromFrequency);
 
@@ -126,16 +131,28 @@ function setupEventListeners() {
     prev_btn.addEventListener('click', goToPreviousPage);
     next_btn.addEventListener('click', goToNextPage);
 
+    // ポップオーバー外をクリックしたら閉じる（名前付き関数で管理）
+    const closePopoverOnOutsideClick = (e) => {
+        if (!settings_popover.contains(e.target) && e.target !== settings_btn) {
+            settings_popover.classList.add('hidden');
+            document.removeEventListener('click', closePopoverOnOutsideClick);
+        }
+    };
+
     // 設定ボタン
     settings_btn.addEventListener('click', (e) => {
         e.stopPropagation();
+        const isHidden = settings_popover.classList.contains('hidden');
         settings_popover.classList.toggle('hidden');
-    });
 
-    // ポップオーバー外をクリックしたら閉じる
-    document.addEventListener('click', (e) => {
-        if (!settings_popover.contains(e.target) && e.target !== settings_btn) {
-            settings_popover.classList.add('hidden');
+        if (isHidden) {
+            // ポップオーバーを開く場合のみリスナーを追加
+            setTimeout(() => {
+                document.addEventListener('click', closePopoverOnOutsideClick);
+            }, 0);
+        } else {
+            // ポップオーバーを閉じる場合はリスナーを削除
+            document.removeEventListener('click', closePopoverOnOutsideClick);
         }
     });
 
@@ -143,12 +160,14 @@ function setupEventListeners() {
     export_btn.addEventListener('click', () => {
         exportLogs();
         settings_popover.classList.add('hidden');
+        document.removeEventListener('click', closePopoverOnOutsideClick);
     });
 
     // インポートボタン
     import_btn.addEventListener('click', () => {
         import_file.click();
         settings_popover.classList.add('hidden');
+        document.removeEventListener('click', closePopoverOnOutsideClick);
     });
     import_file.addEventListener('change', handleImportFile);
 }
@@ -318,6 +337,10 @@ async function handleFormSubmit(event) {
 
     try {
         await db.logs.add(log_data);
+        // キャッシュされたカウントを更新
+        if (cached_total_count !== null) {
+            cached_total_count++;
+        }
         // 新しいログが追加されたら1ページ目に戻る
         current_page = 1;
         hideNewLogForm();
@@ -332,8 +355,11 @@ async function handleFormSubmit(event) {
  */
 async function loadLogs() {
     try {
-        // 総ログ数を取得
-        const total_count = await db.logs.count();
+        // 総ログ数を取得（キャッシュがない場合のみクエリ）
+        if (cached_total_count === null) {
+            cached_total_count = await db.logs.count();
+        }
+        const total_count = cached_total_count;
 
         // 総ページ数を計算
         total_pages = Math.ceil(total_count / ITEMS_PER_PAGE);
@@ -436,6 +462,10 @@ async function deleteLog(log_id) {
 
     try {
         await db.logs.delete(log_id);
+        // キャッシュされたカウントを更新
+        if (cached_total_count !== null) {
+            cached_total_count--;
+        }
 
         // 現在のページのログを再読み込み
         const remaining_logs_on_page = await db.logs
@@ -608,9 +638,12 @@ async function handleImportFile(event) {
 
     try {
         const text = await file.text();
+        // インポート開始メッセージ
+        console.log('インポート開始:', file.name);
         await importLogs(text);
     } catch (error) {
         alert('ファイルの読み込みに失敗しました。');
+        console.error('Import error:', error);
     }
 }
 
@@ -710,9 +743,33 @@ async function importLogs(csv_text) {
             existing_content_hashes.add(content_hash);
         }
 
-        // データベースに追加
+        // データベースに追加（大量データの場合はバッチ処理）
         if (logs_to_import.length > 0) {
-            await db.logs.bulkAdd(logs_to_import);
+            const BATCH_SIZE = 500; // 一度に処理する件数
+            const total_to_import = logs_to_import.length;
+
+            // 大量データの場合はバッチ処理で追加
+            if (total_to_import > BATCH_SIZE) {
+                console.log(`大量インポート開始: ${total_to_import}件をバッチ処理中...`);
+
+                for (let i = 0; i < total_to_import; i += BATCH_SIZE) {
+                    const batch = logs_to_import.slice(i, i + BATCH_SIZE);
+                    await db.logs.bulkAdd(batch);
+
+                    // 進捗をコンソールに出力
+                    const progress = Math.min(i + BATCH_SIZE, total_to_import);
+                    console.log(`インポート進捗: ${progress} / ${total_to_import} (${Math.round(progress / total_to_import * 100)}%)`);
+
+                    // UIスレッドに制御を返して、ブラウザがフリーズしないようにする
+                    await new Promise(resolve => setTimeout(resolve, 0));
+                }
+            } else {
+                // 少量データは一括追加
+                await db.logs.bulkAdd(logs_to_import);
+            }
+
+            // 複数ログを追加したのでキャッシュを無効化（次回ロード時に再計算）
+            cached_total_count = null;
             current_page = 1;
             await loadLogs();
         }
@@ -720,9 +777,11 @@ async function importLogs(csv_text) {
         // 結果を表示
         const message = `インポート完了\n新規追加: ${logs_to_import.length}件\n重複スキップ: ${duplicate_count}件`;
         alert(message);
+        console.log('インポート完了:', message.replace(/\n/g, ' '));
 
     } catch (error) {
         alert('インポートに失敗しました。CSVファイルの形式を確認してください。');
+        console.error('Import failed:', error);
     }
 }
 

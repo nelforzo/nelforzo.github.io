@@ -1,10 +1,15 @@
 // Service Worker for offline functionality
-const CACHE_NAME = 'radio-memo-v19';
+const CACHE_NAME = 'radio-memo-v22';
 const urls_to_cache = [
     './',
     './index.html',
     './style.css',
     './app.js',
+    './manifest.json',
+    './icon-512.png',
+    './icon-192.png',
+    './apple-touch-icon.png',
+    './radio-memo.png',
     'https://unpkg.com/dexie@3.2.4/dist/dexie.js'
 ];
 
