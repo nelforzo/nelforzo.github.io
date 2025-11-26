@@ -493,3 +493,130 @@ footer a {
 footer a:hover {
     background-color: #e0e0e0;
 }
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+    }
+
+    header, main {
+        background-color: #2a2a2a;
+    }
+
+    .log-band, .log-frequency, .log-callsign, .log-qth, .log-rst {
+        color: #e0e0e0;
+        border-color: #e0e0e0;
+    }
+
+    .log-entry {
+        background-color: #2a2a2a;
+        border-color: #e0e0e0;
+    }
+
+    .log-timestamp {
+        color: #e0e0e0;
+    }
+
+    .log-memo {
+        color: #e0e0e0;
+    }
+
+    .log-memo:hover {
+        background-color: #3a3a3a;
+    }
+
+    .btn-primary, .btn-secondary, .btn-settings {
+        color: #e0e0e0;
+        border-color: #e0e0e0;
+    }
+
+    .btn-primary:hover, .btn-secondary:hover, .btn-settings:hover {
+        background-color: #3a3a3a;
+    }
+
+    .btn-delete {
+        color: #e0e0e0;
+        border-color: #e0e0e0;
+    }
+
+    .btn-delete:hover, .btn-delete:active {
+        background-color: #3a3a3a;
+    }
+
+    .pagination-btn {
+        background-color: #2a2a2a;
+        color: #e0e0e0;
+        border-color: #e0e0e0;
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+        background-color: #3a3a3a;
+    }
+
+    .pagination-btn:disabled {
+        border-color: #666;
+        color: #666;
+    }
+
+    .page-info {
+        color: #e0e0e0;
+    }
+
+    .settings-popover {
+        background-color: #2a2a2a;
+        border-color: #666;
+    }
+
+    .settings-menu-item {
+        color: #e0e0e0;
+    }
+
+    .settings-menu-item:hover {
+        background-color: #3a3a3a;
+    }
+
+    .no-logs {
+        color: #e0e0e0;
+    }
+
+    input, textarea, select {
+        background-color: #2a2a2a;
+        color: #e0e0e0;
+        border-color: #666;
+    }
+
+    input:focus, textarea:focus, select:focus {
+        border-color: #e0e0e0;
+        box-shadow: 0 0 3px rgba(224, 224, 224, 0.3);
+    }
+
+    .band-display {
+        background-color: #3a3a3a;
+        color: #e0e0e0;
+    }
+
+    .frequency-unit-selector {
+        background-color: #2a2a2a;
+        color: #e0e0e0;
+        border-color: #e0e0e0;
+    }
+
+    label {
+        color: #e0e0e0;
+    }
+
+    footer {
+        border-top-color: #e0e0e0;
+        color: #e0e0e0;
+    }
+
+    footer a {
+        color: #e0e0e0;
+    }
+
+    footer a:hover {
+        background-color: #3a3a3a;
+    }
+}

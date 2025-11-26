@@ -10,6 +10,12 @@
 
 ラジオメモは、ラジオ受信ログを記録・管理するためのオフライン対応ウェブアプリケーションです。アマチュア無線や短波放送の愛好家が、受信した局の情報を簡単に記録できます。
 
+### 開発について
+
+このアプリは、第４級アマチュア無線技士の資格取得を目指している開発者によって作成されました。アマチュア無線の知識と経験の成長に合わせて進化していくことを想定しており、学習の過程と実際の運用ニーズに基づいて開発を続けています。
+
+運用者としての理解が深まるにつれて、機能の追加・変更・置き換えが行われる可能性があります。このアプリは、アマチュア無線家としての成長とともに歩む、実践的なツールとして位置づけられています。
+
 ### 主な機能
 
 #### ログ管理
@@ -246,6 +252,12 @@
 ### Overview
 
 Radio Memo is an offline-capable web application for recording and managing radio reception logs. Perfect for amateur radio operators and shortwave broadcast enthusiasts to easily log station information.
+
+### About This Project
+
+This app is developed by someone currently studying for the 4th class amateur radio license (第４級アマチュア無線技士). It's designed to evolve alongside my growing knowledge and experience in amateur radio, with development driven by the learning process and practical operating needs.
+
+As my understanding as an operator deepens, features may be added, modified, or replaced. This app is positioned as a practical tool that grows with my journey as a ham radio operator.
 
 ### Key Features
 
