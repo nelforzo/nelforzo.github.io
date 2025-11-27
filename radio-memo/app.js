@@ -73,6 +73,8 @@ const ITEMS_PER_PAGE = 10;
 let current_page = 1;
 let total_pages = 1;
 let cached_total_count = null; // キャッシュされたログ総数（パフォーマンス最適化）
+let is_loading_logs = false; // ログ読み込み中フラグ（重複呼び出し防止）
+let last_frequency_value = ''; // 前回の周波数値（変更検出用）
 
 // Service Worker登録
 if ('serviceWorker' in navigator) {
@@ -170,6 +172,9 @@ function setupEventListeners() {
         document.removeEventListener('click', closePopoverOnOutsideClick);
     });
     import_file.addEventListener('change', handleImportFile);
+
+    // Set up event delegation for log entries (once, not per render)
+    setupLogEventListeners();
 }
 
 /**
@@ -198,6 +203,9 @@ function hideNewLogForm() {
     new_log_form.classList.add('hidden');
     log_list.classList.remove('hidden');
     new_log_btn.classList.remove('hidden');
+
+    // Reset frequency tracking for next form use
+    last_frequency_value = '';
 }
 
 /**
@@ -222,6 +230,7 @@ function formatFrequencyInput() {
 /**
  * Detects and automatically calculates the appropriate band based on frequency and unit
  * Updates the read-only band display field
+ * Optimized to skip processing if value hasn't changed
  */
 function detectBandFromFrequency() {
     const frequency_input = document.getElementById('frequency');
@@ -229,6 +238,13 @@ function detectBandFromFrequency() {
     const frequency_unit = document.getElementById('frequencyUnit');
 
     const value = frequency_input.value.trim();
+    const current_value_key = `${value}|${frequency_unit.value}`;
+
+    // Skip if value hasn't changed (performance optimization)
+    if (current_value_key === last_frequency_value) {
+        return;
+    }
+    last_frequency_value = current_value_key;
 
     if (value === '') {
         band_display.value = '';
@@ -343,6 +359,8 @@ async function handleFormSubmit(event) {
         }
         // 新しいログが追加されたら1ページ目に戻る
         current_page = 1;
+        // Reset frequency tracking for next form use
+        last_frequency_value = '';
         hideNewLogForm();
         await loadLogs();
     } catch (error) {
@@ -352,8 +370,16 @@ async function handleFormSubmit(event) {
 
 /**
  * Loads logs from database with pagination and displays them
+ * Prevents concurrent calls for better performance
  */
 async function loadLogs() {
+    // Prevent concurrent loading
+    if (is_loading_logs) {
+        return;
+    }
+
+    is_loading_logs = true;
+
     try {
         // 総ログ数を取得（キャッシュがない場合のみクエリ）
         if (cached_total_count === null) {
@@ -385,6 +411,8 @@ async function loadLogs() {
         updatePaginationControls();
     } catch (error) {
         // ログ読み込みエラーは静かに処理（データベースの初期化失敗などは稀）
+    } finally {
+        is_loading_logs = false;
     }
 }
 
@@ -420,31 +448,31 @@ function displayLogs(logs) {
     `).join('');
 
     logs_container.innerHTML = logs_html;
-
-    // イベントリスナーを設定
-    setupLogEventListeners();
 }
 
 /**
- * Sets up event listeners for log entries (delete and memo expansion)
+ * Sets up event delegation for log entries (delete and memo expansion)
+ * Uses event delegation pattern - single listener on container instead of multiple listeners
+ * This improves performance and prevents memory leaks
  */
 function setupLogEventListeners() {
-    // 削除ボタンのイベントリスナー
-    const delete_buttons = document.querySelectorAll('.btn-delete');
-    delete_buttons.forEach(button => {
-        button.addEventListener('click', async (e) => {
+    const logs_container = document.getElementById('logs');
+
+    // Use event delegation - single click listener on the container
+    logs_container.addEventListener('click', async (e) => {
+        // Handle delete button clicks
+        if (e.target.classList.contains('btn-delete')) {
             e.stopPropagation();
             const log_id = parseInt(e.target.dataset.logId);
             await deleteLog(log_id);
-        });
-    });
+            return;
+        }
 
-    // メモのクリック展開機能
-    const memos = document.querySelectorAll('.log-memo');
-    memos.forEach(memo => {
-        memo.addEventListener('click', (e) => {
-            e.currentTarget.classList.toggle('expanded');
-        });
+        // Handle memo expansion clicks
+        if (e.target.classList.contains('log-memo')) {
+            e.target.classList.toggle('expanded');
+            return;
+        }
     });
 }
 

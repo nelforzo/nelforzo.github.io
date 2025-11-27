@@ -1,5 +1,6 @@
 // Service Worker for offline functionality
-const CACHE_NAME = 'radio-memo-v27';
+// Updated for performance optimizations (event delegation, cache efficiency)
+const CACHE_NAME = 'radio-memo-v28';
 const urls_to_cache = [
     './',
     './index.html',
@@ -31,8 +32,23 @@ self.addEventListener('install', function(event) {
 
 /**
  * Fetch event - serves cached resources when available, falls back to network
+ * Optimized to skip unnecessary cache lookups for better performance
  */
 self.addEventListener('fetch', function(event) {
+    const request_url = new URL(event.request.url);
+
+    // Skip cache for non-GET requests
+    if (event.request.method !== 'GET') {
+        return;
+    }
+
+    // Skip cache for chrome-extension, blob, and data URLs
+    if (request_url.protocol === 'chrome-extension:' ||
+        request_url.protocol === 'blob:' ||
+        request_url.protocol === 'data:') {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then(function(response) {
@@ -49,20 +65,29 @@ self.addEventListener('fetch', function(event) {
                             return response;
                         }
 
-                        // CORSリソースもキャッシュに保存（外部CDNのライブラリ用）
-                        if (response.type === 'basic' || response.type === 'cors') {
+                        // Only cache GET requests for our domain or whitelisted CDNs
+                        const should_cache = response.type === 'basic' ||
+                            (response.type === 'cors' && request_url.hostname === 'unpkg.com');
+
+                        if (should_cache) {
                             const response_to_cache = response.clone();
                             caches.open(CACHE_NAME)
                                 .then(function(cache) {
                                     cache.put(event.request, response_to_cache);
+                                })
+                                .catch(function() {
+                                    // Silently fail cache writes to avoid blocking
                                 });
                         }
 
                         return response;
                     }
-                ).catch(function(error) {
-                    // ネットワークエラー時は例外をスロー
-                    throw error;
+                ).catch(function() {
+                    // Network error - return nothing (offline mode will handle)
+                    return new Response('', {
+                        status: 408,
+                        statusText: 'Request Timeout'
+                    });
                 });
             })
     );
