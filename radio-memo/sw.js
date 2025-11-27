@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v31: Unify log record element styling - make frequency and QTH match datetime, RS report, and band
-const CACHE_NAME = 'radio-memo-v31';
+// v32: Fix frequency input spinner arrows color in dark mode
+const CACHE_NAME = 'radio-memo-v32';
 const urls_to_cache = [
     './',
     './index.html',

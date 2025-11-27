@@ -271,6 +271,17 @@ input, textarea, select {
     font-size: 16px; /* Minimum 16px prevents iOS Safari auto-zoom */
 }
 
+/* Number input spinner styling - ensure arrows are visible and match other controls */
+input[type="number"] {
+    -moz-appearance: textfield; /* Firefox: use default number styling */
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    opacity: 1; /* Ensure spinners are always visible */
+    height: 40px; /* Make clickable area larger */
+}
+
 /* RST signal strength select optgroup styling */
 select optgroup {
     font-weight: bold;
@@ -741,11 +752,18 @@ footer a:hover {
         background-color: #2a2a2a;
         color: #e0e0e0;
         border: 1px solid #666;
+        color-scheme: dark; /* Enable dark mode for native form controls */
     }
 
     input:focus, textarea:focus, select:focus {
         border: 1px solid #e0e0e0;
         box-shadow: 0 0 3px rgba(224, 224, 224, 0.3);
+    }
+
+    /* Number input spinner arrows in dark mode - invert to light color */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        filter: invert(1); /* Invert colors to make arrows light/white */
     }
 
     .band-display {
