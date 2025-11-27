@@ -414,6 +414,7 @@ textarea {
     padding: 4px 8px;
     border-radius: 0;
     font-size: 12px;
+    font-weight: bold;
     border: 1px solid #000;
 }
 
@@ -443,6 +444,7 @@ textarea {
     padding: 4px 8px;
     border-radius: 0;
     font-size: 12px;
+    font-weight: bold;
     border: 1px solid #000;
 }
 

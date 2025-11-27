@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v30: Clickable page title navigation - return to first page with title click
-const CACHE_NAME = 'radio-memo-v30';
+// v31: Unify log record element styling - make frequency and QTH match datetime, RS report, and band
+const CACHE_NAME = 'radio-memo-v31';
 const urls_to_cache = [
     './',
     './index.html',
