@@ -18,6 +18,28 @@ body {
     padding: 20px;
 }
 
+/* Desktop optimization: wider content area for better space utilization */
+@media (min-width: 768px) {
+    .container {
+        max-width: 95%;
+        padding: 30px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 90%;
+        padding: 40px;
+    }
+}
+
+@media (min-width: 1600px) {
+    .container {
+        max-width: 85%;
+        max-width: 1400px; /* Cap at reasonable width for readability */
+    }
+}
+
 header {
     background-color: #fff;
     padding: 20px;
@@ -27,6 +49,13 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+/* Desktop: Optimize header spacing */
+@media (min-width: 768px) {
+    header {
+        padding: 25px 35px;
+    }
 }
 
 h1 {
@@ -45,6 +74,19 @@ h1 {
     font-weight: bold;
 }
 
+/* Desktop: Larger ASCII title for better visibility */
+@media (min-width: 768px) {
+    .ascii-title {
+        font-size: 16px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .ascii-title {
+        font-size: 18px;
+    }
+}
+
 h2 {
     color: #000;
     margin-bottom: 15px;
@@ -60,6 +102,14 @@ h2 {
     transition: all 0.3s;
     background: none;
     color: #000;
+}
+
+/* Desktop: Larger buttons for better usability */
+@media (min-width: 768px) {
+    .btn-primary, .btn-secondary, .btn-settings {
+        padding: 12px 24px;
+        font-size: 15px;
+    }
 }
 
 .btn-primary {
@@ -147,6 +197,13 @@ main {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+/* Desktop: Optimize main content padding */
+@media (min-width: 768px) {
+    main {
+        padding: 30px 35px;
+    }
+}
+
 .hidden {
     display: none;
 }
@@ -156,8 +213,26 @@ main {
 }
 
 /* フォームスタイル */
+#logForm {
+    display: block;
+}
+
 .form-group {
     margin-bottom: 15px;
+}
+
+/* Desktop: Two-column form layout for better space utilization */
+@media (min-width: 900px) {
+    #logForm {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .form-group:last-of-type,
+    .form-buttons {
+        grid-column: 1 / -1; /* Memo and buttons span full width */
+    }
 }
 
 label {
@@ -247,6 +322,10 @@ textarea {
 }
 
 /* ログエントリースタイル */
+#logs {
+    display: block;
+}
+
 .log-entry {
     display: flex;
     flex-direction: column;
@@ -261,6 +340,31 @@ textarea {
 
 .log-entry:hover {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Desktop: Multi-column grid layout for better space utilization */
+@media (min-width: 900px) {
+    #logs {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .log-entry {
+        margin-bottom: 0;
+        padding: 18px;
+    }
+}
+
+@media (min-width: 1400px) {
+    #logs {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .log-entry {
+        padding: 20px;
+    }
 }
 
 .log-header {
@@ -398,6 +502,13 @@ textarea {
     padding: 40px;
 }
 
+/* Desktop: Ensure no-logs message spans full width in grid */
+@media (min-width: 900px) {
+    #logs .no-logs {
+        grid-column: 1 / -1;
+    }
+}
+
 /* ページネーションスタイル */
 .pagination {
     display: flex;
@@ -406,6 +517,15 @@ textarea {
     gap: 15px;
     margin-top: 20px;
     padding: 15px;
+}
+
+/* Desktop: Improve pagination spacing */
+@media (min-width: 768px) {
+    .pagination {
+        gap: 20px;
+        margin-top: 30px;
+        padding: 20px;
+    }
 }
 
 .pagination-btn {

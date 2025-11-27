@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// Updated for performance optimizations (event delegation, cache efficiency)
-const CACHE_NAME = 'radio-memo-v28';
+// v29: Desktop layout optimization - responsive grid, better space utilization
+const CACHE_NAME = 'radio-memo-v29';
 const urls_to_cache = [
     './',
     './index.html',
