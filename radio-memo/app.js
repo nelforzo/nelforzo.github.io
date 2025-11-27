@@ -112,6 +112,7 @@ function setupEventListeners() {
     const export_btn = document.getElementById('exportBtn');
     const import_btn = document.getElementById('importBtn');
     const import_file = document.getElementById('importFile');
+    const page_title = document.getElementById('pageTitle');
 
     // 新しいログボタン
     new_log_btn.addEventListener('click', showNewLogForm);
@@ -132,6 +133,15 @@ function setupEventListeners() {
     // ページネーションボタン
     prev_btn.addEventListener('click', goToPreviousPage);
     next_btn.addEventListener('click', goToNextPage);
+
+    // ページタイトルクリックで最初のページに戻る
+    page_title.addEventListener('click', returnToFirstPage);
+    page_title.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            returnToFirstPage();
+        }
+    });
 
     // ポップオーバー外をクリックしたら閉じる（名前付き関数で管理）
     const closePopoverOnOutsideClick = (e) => {
@@ -585,6 +595,32 @@ async function goToNextPage() {
         current_page++;
         await loadLogs();
     }
+}
+
+/**
+ * Returns to the first page (most recent logs)
+ * Triggered when clicking the page title
+ */
+async function returnToFirstPage() {
+    // Only navigate if not already on page 1 and not in the form view
+    const new_log_form = document.getElementById('newLogForm');
+    const is_form_visible = !new_log_form.classList.contains('hidden');
+
+    // If form is visible, do nothing (let user finish their task)
+    if (is_form_visible) {
+        return;
+    }
+
+    // If already on page 1, just scroll to top
+    if (current_page === 1) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+    }
+
+    // Navigate to first page
+    current_page = 1;
+    await loadLogs();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /**

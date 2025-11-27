@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v29: Desktop layout optimization - responsive grid, better space utilization
-const CACHE_NAME = 'radio-memo-v29';
+// v30: Clickable page title navigation - return to first page with title click
+const CACHE_NAME = 'radio-memo-v30';
 const urls_to_cache = [
     './',
     './index.html',

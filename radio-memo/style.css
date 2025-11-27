@@ -64,6 +64,27 @@ h1 {
     margin: 0;
 }
 
+/* Make page title clickable for navigation to first page */
+#pageTitle {
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    user-select: none; /* Prevent text selection on click */
+}
+
+#pageTitle:hover {
+    opacity: 0.7;
+}
+
+#pageTitle:active {
+    opacity: 0.5;
+}
+
+/* Focus state for keyboard navigation */
+#pageTitle:focus {
+    outline: 2px solid #000;
+    outline-offset: 4px;
+}
+
 .ascii-title {
     font-size: 14px;
     line-height: 1.2;
@@ -631,6 +652,11 @@ footer a:hover {
 
     .ascii-title {
         color: #e0e0e0;
+    }
+
+    /* Dark mode: clickable title focus state */
+    #pageTitle:focus {
+        outline-color: #e0e0e0;
     }
 
     .log-band, .log-frequency, .log-callsign, .log-qth, .log-rst {
