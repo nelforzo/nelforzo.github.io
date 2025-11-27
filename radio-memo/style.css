@@ -507,12 +507,12 @@ footer a:hover {
 
     .log-band, .log-frequency, .log-callsign, .log-qth, .log-rst {
         color: #e0e0e0;
-        border-color: #e0e0e0;
+        border: 1px solid #e0e0e0;
     }
 
     .log-entry {
         background-color: #2a2a2a;
-        border-color: #e0e0e0;
+        border: 1px solid #e0e0e0;
     }
 
     .log-timestamp {
@@ -529,7 +529,7 @@ footer a:hover {
 
     .btn-primary, .btn-secondary, .btn-settings {
         color: #e0e0e0;
-        border-color: #e0e0e0;
+        border: 1px solid #e0e0e0;
     }
 
     .btn-primary:hover, .btn-secondary:hover, .btn-settings:hover {
@@ -538,7 +538,7 @@ footer a:hover {
 
     .btn-delete {
         color: #e0e0e0;
-        border-color: #e0e0e0;
+        border: 1px solid #e0e0e0;
     }
 
     .btn-delete:hover, .btn-delete:active {
@@ -548,7 +548,7 @@ footer a:hover {
     .pagination-btn {
         background-color: #2a2a2a;
         color: #e0e0e0;
-        border-color: #e0e0e0;
+        border: 1px solid #e0e0e0;
     }
 
     .pagination-btn:hover:not(:disabled) {
@@ -556,7 +556,7 @@ footer a:hover {
     }
 
     .pagination-btn:disabled {
-        border-color: #666;
+        border: 1px solid #666;
         color: #666;
     }
 
@@ -566,7 +566,7 @@ footer a:hover {
 
     .settings-popover {
         background-color: #2a2a2a;
-        border-color: #666;
+        border: 1px solid #666;
     }
 
     .settings-menu-item {
@@ -584,11 +584,11 @@ footer a:hover {
     input, textarea, select {
         background-color: #2a2a2a;
         color: #e0e0e0;
-        border-color: #666;
+        border: 1px solid #666;
     }
 
     input:focus, textarea:focus, select:focus {
-        border-color: #e0e0e0;
+        border: 1px solid #e0e0e0;
         box-shadow: 0 0 3px rgba(224, 224, 224, 0.3);
     }
 
@@ -600,7 +600,7 @@ footer a:hover {
     .frequency-unit-selector {
         background-color: #2a2a2a;
         color: #e0e0e0;
-        border-color: #e0e0e0;
+        border: 1px solid #e0e0e0;
     }
 
     label {
@@ -608,7 +608,7 @@ footer a:hover {
     }
 
     footer {
-        border-top-color: #e0e0e0;
+        border-top: 1px solid #e0e0e0;
         color: #e0e0e0;
     }
 
