@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v32: Fix frequency input spinner arrows color in dark mode
-const CACHE_NAME = 'radio-memo-v32';
+// v33: Hide frequency input spinner arrows for Safari compatibility
+const CACHE_NAME = 'radio-memo-v33';
 const urls_to_cache = [
     './',
     './index.html',

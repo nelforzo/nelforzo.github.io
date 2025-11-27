@@ -271,15 +271,16 @@ input, textarea, select {
     font-size: 16px; /* Minimum 16px prevents iOS Safari auto-zoom */
 }
 
-/* Number input spinner styling - ensure arrows are visible and match other controls */
+/* Number input spinner styling - hide for consistency across browsers (especially Safari) */
 input[type="number"] {
-    -moz-appearance: textfield; /* Firefox: use default number styling */
+    -moz-appearance: textfield; /* Firefox: hide spinners */
 }
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
-    opacity: 1; /* Ensure spinners are always visible */
-    height: 40px; /* Make clickable area larger */
+    -webkit-appearance: none; /* Safari/Chrome: hide spinners */
+    appearance: none;
+    margin: 0;
 }
 
 /* RST signal strength select optgroup styling */
@@ -758,12 +759,6 @@ footer a:hover {
     input:focus, textarea:focus, select:focus {
         border: 1px solid #e0e0e0;
         box-shadow: 0 0 3px rgba(224, 224, 224, 0.3);
-    }
-
-    /* Number input spinner arrows in dark mode - invert to light color */
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button {
-        filter: invert(1); /* Invert colors to make arrows light/white */
     }
 
     .band-display {
