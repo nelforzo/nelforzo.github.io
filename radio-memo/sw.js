@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v33: Hide frequency input spinner arrows for Safari compatibility
-const CACHE_NAME = 'radio-memo-v33';
+// v34: Remove underlines from all buttons for cleaner interface
+const CACHE_NAME = 'radio-memo-v34';
 const urls_to_cache = [
     './',
     './index.html',

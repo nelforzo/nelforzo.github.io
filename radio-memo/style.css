@@ -134,7 +134,7 @@ h2 {
 }
 
 .btn-primary {
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .btn-primary:hover {
@@ -166,7 +166,7 @@ h2 {
     background: none;
     color: #000;
     transition: all 0.3s;
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .btn-settings:hover {
@@ -493,7 +493,7 @@ textarea {
     border-radius: 0;
     transition: all 0.2s;
     color: #000;
-    text-decoration: underline;
+    text-decoration: none;
     position: absolute;
     top: 15px;
     right: 15px;
@@ -572,7 +572,7 @@ textarea {
     cursor: pointer;
     font-size: 14px;
     transition: all 0.3s;
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .pagination-btn:hover:not(:disabled) {
@@ -584,7 +584,6 @@ textarea {
     cursor: not-allowed;
     border-color: #666;
     color: #666;
-    text-decoration: none;
 }
 
 .page-info {
