@@ -505,6 +505,14 @@ footer a:hover {
         background-color: #2a2a2a;
     }
 
+    h1, h2 {
+        color: #e0e0e0;
+    }
+
+    .ascii-title {
+        color: #e0e0e0;
+    }
+
     .log-band, .log-frequency, .log-callsign, .log-qth, .log-rst {
         color: #e0e0e0;
         border: 1px solid #e0e0e0;
