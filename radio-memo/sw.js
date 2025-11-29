@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v37: Remove shadows and simplify borders to plain black/white
-const CACHE_NAME = 'radio-memo-v37';
+// v38: Soften container border colors to subtle grays
+const CACHE_NAME = 'radio-memo-v38';
 const urls_to_cache = [
     './',
     './index.html',
