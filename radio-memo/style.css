@@ -48,7 +48,7 @@ input, textarea, select, button {
 header {
     background-color: #fff;
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 0;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     display: flex;
@@ -178,7 +178,7 @@ h2 {
     margin-bottom: 10px;
     background-color: white;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 0;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     z-index: 1000;
     min-width: 200px;
@@ -198,11 +198,11 @@ h2 {
 }
 
 .settings-menu-item:first-child {
-    border-radius: 8px 8px 0 0;
+    border-radius: 0;
 }
 
 .settings-menu-item:last-child {
-    border-radius: 0 0 8px 8px;
+    border-radius: 0;
 }
 
 .settings-menu-item:hover {
@@ -212,7 +212,7 @@ h2 {
 main {
     background-color: #fff;
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 0;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -265,7 +265,7 @@ input, textarea, select {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 0;
     font-size: 16px; /* Minimum 16px prevents iOS Safari auto-zoom */
 }
 
@@ -361,7 +361,7 @@ textarea {
     flex-direction: column;
     background-color: #fff;
     border: 1px solid #000;
-    border-radius: 6px;
+    border-radius: 0;
     padding: 15px;
     margin-bottom: 10px;
     transition: box-shadow 0.3s;

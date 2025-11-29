@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v35: Add DotGothic16 font and redesign page title
-const CACHE_NAME = 'radio-memo-v35';
+// v36: Remove rounded borders for unified square aesthetic
+const CACHE_NAME = 'radio-memo-v36';
 const urls_to_cache = [
     './',
     './index.html',
