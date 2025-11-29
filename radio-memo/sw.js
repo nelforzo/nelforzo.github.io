@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v34: Remove underlines from all buttons for cleaner interface
-const CACHE_NAME = 'radio-memo-v34';
+// v35: Add DotGothic16 font and redesign page title
+const CACHE_NAME = 'radio-memo-v35';
 const urls_to_cache = [
     './',
     './index.html',
@@ -11,7 +11,8 @@ const urls_to_cache = [
     './icon-192.png',
     './apple-touch-icon.png',
     './radio-memo.png',
-    'https://unpkg.com/dexie@3.2.4/dist/dexie.js'
+    'https://unpkg.com/dexie@3.2.4/dist/dexie.js',
+    'https://fonts.googleapis.com/css2?family=DotGothic16&display=swap'
 ];
 
 /**
@@ -67,7 +68,11 @@ self.addEventListener('fetch', function(event) {
 
                         // Only cache GET requests for our domain or whitelisted CDNs
                         const should_cache = response.type === 'basic' ||
-                            (response.type === 'cors' && request_url.hostname === 'unpkg.com');
+                            (response.type === 'cors' && (
+                                request_url.hostname === 'unpkg.com' ||
+                                request_url.hostname === 'fonts.googleapis.com' ||
+                                request_url.hostname === 'fonts.gstatic.com'
+                            ));
 
                         if (should_cache) {
                             const response_to_cache = response.clone();
