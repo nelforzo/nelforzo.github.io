@@ -54,7 +54,13 @@ db.version(5).stores({
     });
 });
 
-// UUID生成関数
+/**
+ * Generates a UUID (Universally Unique Identifier)
+ * Uses crypto.randomUUID() for modern browsers with cryptographically secure random
+ * Falls back to Math.random() for older browsers
+ *
+ * @returns {string} A UUID v4 string in format "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+ */
 function generateUUID() {
     // モダンブラウザではcrypto.randomUUID()を使用（暗号学的に安全）
     if (crypto.randomUUID) {

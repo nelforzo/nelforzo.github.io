@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v38: Soften container border colors to subtle grays
-const CACHE_NAME = 'radio-memo-v38';
+// v39: Add comprehensive JSDoc documentation and coding conventions
+const CACHE_NAME = 'radio-memo-v39';
 const urls_to_cache = [
     './',
     './index.html',
@@ -11,6 +11,7 @@ const urls_to_cache = [
     './icon-192.png',
     './apple-touch-icon.png',
     './radio-memo.png',
+    './CODING_CONVENTIONS.md',
     'https://unpkg.com/dexie@3.2.4/dist/dexie.js',
     'https://fonts.googleapis.com/css2?family=DotGothic16&display=swap'
 ];
