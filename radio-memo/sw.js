@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v53: Align FAB button with list item borders across all breakpoints
-const CACHE_NAME = 'radio-memo-v53';
+// v54: Move FAB inside list container with sticky positioning, add back-to-top link
+const CACHE_NAME = 'radio-memo-v54';
 const urls_to_cache = [
     './',
     './index.html',

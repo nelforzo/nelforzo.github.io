@@ -118,12 +118,19 @@ function setupEventListeners() {
     const import_file = document.getElementById('importFile');
     const page_title = document.getElementById('pageTitle');
     const load_more_btn = document.getElementById('loadMoreBtn');
+    const back_to_top_link = document.getElementById('backToTopLink');
 
     // 新しいログボタン
     new_log_btn.addEventListener('click', showNewLogForm);
 
     // さらに表示ボタン
     load_more_btn.addEventListener('click', loadMoreLogs);
+
+    // トップに戻るリンク
+    back_to_top_link.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 
     // フォーム送信
     log_form.addEventListener('submit', handleFormSubmit);
@@ -553,19 +560,30 @@ function setupLogEventListeners() {
 function updateEndOfListMessage() {
     const end_of_list = document.getElementById('endOfList');
     const load_more_btn = document.getElementById('loadMoreBtn');
+    const back_to_top_link = document.getElementById('backToTopLink');
+    const BACK_TO_TOP_THRESHOLD = 20; // Show back to top link if 20+ logs
 
     if (!has_more_logs && loaded_count > 0) {
         // No more logs - show end message, hide button
         end_of_list.classList.remove('hidden');
         load_more_btn.classList.add('hidden');
+
+        // Show back to top link only if there are many logs
+        if (total_count >= BACK_TO_TOP_THRESHOLD) {
+            back_to_top_link.classList.remove('hidden');
+        } else {
+            back_to_top_link.classList.add('hidden');
+        }
     } else if (has_more_logs) {
         // More logs available - hide end message, show button
         end_of_list.classList.add('hidden');
         load_more_btn.classList.remove('hidden');
+        back_to_top_link.classList.add('hidden');
     } else {
         // No logs at all - hide both
         end_of_list.classList.add('hidden');
         load_more_btn.classList.add('hidden');
+        back_to_top_link.classList.add('hidden');
     }
 }
 

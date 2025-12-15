@@ -208,6 +208,29 @@ h2 {
     padding: 20px;
     margin-top: 10px;
     font-style: italic;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Back to top link */
+.back-to-top-link {
+    font-family: 'DotGothic16', monospace;
+    font-size: 14px;
+    color: #000;
+    text-decoration: none;
+    padding: 6px 12px;
+    border: 1px solid #000;
+    border-radius: 0;
+    background: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-style: normal;
+}
+
+.back-to-top-link:hover {
+    background-color: #e0e0e0;
 }
 
 .settings-popover {
@@ -677,17 +700,15 @@ textarea {
         width: 100%;
     }
 
-    /* Small mobile: Adjust FAB alignment */
-    .fab-button {
-        right: 22px; /* Aligned with container (8px) + main (14px) padding */
-    }
 }
 
-/* Floating Action Button (FAB) */
+/* Floating Action Button (FAB) - now inside list container with sticky positioning */
 .fab-button {
-    position: fixed;
-    right: 28px; /* Aligned with container (14px) + main (14px) padding */
-    bottom: 100px;
+    position: sticky;
+    float: right;
+    top: 100px;
+    right: 0;
+    margin-top: -100px; /* Offset to position at top of sticky context */
     padding: 10px 16px;
     border: 1px solid #000;
     border-radius: 0;
@@ -699,27 +720,21 @@ textarea {
     transition: all 0.3s;
     text-decoration: none;
     font-family: 'DotGothic16', monospace;
-    z-index: 1000;
+    z-index: 100;
+    clear: both;
 }
 
 .fab-button:hover {
     background-color: #e0e0e0;
 }
 
-/* Desktop: Adjust FAB position and size */
+/* Desktop: Adjust FAB size */
 @media (min-width: 768px) {
     .fab-button {
-        right: 45px; /* Aligned with container (20px) + main (25px) padding */
-        bottom: 120px;
         padding: 10px 18px;
         font-size: 15px;
-    }
-}
-
-/* Large desktop: Further adjust FAB position */
-@media (min-width: 1200px) {
-    .fab-button {
-        right: 53px; /* Aligned with container (28px) + main (25px) padding */
+        top: 120px;
+        margin-top: -120px;
     }
 }
 
@@ -812,6 +827,15 @@ footer a:hover {
 
     .end-of-list {
         color: #888;
+    }
+
+    .back-to-top-link {
+        color: #e0e0e0;
+        border: 1px solid #e0e0e0;
+    }
+
+    .back-to-top-link:hover {
+        background-color: #3a3a3a;
     }
 
     .btn-delete {
