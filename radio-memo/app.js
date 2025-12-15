@@ -200,7 +200,7 @@ function setupEventListeners() {
 }
 
 /**
- * Shows the new log form and hides the log list and FAB
+ * Shows the new log form and hides the log list and add button
  */
 function showNewLogForm() {
     const log_list = document.getElementById('logList');
@@ -209,11 +209,11 @@ function showNewLogForm() {
 
     log_list.classList.add('hidden');
     new_log_form.classList.remove('hidden');
-    new_log_btn.classList.add('hidden'); // Hide FAB when form is open
+    new_log_btn.classList.add('hidden'); // Hide button when form is open
 }
 
 /**
- * Hides the new log form, resets it, and shows the log list and FAB
+ * Hides the new log form, resets it, and shows the log list and add button
  */
 function hideNewLogForm() {
     const log_list = document.getElementById('logList');
@@ -224,7 +224,7 @@ function hideNewLogForm() {
     form.reset();
     new_log_form.classList.add('hidden');
     log_list.classList.remove('hidden');
-    new_log_btn.classList.remove('hidden'); // Show FAB when form is closed
+    new_log_btn.classList.remove('hidden'); // Show button when form is closed
 
     // Reset frequency tracking for next form use
     last_frequency_value = '';
@@ -657,22 +657,10 @@ function formatTimestamp(timestamp) {
 }
 
 /**
- * Returns to the first page (most recent logs)
+ * Scrolls to the top of the page
  * Triggered when clicking the page title
  */
-async function returnToFirstPage() {
-    // Only navigate if not in the form view
-    const new_log_form = document.getElementById('newLogForm');
-    const is_form_visible = !new_log_form.classList.contains('hidden');
-
-    // If form is visible, do nothing (let user finish their task)
-    if (is_form_visible) {
-        return;
-    }
-
-    // Reset to initial state and reload
-    loaded_count = 0;
-    await loadLogs();
+function returnToFirstPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 

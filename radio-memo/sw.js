@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v54: Move FAB inside list container with sticky positioning, add back-to-top link
-const CACHE_NAME = 'radio-memo-v54';
+// v56: Redesign header - make sticky and move add log button to header
+const CACHE_NAME = 'radio-memo-v56';
 const urls_to_cache = [
     './',
     './index.html',
