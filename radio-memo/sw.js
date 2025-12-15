@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v49: Remove ログ一覧 heading for cleaner interface
-const CACHE_NAME = 'radio-memo-v49';
+// v50: Fix FAB plus sign alignment by removing align-items: center
+const CACHE_NAME = 'radio-memo-v50';
 const urls_to_cache = [
     './',
     './index.html',

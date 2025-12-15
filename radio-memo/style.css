@@ -679,12 +679,9 @@ textarea {
     z-index: 1000;
     transition: all 0.2s;
     display: flex;
-    align-items: center;
     justify-content: center;
     line-height: 1;
     padding: 0;
-    /* Fine-tune vertical centering for DotGothic16 font metrics */
-    padding-top: 4px;
 }
 
 .fab-button:hover {
