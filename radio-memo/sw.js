@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v52: Restore manual "さらに表示" button, remove automatic infinite scroll
-const CACHE_NAME = 'radio-memo-v52';
+// v53: Align FAB button with list item borders across all breakpoints
+const CACHE_NAME = 'radio-memo-v53';
 const urls_to_cache = [
     './',
     './index.html',

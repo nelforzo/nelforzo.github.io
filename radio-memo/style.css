@@ -676,12 +676,17 @@ textarea {
     .btn-primary, .btn-secondary {
         width: 100%;
     }
+
+    /* Small mobile: Adjust FAB alignment */
+    .fab-button {
+        right: 22px; /* Aligned with container (8px) + main (14px) padding */
+    }
 }
 
 /* Floating Action Button (FAB) */
 .fab-button {
     position: fixed;
-    right: 20px;
+    right: 28px; /* Aligned with container (14px) + main (14px) padding */
     bottom: 100px;
     padding: 10px 16px;
     border: 1px solid #000;
@@ -704,7 +709,7 @@ textarea {
 /* Desktop: Adjust FAB position and size */
 @media (min-width: 768px) {
     .fab-button {
-        right: 30px;
+        right: 45px; /* Aligned with container (20px) + main (25px) padding */
         bottom: 120px;
         padding: 10px 18px;
         font-size: 15px;
@@ -714,7 +719,7 @@ textarea {
 /* Large desktop: Further adjust FAB position */
 @media (min-width: 1200px) {
     .fab-button {
-        right: 40px;
+        right: 53px; /* Aligned with container (28px) + main (25px) padding */
     }
 }
 
