@@ -111,7 +111,6 @@ function setupEventListeners() {
     const cancel_btn = document.getElementById('cancelBtn');
     const frequency_input = document.getElementById('frequency');
     const frequency_unit = document.getElementById('frequencyUnit');
-    const show_more_btn = document.getElementById('showMoreBtn');
     const settings_btn = document.getElementById('settingsBtn');
     const settings_popover = document.getElementById('settingsPopover');
     const export_btn = document.getElementById('exportBtn');
@@ -135,8 +134,16 @@ function setupEventListeners() {
     frequency_input.addEventListener('blur', detectBandFromFrequency);
     frequency_unit.addEventListener('change', detectBandFromFrequency);
 
-    // "さらに表示"ボタン
-    show_more_btn.addEventListener('click', loadMoreLogs);
+    // Infinite scroll: Load more logs when scrolling near bottom
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+        // Throttle scroll event
+        if (scrollTimeout) return;
+        scrollTimeout = setTimeout(() => {
+            scrollTimeout = null;
+            checkScrollPosition();
+        }, 100);
+    });
 
     // ページタイトルクリックで最初のページに戻る（リロード）
     page_title.addEventListener('click', returnToFirstPage);
@@ -411,7 +418,7 @@ async function loadLogs() {
         has_more_logs = loaded_count < total_count;
 
         displayLogs(logs, false);
-        updateShowMoreButton();
+        updateEndOfListMessage();
     } catch (error) {
         // ログ読み込みエラーは静かに処理（データベースの初期化失敗などは稀）
     } finally {
@@ -420,12 +427,34 @@ async function loadLogs() {
 }
 
 /**
+ * Checks scroll position and loads more logs if near bottom
+ * Called by throttled scroll event listener
+ */
+function checkScrollPosition() {
+    // Don't trigger if already loading, no more logs, or form is visible
+    if (is_loading_logs || !has_more_logs) return;
+
+    const new_log_form = document.getElementById('newLogForm');
+    const is_form_visible = !new_log_form.classList.contains('hidden');
+    if (is_form_visible) return;
+
+    // Calculate scroll position
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const threshold = document.body.offsetHeight - 200;
+
+    // Load more if near bottom
+    if (scrollPosition >= threshold) {
+        loadMoreLogs();
+    }
+}
+
+/**
  * Loads more logs from database and appends them to the display
- * Called when "さらに表示" button is clicked
+ * Called automatically when scrolling near bottom
  */
 async function loadMoreLogs() {
     // Prevent concurrent loading
-    if (is_loading_logs) {
+    if (is_loading_logs || !has_more_logs) {
         return;
     }
 
@@ -448,7 +477,7 @@ async function loadMoreLogs() {
             has_more_logs = loaded_count < total_count;
 
             displayLogs(logs, true);
-            updateShowMoreButton();
+            updateEndOfListMessage();
         }
     } catch (error) {
         // ログ読み込みエラーは静かに処理
@@ -546,16 +575,15 @@ function setupLogEventListeners() {
 }
 
 /**
- * Updates the visibility and state of the "さらに表示" button
+ * Updates the visibility of the end-of-list message
  */
-function updateShowMoreButton() {
-    const show_more_btn = document.getElementById('showMoreBtn');
+function updateEndOfListMessage() {
+    const end_of_list = document.getElementById('endOfList');
 
-    if (has_more_logs) {
-        show_more_btn.classList.remove('hidden');
-        show_more_btn.disabled = false;
+    if (!has_more_logs && loaded_count > 0) {
+        end_of_list.classList.remove('hidden');
     } else {
-        show_more_btn.classList.add('hidden');
+        end_of_list.classList.add('hidden');
     }
 }
 
@@ -593,7 +621,7 @@ async function deleteLog(log_id) {
         has_more_logs = loaded_count < total_count;
 
         displayLogs(logs, false);
-        updateShowMoreButton();
+        updateEndOfListMessage();
     } catch (error) {
         alert('ログの削除に失敗しました。');
     }

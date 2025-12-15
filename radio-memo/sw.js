@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v46: Fix FAB centering, popover position, and remove borders
-const CACHE_NAME = 'radio-memo-v46';
+// v48: Fix FAB plus sign vertical centering with DotGothic16 font
+const CACHE_NAME = 'radio-memo-v48';
 const urls_to_cache = [
     './',
     './index.html',

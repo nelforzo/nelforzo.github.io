@@ -145,20 +145,18 @@ h2 {
     background-color: #e0e0e0;
 }
 
-/* フッターボタンコンテナ（管理と"さらに表示"ボタン） */
+/* フッターボタンコンテナ（管理ボタン） */
 .footer-buttons {
     margin-top: 14px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
-    gap: 12px;
 }
 
 /* Desktop: Improve footer button spacing */
 @media (min-width: 768px) {
     .footer-buttons {
         margin-top: 20px;
-        gap: 14px;
     }
 }
 
@@ -185,35 +183,14 @@ h2 {
     background-color: #e0e0e0;
 }
 
-.btn-show-more {
-    padding: 10px 16px;
-    border: 1px solid #000;
-    border-radius: 0;
-    cursor: pointer;
-    font-size: 14px;
-    background: none;
-    color: #000;
-    transition: all 0.3s;
-    text-decoration: none;
-}
-
-/* Desktop: Larger show more button for better usability */
-@media (min-width: 768px) {
-    .btn-show-more {
-        padding: 10px 18px;
-        font-size: 15px;
-    }
-}
-
-.btn-show-more:hover:not(:disabled) {
-    background-color: #e0e0e0;
-}
-
-.btn-show-more:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    border-color: #666;
+/* End of list message */
+.end-of-list {
+    text-align: center;
     color: #666;
+    font-size: 14px;
+    padding: 20px;
+    margin-top: 10px;
+    font-style: italic;
 }
 
 .settings-popover {
@@ -704,9 +681,10 @@ textarea {
     display: flex;
     align-items: center;
     justify-content: center;
-    line-height: 0.9;
+    line-height: 1;
     padding: 0;
-    padding-bottom: 2px; /* Fine-tune vertical centering for DotGothic16 */
+    /* Fine-tune vertical centering for DotGothic16 font metrics */
+    padding-top: 4px;
 }
 
 .fab-button:hover {
@@ -813,18 +791,17 @@ footer a:hover {
         background-color: #3a3a3a;
     }
 
-    .btn-primary, .btn-secondary, .btn-settings, .btn-show-more {
+    .btn-primary, .btn-secondary, .btn-settings {
         color: #e0e0e0;
         border: 1px solid #e0e0e0;
     }
 
-    .btn-primary:hover, .btn-secondary:hover, .btn-settings:hover, .btn-show-more:hover:not(:disabled) {
+    .btn-primary:hover, .btn-secondary:hover, .btn-settings:hover {
         background-color: #3a3a3a;
     }
 
-    .btn-show-more:disabled {
-        border: 1px solid #666;
-        color: #666;
+    .end-of-list {
+        color: #888;
     }
 
     .btn-delete {
