@@ -192,7 +192,7 @@ function setupEventListeners() {
 }
 
 /**
- * Shows the new log form and hides the log list
+ * Shows the new log form and hides the log list and FAB
  */
 function showNewLogForm() {
     const log_list = document.getElementById('logList');
@@ -201,11 +201,11 @@ function showNewLogForm() {
 
     log_list.classList.add('hidden');
     new_log_form.classList.remove('hidden');
-    new_log_btn.classList.add('hidden');
+    new_log_btn.classList.add('hidden'); // Hide FAB when form is open
 }
 
 /**
- * Hides the new log form, resets it, and shows the log list
+ * Hides the new log form, resets it, and shows the log list and FAB
  */
 function hideNewLogForm() {
     const log_list = document.getElementById('logList');
@@ -216,7 +216,7 @@ function hideNewLogForm() {
     form.reset();
     new_log_form.classList.add('hidden');
     log_list.classList.remove('hidden');
-    new_log_btn.classList.remove('hidden');
+    new_log_btn.classList.remove('hidden'); // Show FAB when form is closed
 
     // Reset frequency tracking for next form use
     last_frequency_value = '';

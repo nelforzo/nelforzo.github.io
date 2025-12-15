@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v45: Convert new log button to floating action button (FAB)
-const CACHE_NAME = 'radio-memo-v45';
+// v46: Fix FAB centering, popover position, and remove borders
+const CACHE_NAME = 'radio-memo-v46';
 const urls_to_cache = [
     './',
     './index.html',

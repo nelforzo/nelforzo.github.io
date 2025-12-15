@@ -219,7 +219,7 @@ h2 {
 .settings-popover {
     position: absolute;
     bottom: 100%;
-    right: 0;
+    left: 0;
     margin-bottom: 10px;
     background-color: white;
     border: 1px solid #ccc;
@@ -256,8 +256,6 @@ h2 {
 main {
     background-color: #fff;
     padding: 14px;
-    border-radius: 0;
-    border: 1px solid #ccc;
 }
 
 /* Desktop: Optimize main content padding */
@@ -706,8 +704,9 @@ textarea {
     display: flex;
     align-items: center;
     justify-content: center;
-    line-height: 1;
+    line-height: 0.9;
     padding: 0;
+    padding-bottom: 2px; /* Fine-tune vertical centering for DotGothic16 */
 }
 
 .fab-button:hover {
@@ -768,7 +767,6 @@ footer a:hover {
 
     main {
         background-color: #2a2a2a;
-        border-color: #555;
     }
 
     h1, h2 {
