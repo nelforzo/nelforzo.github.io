@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v48: Fix FAB plus sign vertical centering with DotGothic16 font
-const CACHE_NAME = 'radio-memo-v48';
+// v49: Remove ログ一覧 heading for cleaner interface
+const CACHE_NAME = 'radio-memo-v49';
 const urls_to_cache = [
     './',
     './index.html',
