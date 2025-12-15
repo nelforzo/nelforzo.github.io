@@ -117,9 +117,13 @@ function setupEventListeners() {
     const import_btn = document.getElementById('importBtn');
     const import_file = document.getElementById('importFile');
     const page_title = document.getElementById('pageTitle');
+    const load_more_btn = document.getElementById('loadMoreBtn');
 
     // 新しいログボタン
     new_log_btn.addEventListener('click', showNewLogForm);
+
+    // さらに表示ボタン
+    load_more_btn.addEventListener('click', loadMoreLogs);
 
     // フォーム送信
     log_form.addEventListener('submit', handleFormSubmit);
@@ -134,16 +138,6 @@ function setupEventListeners() {
     frequency_input.addEventListener('blur', detectBandFromFrequency);
     frequency_unit.addEventListener('change', detectBandFromFrequency);
 
-    // Infinite scroll: Load more logs when scrolling near bottom
-    let scrollTimeout;
-    window.addEventListener('scroll', () => {
-        // Throttle scroll event
-        if (scrollTimeout) return;
-        scrollTimeout = setTimeout(() => {
-            scrollTimeout = null;
-            checkScrollPosition();
-        }, 100);
-    });
 
     // ページタイトルクリックで最初のページに戻る（リロード）
     page_title.addEventListener('click', returnToFirstPage);
@@ -426,31 +420,10 @@ async function loadLogs() {
     }
 }
 
-/**
- * Checks scroll position and loads more logs if near bottom
- * Called by throttled scroll event listener
- */
-function checkScrollPosition() {
-    // Don't trigger if already loading, no more logs, or form is visible
-    if (is_loading_logs || !has_more_logs) return;
-
-    const new_log_form = document.getElementById('newLogForm');
-    const is_form_visible = !new_log_form.classList.contains('hidden');
-    if (is_form_visible) return;
-
-    // Calculate scroll position
-    const scrollPosition = window.innerHeight + window.scrollY;
-    const threshold = document.body.offsetHeight - 200;
-
-    // Load more if near bottom
-    if (scrollPosition >= threshold) {
-        loadMoreLogs();
-    }
-}
 
 /**
  * Loads more logs from database and appends them to the display
- * Called automatically when scrolling near bottom
+ * Called manually when clicking the "さらに表示" button
  */
 async function loadMoreLogs() {
     // Prevent concurrent loading
@@ -575,15 +548,24 @@ function setupLogEventListeners() {
 }
 
 /**
- * Updates the visibility of the end-of-list message
+ * Updates the visibility of the end-of-list message and load more button
  */
 function updateEndOfListMessage() {
     const end_of_list = document.getElementById('endOfList');
+    const load_more_btn = document.getElementById('loadMoreBtn');
 
     if (!has_more_logs && loaded_count > 0) {
+        // No more logs - show end message, hide button
         end_of_list.classList.remove('hidden');
-    } else {
+        load_more_btn.classList.add('hidden');
+    } else if (has_more_logs) {
+        // More logs available - hide end message, show button
         end_of_list.classList.add('hidden');
+        load_more_btn.classList.remove('hidden');
+    } else {
+        // No logs at all - hide both
+        end_of_list.classList.add('hidden');
+        load_more_btn.classList.add('hidden');
     }
 }
 

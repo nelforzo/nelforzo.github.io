@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v51: Replace FAB plus sign with text '追加' styled like 管理 button
-const CACHE_NAME = 'radio-memo-v51';
+// v52: Restore manual "さらに表示" button, remove automatic infinite scroll
+const CACHE_NAME = 'radio-memo-v52';
 const urls_to_cache = [
     './',
     './index.html',
