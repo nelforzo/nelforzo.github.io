@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v50: Fix FAB plus sign alignment by removing align-items: center
-const CACHE_NAME = 'radio-memo-v50';
+// v51: Replace FAB plus sign with text '追加' styled like 管理 button
+const CACHE_NAME = 'radio-memo-v51';
 const urls_to_cache = [
     './',
     './index.html',

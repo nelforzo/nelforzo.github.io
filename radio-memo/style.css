@@ -666,40 +666,31 @@ textarea {
     position: fixed;
     right: 20px;
     bottom: 100px;
-    width: 56px;
-    height: 56px;
+    padding: 10px 16px;
+    border: 1px solid #000;
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 14px;
+    background: none;
     background-color: #fff;
     color: #000;
-    border: 2px solid #000;
-    border-radius: 0;
+    transition: all 0.3s;
+    text-decoration: none;
     font-family: 'DotGothic16', monospace;
-    font-size: 32px;
-    font-weight: bold;
-    cursor: pointer;
     z-index: 1000;
-    transition: all 0.2s;
-    display: flex;
-    justify-content: center;
-    line-height: 1;
-    padding: 0;
 }
 
 .fab-button:hover {
-    background-color: #f5f5f5;
-}
-
-.fab-button:active {
     background-color: #e0e0e0;
 }
 
-/* Desktop: Adjust FAB position */
+/* Desktop: Adjust FAB position and size */
 @media (min-width: 768px) {
     .fab-button {
         right: 30px;
         bottom: 120px;
-        width: 60px;
-        height: 60px;
-        font-size: 36px;
+        padding: 10px 18px;
+        font-size: 15px;
     }
 }
 
@@ -889,14 +880,10 @@ footer a:hover {
     .fab-button {
         background-color: #2a2a2a;
         color: #e0e0e0;
-        border: 2px solid #e0e0e0;
+        border: 1px solid #e0e0e0;
     }
 
     .fab-button:hover {
         background-color: #3a3a3a;
-    }
-
-    .fab-button:active {
-        background-color: #4a4a4a;
     }
 }
