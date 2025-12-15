@@ -74,11 +74,11 @@ function generateUUID() {
     });
 }
 
-// ページネーション設定
-const ITEMS_PER_PAGE = 10;
-let current_page = 1;
-let total_pages = 1;
-let cached_total_count = null; // キャッシュされたログ総数（パフォーマンス最適化）
+// "さらに表示"設定
+const ITEMS_PER_LOAD = 10;
+let loaded_count = 0; // 現在表示されているログ数
+let total_count = 0; // データベース内の総ログ数
+let has_more_logs = false; // さらにログがあるかどうか
 let is_loading_logs = false; // ログ読み込み中フラグ（重複呼び出し防止）
 let last_frequency_value = ''; // 前回の周波数値（変更検出用）
 
@@ -111,8 +111,7 @@ function setupEventListeners() {
     const cancel_btn = document.getElementById('cancelBtn');
     const frequency_input = document.getElementById('frequency');
     const frequency_unit = document.getElementById('frequencyUnit');
-    const prev_btn = document.getElementById('prevBtn');
-    const next_btn = document.getElementById('nextBtn');
+    const show_more_btn = document.getElementById('showMoreBtn');
     const settings_btn = document.getElementById('settingsBtn');
     const settings_popover = document.getElementById('settingsPopover');
     const export_btn = document.getElementById('exportBtn');
@@ -136,11 +135,10 @@ function setupEventListeners() {
     frequency_input.addEventListener('blur', detectBandFromFrequency);
     frequency_unit.addEventListener('change', detectBandFromFrequency);
 
-    // ページネーションボタン
-    prev_btn.addEventListener('click', goToPreviousPage);
-    next_btn.addEventListener('click', goToNextPage);
+    // "さらに表示"ボタン
+    show_more_btn.addEventListener('click', loadMoreLogs);
 
-    // ページタイトルクリックで最初のページに戻る
+    // ページタイトルクリックで最初のページに戻る（リロード）
     page_title.addEventListener('click', returnToFirstPage);
     page_title.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -369,12 +367,10 @@ async function handleFormSubmit(event) {
 
     try {
         await db.logs.add(log_data);
-        // キャッシュされたカウントを更新
-        if (cached_total_count !== null) {
-            cached_total_count++;
-        }
-        // 新しいログが追加されたら1ページ目に戻る
-        current_page = 1;
+        // 総カウントを更新
+        total_count++;
+        // 新しいログが追加されたら最初からリロード
+        loaded_count = 0;
         // Reset frequency tracking for next form use
         last_frequency_value = '';
         hideNewLogForm();
@@ -385,7 +381,8 @@ async function handleFormSubmit(event) {
 }
 
 /**
- * Loads logs from database with pagination and displays them
+ * Loads initial logs from database (most recent 10) and displays them
+ * Resets the display to show only the latest logs
  * Prevents concurrent calls for better performance
  */
 async function loadLogs() {
@@ -397,34 +394,24 @@ async function loadLogs() {
     is_loading_logs = true;
 
     try {
-        // 総ログ数を取得（キャッシュがない場合のみクエリ）
-        if (cached_total_count === null) {
-            cached_total_count = await db.logs.count();
-        }
-        const total_count = cached_total_count;
+        // 総ログ数を取得
+        total_count = await db.logs.count();
 
-        // 総ページ数を計算
-        total_pages = Math.ceil(total_count / ITEMS_PER_PAGE);
-
-        // 現在のページが総ページ数を超えていたら調整
-        if (current_page > total_pages && total_pages > 0) {
-            current_page = total_pages;
-        }
-        if (current_page < 1) {
-            current_page = 1;
-        }
-
-        // 現在のページのログを取得
-        const offset = (current_page - 1) * ITEMS_PER_PAGE;
+        // 最初の10件のログを取得
         const logs = await db.logs
             .orderBy('timestamp')
             .reverse()
-            .offset(offset)
-            .limit(ITEMS_PER_PAGE)
+            .limit(ITEMS_PER_LOAD)
             .toArray();
 
-        displayLogs(logs);
-        updatePaginationControls();
+        // 表示されているログ数を更新
+        loaded_count = logs.length;
+
+        // さらにログがあるかチェック
+        has_more_logs = loaded_count < total_count;
+
+        displayLogs(logs, false);
+        updateShowMoreButton();
     } catch (error) {
         // ログ読み込みエラーは静かに処理（データベースの初期化失敗などは稀）
     } finally {
@@ -433,13 +420,52 @@ async function loadLogs() {
 }
 
 /**
- * Displays logs in the log container with pagination
- * @param {Array} logs - Array of log objects to display
+ * Loads more logs from database and appends them to the display
+ * Called when "さらに表示" button is clicked
  */
-function displayLogs(logs) {
+async function loadMoreLogs() {
+    // Prevent concurrent loading
+    if (is_loading_logs) {
+        return;
+    }
+
+    is_loading_logs = true;
+
+    try {
+        // 次の10件のログを取得
+        const logs = await db.logs
+            .orderBy('timestamp')
+            .reverse()
+            .offset(loaded_count)
+            .limit(ITEMS_PER_LOAD)
+            .toArray();
+
+        if (logs.length > 0) {
+            // 表示されているログ数を更新
+            loaded_count += logs.length;
+
+            // さらにログがあるかチェック
+            has_more_logs = loaded_count < total_count;
+
+            displayLogs(logs, true);
+            updateShowMoreButton();
+        }
+    } catch (error) {
+        // ログ読み込みエラーは静かに処理
+    } finally {
+        is_loading_logs = false;
+    }
+}
+
+/**
+ * Displays logs in the log container
+ * @param {Array} logs - Array of log objects to display
+ * @param {boolean} append - If true, appends to existing logs; if false, replaces all logs
+ */
+function displayLogs(logs, append = false) {
     const logs_container = document.getElementById('logs');
 
-    if (logs.length === 0) {
+    if (logs.length === 0 && !append) {
         logs_container.innerHTML = '<p class="no-logs">交信ログがまだありません。<br>上の「新しいログ」ボタンから最初のログを作成できます。</p>';
         return;
     }
@@ -463,11 +489,15 @@ function displayLogs(logs) {
         </div>
     `).join('');
 
-    logs_container.innerHTML = logs_html;
+    if (append) {
+        logs_container.insertAdjacentHTML('beforeend', logs_html);
+    } else {
+        logs_container.innerHTML = logs_html;
+    }
 }
 
 /**
- * Sets up event delegation for log entries (delete and memo expansion)
+ * Sets up event delegation for log entries (delete, memo expansion, and selection)
  * Uses event delegation pattern - single listener on container instead of multiple listeners
  * This improves performance and prevents memory leaks
  */
@@ -489,7 +519,44 @@ function setupLogEventListeners() {
             e.target.classList.toggle('expanded');
             return;
         }
+
+        // Handle log entry selection (show delete button)
+        const log_entry = e.target.closest('.log-entry');
+        if (log_entry) {
+            // Remove 'selected' class from all other entries
+            const all_entries = logs_container.querySelectorAll('.log-entry');
+            all_entries.forEach(entry => {
+                if (entry !== log_entry) {
+                    entry.classList.remove('selected');
+                }
+            });
+
+            // Toggle 'selected' class on clicked entry
+            log_entry.classList.toggle('selected');
+        }
     });
+
+    // Click outside logs container to deselect all
+    document.addEventListener('click', (e) => {
+        if (!logs_container.contains(e.target)) {
+            const all_entries = logs_container.querySelectorAll('.log-entry');
+            all_entries.forEach(entry => entry.classList.remove('selected'));
+        }
+    });
+}
+
+/**
+ * Updates the visibility and state of the "さらに表示" button
+ */
+function updateShowMoreButton() {
+    const show_more_btn = document.getElementById('showMoreBtn');
+
+    if (has_more_logs) {
+        show_more_btn.classList.remove('hidden');
+        show_more_btn.disabled = false;
+    } else {
+        show_more_btn.classList.add('hidden');
+    }
 }
 
 /**
@@ -506,25 +573,27 @@ async function deleteLog(log_id) {
 
     try {
         await db.logs.delete(log_id);
-        // キャッシュされたカウントを更新
-        if (cached_total_count !== null) {
-            cached_total_count--;
-        }
+        // 総カウントを更新
+        total_count--;
+        // 読み込み済みカウントを減らす
+        loaded_count--;
 
-        // 現在のページのログを再読み込み
-        const remaining_logs_on_page = await db.logs
+        // さらにログがあるかチェック
+        has_more_logs = loaded_count < total_count;
+
+        // ログをリロード（最初からではなく、現在表示されている分だけ）
+        const logs = await db.logs
             .orderBy('timestamp')
             .reverse()
-            .offset((current_page - 1) * ITEMS_PER_PAGE)
-            .limit(ITEMS_PER_PAGE)
-            .count();
+            .limit(loaded_count)
+            .toArray();
 
-        // 現在のページにログが残っていない場合、前のページに戻る
-        if (remaining_logs_on_page === 0 && current_page > 1) {
-            current_page--;
-        }
+        // 実際に読み込めたログ数で更新
+        loaded_count = logs.length;
+        has_more_logs = loaded_count < total_count;
 
-        await loadLogs();
+        displayLogs(logs, false);
+        updateShowMoreButton();
     } catch (error) {
         alert('ログの削除に失敗しました。');
     }
@@ -560,55 +629,11 @@ function formatTimestamp(timestamp) {
 }
 
 /**
- * Updates pagination controls based on current page and total pages
- */
-function updatePaginationControls() {
-    const pagination = document.getElementById('pagination');
-    const prev_btn = document.getElementById('prevBtn');
-    const next_btn = document.getElementById('nextBtn');
-    const page_info = document.getElementById('pageInfo');
-
-    // ログが存在し、複数ページがある場合のみページネーションを表示
-    if (total_pages > 1) {
-        pagination.classList.remove('hidden');
-        page_info.textContent = `${current_page} / ${total_pages}`;
-
-        // 前へボタンの有効/無効
-        prev_btn.disabled = current_page === 1;
-
-        // 次へボタンの有効/無効
-        next_btn.disabled = current_page === total_pages;
-    } else {
-        pagination.classList.add('hidden');
-    }
-}
-
-/**
- * Navigates to the previous page
- */
-async function goToPreviousPage() {
-    if (current_page > 1) {
-        current_page--;
-        await loadLogs();
-    }
-}
-
-/**
- * Navigates to the next page
- */
-async function goToNextPage() {
-    if (current_page < total_pages) {
-        current_page++;
-        await loadLogs();
-    }
-}
-
-/**
  * Returns to the first page (most recent logs)
  * Triggered when clicking the page title
  */
 async function returnToFirstPage() {
-    // Only navigate if not already on page 1 and not in the form view
+    // Only navigate if not in the form view
     const new_log_form = document.getElementById('newLogForm');
     const is_form_visible = !new_log_form.classList.contains('hidden');
 
@@ -617,14 +642,8 @@ async function returnToFirstPage() {
         return;
     }
 
-    // If already on page 1, just scroll to top
-    if (current_page === 1) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
-    }
-
-    // Navigate to first page
-    current_page = 1;
+    // Reset to initial state and reload
+    loaded_count = 0;
     await loadLogs();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -838,9 +857,8 @@ async function importLogs(csv_text) {
                 await db.logs.bulkAdd(logs_to_import);
             }
 
-            // 複数ログを追加したのでキャッシュを無効化（次回ロード時に再計算）
-            cached_total_count = null;
-            current_page = 1;
+            // 複数ログを追加したので最初からリロード
+            loaded_count = 0;
             await loadLogs();
         }
 

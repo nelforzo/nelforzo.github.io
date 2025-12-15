@@ -20,21 +20,21 @@ input, textarea, select, button {
 .container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 14px;
 }
 
 /* Desktop optimization: wider content area for better space utilization */
 @media (min-width: 768px) {
     .container {
         max-width: 95%;
-        padding: 30px;
+        padding: 20px;
     }
 }
 
 @media (min-width: 1200px) {
     .container {
         max-width: 90%;
-        padding: 40px;
+        padding: 28px;
     }
 }
 
@@ -47,10 +47,8 @@ input, textarea, select, button {
 
 header {
     background-color: #fff;
-    padding: 20px;
-    border-radius: 0;
-    border: 1px solid #ccc;
-    margin-bottom: 20px;
+    padding: 14px;
+    margin-bottom: 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -59,28 +57,28 @@ header {
 /* Desktop: Optimize header spacing */
 @media (min-width: 768px) {
     header {
-        padding: 25px 35px;
+        padding: 18px 25px;
     }
 }
 
 h1 {
     color: #000;
-    font-size: 32px;
+    font-size: 24px;
     margin: 0;
     font-weight: bold;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
 }
 
-/* Desktop: Larger title for better visibility */
+/* Desktop: Slightly larger title for better visibility */
 @media (min-width: 768px) {
     h1 {
-        font-size: 40px;
+        font-size: 28px;
     }
 }
 
 @media (min-width: 1200px) {
     h1 {
-        font-size: 48px;
+        font-size: 32px;
     }
 }
 
@@ -113,7 +111,7 @@ h2 {
 }
 
 .btn-primary, .btn-secondary {
-    padding: 10px 20px;
+    padding: 10px 16px;
     border: 1px solid #000;
     border-radius: 0;
     cursor: pointer;
@@ -126,7 +124,7 @@ h2 {
 /* Desktop: Larger buttons for better usability */
 @media (min-width: 768px) {
     .btn-primary, .btn-secondary, .btn-settings {
-        padding: 12px 24px;
+        padding: 10px 18px;
         font-size: 15px;
     }
 }
@@ -147,16 +145,32 @@ h2 {
     background-color: #e0e0e0;
 }
 
+/* フッターボタンコンテナ（管理と"さらに表示"ボタン） */
+.footer-buttons {
+    margin-top: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Desktop: Improve footer button spacing */
+@media (min-width: 768px) {
+    .footer-buttons {
+        margin-top: 20px;
+        gap: 14px;
+    }
+}
+
 /* 設定ボタンとポップオーバー */
 .settings-container {
-    margin-top: 20px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     position: relative;
 }
 
 .btn-settings {
-    padding: 10px 20px;
+    padding: 10px 16px;
     border: 1px solid #000;
     border-radius: 0;
     cursor: pointer;
@@ -169,6 +183,37 @@ h2 {
 
 .btn-settings:hover {
     background-color: #e0e0e0;
+}
+
+.btn-show-more {
+    padding: 10px 16px;
+    border: 1px solid #000;
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 14px;
+    background: none;
+    color: #000;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+/* Desktop: Larger show more button for better usability */
+@media (min-width: 768px) {
+    .btn-show-more {
+        padding: 10px 18px;
+        font-size: 15px;
+    }
+}
+
+.btn-show-more:hover:not(:disabled) {
+    background-color: #e0e0e0;
+}
+
+.btn-show-more:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: #666;
+    color: #666;
 }
 
 .settings-popover {
@@ -186,7 +231,7 @@ h2 {
 .settings-menu-item {
     display: block;
     width: 100%;
-    padding: 12px 20px;
+    padding: 10px 16px;
     border: none;
     background: none;
     text-align: left;
@@ -210,7 +255,7 @@ h2 {
 
 main {
     background-color: #fff;
-    padding: 20px;
+    padding: 14px;
     border-radius: 0;
     border: 1px solid #ccc;
 }
@@ -218,7 +263,7 @@ main {
 /* Desktop: Optimize main content padding */
 @media (min-width: 768px) {
     main {
-        padding: 30px 35px;
+        padding: 20px 25px;
     }
 }
 
@@ -236,7 +281,7 @@ main {
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 /* Desktop: Two-column form layout for better space utilization */
@@ -262,7 +307,7 @@ label {
 
 input, textarea, select {
     width: 100%;
-    padding: 10px;
+    padding: 8px;
     border: 1px solid #ddd;
     border-radius: 0;
     font-size: 16px; /* Minimum 16px prevents iOS Safari auto-zoom */
@@ -289,7 +334,7 @@ select optgroup {
 
 select option {
     font-weight: normal;
-    padding: 5px;
+    padding: 4px;
 }
 
 .frequency-input-group {
@@ -309,7 +354,7 @@ select option {
     width: auto; /* Size based on content */
     background: #fff;
     color: #000;
-    padding: 10px 12px;
+    padding: 8px 10px;
     border-radius: 0;
     font-size: 16px;
     font-weight: bold;
@@ -344,9 +389,9 @@ textarea {
 
 .form-buttons {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     justify-content: flex-end;
-    margin-top: 20px;
+    margin-top: 14px;
 }
 
 /* ログエントリースタイル */
@@ -360,12 +405,17 @@ textarea {
     background-color: #fff;
     border: 1px solid #000;
     border-radius: 0;
-    padding: 15px;
-    margin-bottom: 10px;
+    padding: 10px;
+    margin-bottom: 8px;
     position: relative;
 }
 
 .log-entry:hover {
+    background-color: #f5f5f5;
+}
+
+/* Selected entry visual indicator */
+.log-entry.selected {
     background-color: #f5f5f5;
 }
 
@@ -374,23 +424,23 @@ textarea {
     #logs {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
+        gap: 12px;
     }
 
     .log-entry {
         margin-bottom: 0;
-        padding: 18px;
+        padding: 12px;
     }
 }
 
 @media (min-width: 1400px) {
     #logs {
         grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
+        gap: 14px;
     }
 
     .log-entry {
-        padding: 20px;
+        padding: 14px;
     }
 }
 
@@ -398,17 +448,17 @@ textarea {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     flex-wrap: wrap;
-    gap: 10px;
-    padding-right: 70px;
+    gap: 8px;
+    padding-right: 60px;
 }
 
 .log-band {
     font-weight: bold;
     color: #000;
     background: none;
-    padding: 4px 8px;
+    padding: 3px 6px;
     border-radius: 0;
     font-size: 12px;
     border: 1px solid #000;
@@ -417,7 +467,7 @@ textarea {
 .log-frequency {
     background: none;
     color: #000;
-    padding: 4px 8px;
+    padding: 3px 6px;
     border-radius: 0;
     font-size: 12px;
     font-weight: bold;
@@ -427,7 +477,7 @@ textarea {
 .log-callsign {
     background: none;
     color: #000;
-    padding: 4px 8px;
+    padding: 3px 6px;
     border-radius: 0;
     font-size: 12px;
     font-weight: bold;
@@ -437,7 +487,7 @@ textarea {
 .log-rst {
     background: none;
     color: #000;
-    padding: 4px 8px;
+    padding: 3px 6px;
     border-radius: 0;
     font-size: 12px;
     font-weight: bold;
@@ -447,7 +497,7 @@ textarea {
 .log-qth {
     background: none;
     color: #000;
-    padding: 4px 8px;
+    padding: 3px 6px;
     border-radius: 0;
     font-size: 12px;
     font-weight: bold;
@@ -457,8 +507,8 @@ textarea {
 .log-timestamp-row {
     display: block;
     width: 100%;
-    margin-bottom: 8px;
-    padding-right: 70px;
+    margin-bottom: 6px;
+    padding-right: 60px;
     box-sizing: border-box;
 }
 
@@ -472,9 +522,9 @@ textarea {
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    padding-right: 70px;
+    gap: 6px;
+    margin-bottom: 6px;
+    padding-right: 60px;
     box-sizing: border-box;
 }
 
@@ -483,14 +533,27 @@ textarea {
     border: 1px solid #000;
     cursor: pointer;
     font-size: 12px;
-    padding: 4px 8px;
+    padding: 3px 6px;
     border-radius: 0;
     transition: all 0.2s;
     color: #000;
     text-decoration: none;
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 10px;
+    right: 10px;
+    display: none; /* Hidden by default */
+}
+
+/* Show delete button when entry is selected */
+.log-entry.selected .btn-delete {
+    display: block;
+}
+
+/* Desktop: Show delete button on hover for mouse users */
+@media (min-width: 768px) and (hover: hover) {
+    .log-entry:hover .btn-delete {
+        display: block;
+    }
 }
 
 .btn-delete:hover,
@@ -501,7 +564,7 @@ textarea {
 .log-memo {
     color: #000;
     font-style: italic;
-    margin-top: 8px;
+    margin-top: 6px;
     line-height: 1.4;
     /* Text truncation for long comments */
     display: -webkit-box;
@@ -528,7 +591,7 @@ textarea {
     text-align: center;
     color: #000;
     font-style: italic;
-    padding: 40px;
+    padding: 28px;
 }
 
 /* Desktop: Ensure no-logs message spans full width in grid */
@@ -543,22 +606,22 @@ textarea {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 15px;
-    margin-top: 20px;
-    padding: 15px;
+    gap: 12px;
+    margin-top: 14px;
+    padding: 10px;
 }
 
 /* Desktop: Improve pagination spacing */
 @media (min-width: 768px) {
     .pagination {
-        gap: 20px;
-        margin-top: 30px;
-        padding: 20px;
+        gap: 14px;
+        margin-top: 20px;
+        padding: 14px;
     }
 }
 
 .pagination-btn {
-    padding: 8px 16px;
+    padding: 6px 12px;
     border: 1px solid #000;
     background-color: #fff;
     color: #000;
@@ -589,13 +652,13 @@ textarea {
 /* レスポンシブデザイン */
 @media (max-width: 600px) {
     .container {
-        padding: 10px;
+        padding: 8px;
     }
 
     header {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
+        flex-direction: row;
+        gap: 10px;
+        text-align: left;
     }
 
     .ascii-title {
@@ -606,12 +669,12 @@ textarea {
     .log-header {
         flex-direction: column;
         align-items: flex-start;
-        padding-right: 70px;
+        padding-right: 60px;
     }
 
     .btn-delete {
-        top: 10px;
-        right: 10px;
+        top: 8px;
+        right: 8px;
     }
 
     .form-buttons {
@@ -623,11 +686,61 @@ textarea {
     }
 }
 
+/* Floating Action Button (FAB) */
+.fab-button {
+    position: fixed;
+    right: 20px;
+    bottom: 100px;
+    width: 56px;
+    height: 56px;
+    background-color: #fff;
+    color: #000;
+    border: 2px solid #000;
+    border-radius: 0;
+    font-family: 'DotGothic16', monospace;
+    font-size: 32px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+}
+
+.fab-button:hover {
+    background-color: #f5f5f5;
+}
+
+.fab-button:active {
+    background-color: #e0e0e0;
+}
+
+/* Desktop: Adjust FAB position */
+@media (min-width: 768px) {
+    .fab-button {
+        right: 30px;
+        bottom: 120px;
+        width: 60px;
+        height: 60px;
+        font-size: 36px;
+    }
+}
+
+/* Large desktop: Further adjust FAB position */
+@media (min-width: 1200px) {
+    .fab-button {
+        right: 40px;
+    }
+}
+
 /* フッタースタイル */
 footer {
     text-align: center;
-    padding: 20px;
-    margin-top: 40px;
+    padding: 14px;
+    margin-top: 28px;
     border-top: 1px solid #000;
     color: #000;
     font-size: 14px;
@@ -649,7 +762,11 @@ footer a:hover {
         color: #e0e0e0;
     }
 
-    header, main {
+    header {
+        background-color: #2a2a2a;
+    }
+
+    main {
         background-color: #2a2a2a;
         border-color: #555;
     }
@@ -681,6 +798,11 @@ footer a:hover {
         background-color: #3a3a3a;
     }
 
+    /* Dark mode: Selected entry visual indicator */
+    .log-entry.selected {
+        background-color: #3a3a3a;
+    }
+
     .log-timestamp {
         color: #e0e0e0;
     }
@@ -693,13 +815,18 @@ footer a:hover {
         background-color: #3a3a3a;
     }
 
-    .btn-primary, .btn-secondary, .btn-settings {
+    .btn-primary, .btn-secondary, .btn-settings, .btn-show-more {
         color: #e0e0e0;
         border: 1px solid #e0e0e0;
     }
 
-    .btn-primary:hover, .btn-secondary:hover, .btn-settings:hover {
+    .btn-primary:hover, .btn-secondary:hover, .btn-settings:hover, .btn-show-more:hover:not(:disabled) {
         background-color: #3a3a3a;
+    }
+
+    .btn-show-more:disabled {
+        border: 1px solid #666;
+        color: #666;
     }
 
     .btn-delete {
@@ -784,5 +911,20 @@ footer a:hover {
 
     footer a:hover {
         background-color: #3a3a3a;
+    }
+
+    /* Dark mode: FAB styling */
+    .fab-button {
+        background-color: #2a2a2a;
+        color: #e0e0e0;
+        border: 2px solid #e0e0e0;
+    }
+
+    .fab-button:hover {
+        background-color: #3a3a3a;
+    }
+
+    .fab-button:active {
+        background-color: #4a4a4a;
     }
 }

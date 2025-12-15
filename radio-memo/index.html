@@ -35,24 +35,21 @@
     <div class="container">
         <header>
             <h1 id="pageTitle" role="button" tabindex="0" title="最初のページに戻る (Return to first page)">RADIO MEMO</h1>
-            <button id="newLogBtn" class="btn-primary">新しいログ</button>
         </header>
 
         <main>
             <section id="logList">
                 <h2>ログ一覧</h2>
                 <div id="logs"></div>
-                <div id="pagination" class="pagination hidden">
-                    <button id="prevBtn" class="pagination-btn">前へ</button>
-                    <span id="pageInfo" class="page-info"></span>
-                    <button id="nextBtn" class="pagination-btn">次へ</button>
-                </div>
-                <div class="settings-container">
-                    <button id="settingsBtn" class="btn-settings">管理</button>
-                    <div id="settingsPopover" class="settings-popover hidden">
-                        <button id="exportBtn" class="settings-menu-item">エクスポート</button>
-                        <button id="importBtn" class="settings-menu-item">インポート</button>
+                <div class="footer-buttons">
+                    <div class="settings-container">
+                        <button id="settingsBtn" class="btn-settings">管理</button>
+                        <div id="settingsPopover" class="settings-popover hidden">
+                            <button id="exportBtn" class="settings-menu-item">エクスポート</button>
+                            <button id="importBtn" class="settings-menu-item">インポート</button>
+                        </div>
                     </div>
+                    <button id="showMoreBtn" class="btn-show-more hidden">さらに表示</button>
                 </div>
                 <input type="file" id="importFile" accept=".csv" class="hidden-file-input">
             </section>
@@ -107,6 +104,9 @@
             </section>
         </main>
     </div>
+
+    <!-- Floating Action Button -->
+    <button id="newLogBtn" class="fab-button" aria-label="新しいログを作成">+</button>
 
     <footer>
         <p>&copy; 2025 <a href="https://github.com/nelforzo/radio-memo" target="_blank">github</a></p>

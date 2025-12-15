@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v39: Add comprehensive JSDoc documentation and coding conventions
-const CACHE_NAME = 'radio-memo-v39';
+// v45: Convert new log button to floating action button (FAB)
+const CACHE_NAME = 'radio-memo-v45';
 const urls_to_cache = [
     './',
     './index.html',
