@@ -1,119 +1,152 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADIO MEMO</title>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>RADIO MEMO</title>
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="radio-memo.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="radio-memo.png">
-    <link rel="shortcut icon" href="radio-memo.png">
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" sizes="32x32" href="radio-memo.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="radio-memo.png" />
+        <link rel="shortcut icon" href="radio-memo.png" />
 
-    <!-- iOS Home Screen Icon -->
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+        <!-- iOS Home Screen Icon -->
+        <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+        <!-- PWA Manifest -->
+        <link rel="manifest" href="manifest.json" />
 
-    <!-- iOS Web App Meta Tags -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="~RM~">
+        <!-- iOS Web App Meta Tags -->
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="~RM~" />
 
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#000000">
+        <!-- Theme Color -->
+        <meta name="theme-color" content="#000000" />
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap"
+            rel="stylesheet"
+        />
 
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1 id="pageTitle" role="button" tabindex="0" title="トップに戻る (Scroll to top)">RADIO MEMO</h1>
-            <button id="newLogBtn" class="btn-add-log" aria-label="新しいログを作成">追加</button>
-        </header>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <h1 id="pageTitle" role="button" tabindex="0" title="トップに戻る (Scroll to top)">
+                    RADIO MEMO
+                </h1>
+                <button id="newLogBtn" class="btn-add-log" aria-label="新しいログを作成">
+                    追加
+                </button>
+            </header>
 
-        <main>
-            <section id="logList">
-                <div id="logs"></div>
-                <div class="footer-buttons">
-                    <div class="settings-container">
-                        <button id="settingsBtn" class="btn-settings">管理</button>
-                        <div id="settingsPopover" class="settings-popover hidden">
-                            <button id="exportBtn" class="settings-menu-item">エクスポート</button>
-                            <button id="importBtn" class="settings-menu-item">インポート</button>
+            <main>
+                <section id="logList">
+                    <div id="logs"></div>
+                    <div class="footer-buttons">
+                        <div class="settings-container">
+                            <button id="settingsBtn" class="btn-settings">管理</button>
+                            <div id="settingsPopover" class="settings-popover hidden">
+                                <button id="exportBtn" class="settings-menu-item">
+                                    エクスポート
+                                </button>
+                                <button id="importBtn" class="settings-menu-item">
+                                    インポート
+                                </button>
+                            </div>
                         </div>
+                        <button id="loadMoreBtn" class="btn-load-more hidden">さらに表示</button>
                     </div>
-                    <button id="loadMoreBtn" class="btn-load-more hidden">さらに表示</button>
-                </div>
-                <div id="endOfList" class="end-of-list hidden">
-                    <span>すべてのログを表示しました</span>
-                    <a href="#" id="backToTopLink" class="back-to-top-link hidden">トップに戻る</a>
-                </div>
-                <input type="file" id="importFile" accept=".csv" class="hidden-file-input">
-            </section>
+                    <div id="endOfList" class="end-of-list hidden">
+                        <span>すべてのログを表示しました</span>
+                        <a href="#" id="backToTopLink" class="back-to-top-link hidden"
+                            >トップに戻る</a
+                        >
+                    </div>
+                    <input type="file" id="importFile" accept=".csv" class="hidden-file-input" />
+                </section>
 
-            <!-- 新しいログ入力フォーム -->
-            <section id="newLogForm" class="hidden">
-                <h2>新しいログを追加</h2>
-                <form id="logForm">
-                    <div class="form-group">
-                        <label for="frequency">周波数:</label>
-                        <div class="frequency-input-group">
-                            <input type="number" id="frequency" name="frequency" step="0.001" required>
-                            <select id="frequencyUnit" name="frequencyUnit" class="frequency-unit-selector">
-                                <option value="MHz">MHz</option>
-                                <option value="kHz">kHz</option>
+                <!-- 新しいログ入力フォーム -->
+                <section id="newLogForm" class="hidden">
+                    <h2>新しいログを追加</h2>
+                    <form id="logForm">
+                        <div class="form-group">
+                            <label for="frequency">周波数:</label>
+                            <div class="frequency-input-group">
+                                <input
+                                    type="number"
+                                    id="frequency"
+                                    name="frequency"
+                                    step="0.001"
+                                    required
+                                />
+                                <select
+                                    id="frequencyUnit"
+                                    name="frequencyUnit"
+                                    class="frequency-unit-selector"
+                                >
+                                    <option value="MHz">MHz</option>
+                                    <option value="kHz">kHz</option>
+                                </select>
+                            </div>
+                        </div>
+                        <input type="hidden" id="band" name="band" />
+                        <div class="form-group">
+                            <label for="callsign">相手局コールサイン:</label>
+                            <input
+                                type="text"
+                                id="callsign"
+                                name="callsign"
+                                placeholder="例: JA1ABC"
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="qth">相手局QTH:</label>
+                            <input type="text" id="qth" name="qth" placeholder="例: 東京都港区" />
+                        </div>
+                        <div class="form-group">
+                            <label for="rst">RSレポート:</label>
+                            <select id="rst" name="rst">
+                                <option value="">選択してください</option>
+                                <option value="59">59 - 完璧な信号</option>
+                                <option value="58">58 - 強い信号</option>
+                                <option value="57">57 - かなり良好</option>
+                                <option value="56">56 - 良好</option>
+                                <option value="55">55 - まあまあ</option>
+                                <option value="54">54 - やや弱い</option>
+                                <option value="53">53 - 弱い</option>
+                                <option value="52">52 - かなり弱い</option>
+                                <option value="51">51 - 非常に弱い</option>
                             </select>
                         </div>
-                    </div>
-                    <input type="hidden" id="band" name="band">
-                    <div class="form-group">
-                        <label for="callsign">相手局コールサイン:</label>
-                        <input type="text" id="callsign" name="callsign" placeholder="例: JA1ABC">
-                    </div>
-                    <div class="form-group">
-                        <label for="qth">相手局QTH:</label>
-                        <input type="text" id="qth" name="qth" placeholder="例: 東京都港区">
-                    </div>
-                    <div class="form-group">
-                        <label for="rst">RSレポート:</label>
-                        <select id="rst" name="rst">
-                            <option value="">選択してください</option>
-                            <option value="59">59 - 完璧な信号</option>
-                            <option value="58">58 - 強い信号</option>
-                            <option value="57">57 - かなり良好</option>
-                            <option value="56">56 - 良好</option>
-                            <option value="55">55 - まあまあ</option>
-                            <option value="54">54 - やや弱い</option>
-                            <option value="53">53 - 弱い</option>
-                            <option value="52">52 - かなり弱い</option>
-                            <option value="51">51 - 非常に弱い</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="memo">備考:</label>
-                        <textarea id="memo" name="memo" rows="3"></textarea>
-                    </div>
-                    <div class="form-buttons">
-                        <button type="submit" class="btn-primary">保存</button>
-                        <button type="button" id="cancelBtn" class="btn-secondary">キャンセル</button>
-                    </div>
-                </form>
-            </section>
-        </main>
-    </div>
+                        <div class="form-group">
+                            <label for="memo">備考:</label>
+                            <textarea id="memo" name="memo" rows="3"></textarea>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="btn-primary">保存</button>
+                            <button type="button" id="cancelBtn" class="btn-secondary">
+                                キャンセル
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            </main>
+        </div>
 
-    <footer>
-        <p>&copy; 2025 <a href="https://github.com/nelforzo/radio-memo" target="_blank">github</a></p>
-    </footer>
+        <footer>
+            <p>
+                &copy; 2025
+                <a href="https://github.com/nelforzo/radio-memo" target="_blank">github</a>
+            </p>
+        </footer>
 
-    <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.js"></script>
-    <script src="app.js"></script>
-</body>
+        <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.js"></script>
+        <script src="app.js"></script>
+    </body>
 </html>

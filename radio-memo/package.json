@@ -1,0 +1,31 @@
+{
+  "name": "radio-memo",
+  "version": "1.0.0",
+  "description": "Radio reception log management PWA",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint *.js",
+    "lint:fix": "eslint *.js --fix",
+    "format": "prettier --write \"*.{js,css,html,md}\"",
+    "format:check": "prettier --check \"*.{js,css,html,md}\"",
+    "test": "echo \"No tests configured\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nelforzo/radio-memo"
+  },
+  "keywords": [
+    "radio",
+    "amateur-radio",
+    "logging",
+    "pwa",
+    "offline-first"
+  ],
+  "author": "nelforzo",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.4"
+  }
+}

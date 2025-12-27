@@ -3,6 +3,7 @@
 This document defines the comprehensive coding standards for the Radio Memo project. Following these conventions ensures consistency, maintainability, and quality across the codebase.
 
 ## Table of Contents
+
 1. [Naming Conventions](#naming-conventions)
 2. [Code Style](#code-style)
 3. [JavaScript Conventions](#javascript-conventions)
@@ -14,56 +15,63 @@ This document defines the comprehensive coding standards for the Radio Memo proj
 9. [Performance](#performance)
 10. [Testing](#testing)
 11. [File Structure](#file-structure)
+12. [Linting and Formatting](#linting-and-formatting)
 
 ---
 
 ## Naming Conventions
 
 ### Variables
-- Use `snake_case` for all variable names
+
+- Use `camelCase` for all variable names
 - Use descriptive names that clearly indicate purpose
-- Constants should also use `snake_case` (not SCREAMING_CASE)
+- True constants (values that never change) should use `SCREAMING_SNAKE_CASE`
+- **Rationale**: This follows JavaScript industry standards (Airbnb, Google, StandardJS) and ensures compatibility with ESLint and Prettier
 - Examples:
-  ```javascript
-  const total_count = 10;
-  const frequency_unit = 'MHz';
-  let current_page = 1;
-  const ITEMS_PER_PAGE = 10;  // Constant
-  let cached_total_count = null;
-  let is_loading_logs = false;
-  ```
+    ```javascript
+    const totalCount = 10;
+    const frequencyUnit = 'MHz';
+    let currentPage = 1;
+    const ITEMS_PER_PAGE = 10; // True constant - never changes
+    let cachedTotalCount = null;
+    let isLoadingLogs = false;
+    ```
 
 ### Functions
+
 - Use `camelCase` for all function names
 - Use descriptive, action-oriented names (verbs)
 - This applies to function declarations and function expressions
 - **Note**: Variables that hold function values should still use `camelCase` (not `snake_case`)
 - Examples:
-  ```javascript
-  function loadLogs() { }
-  function formatTimestamp() { }
-  function detectBandFromFrequency() { }
-  async function handleFormSubmit() { }
 
-  // Even when assigning to a variable, use camelCase
-  const handleFormSubmit = function() { };
-  const exportLogs = async function() { };
-  ```
+    ```javascript
+    function loadLogs() {}
+    function formatTimestamp() {}
+    function detectBandFromFrequency() {}
+    async function handleFormSubmit() {}
+
+    // Even when assigning to a variable, use camelCase
+    const handleFormSubmit = function () {};
+    const exportLogs = async function () {};
+    ```
 
 ### IDs and Classes (HTML/CSS)
+
 - Use `kebab-case` for HTML element IDs
 - Use `kebab-case` for CSS class names
 - Examples:
-  ```html
-  <div id="new-log-form"></div>
-  <button class="btn-primary"></button>
-  ```
+    ```html
+    <div id="new-log-form"></div>
+    <button class="btn-primary"></button>
+    ```
 
 ---
 
 ## Code Style
 
 ### Visual Aesthetic
+
 - **Font**: DotGothic16 for all UI elements
 - **Theme**: Pixelated, retro terminal/amateur radio aesthetic
 - **Colors**: High contrast (black text on white, or light text on dark in dark mode)
@@ -73,6 +81,7 @@ This document defines the comprehensive coding standards for the Radio Memo proj
 - **Monospaced pixel font**: Applied throughout the entire interface
 
 ### Design Principles
+
 - Minimalist, functional design
 - Clear visual hierarchy
 - Consistent spacing and alignment
@@ -84,71 +93,78 @@ This document defines the comprehensive coding standards for the Radio Memo proj
 ## JavaScript Conventions
 
 ### Variable Declarations
+
 - Always use `const` for values that don't change
 - Use `let` for values that will be reassigned
 - **Never use `var`** - it has function scope and can cause bugs
 - Examples:
-  ```javascript
-  const db = new Dexie('RadioMemoDatabase');  // Won't be reassigned
-  let current_page = 1;  // Will be reassigned
-  const ITEMS_PER_PAGE = 10;  // Constant value
-  ```
+    ```javascript
+    const db = new Dexie('RadioMemoDatabase'); // Won't be reassigned
+    let currentPage = 1; // Will be reassigned
+    const ITEMS_PER_PAGE = 10; // True constant - value never changes
+    ```
 
 ### Async/Await
+
 - Prefer `async/await` over promise chains for better readability
 - Always handle errors with try/catch blocks
 - Examples:
-  ```javascript
-  async function loadLogs() {
-      try {
-          const logs = await db.logs.toArray();
-          displayLogs(logs);
-      } catch (error) {
-          alert('ログの読み込みに失敗しました。');
-      }
-  }
-  ```
+    ```javascript
+    async function loadLogs() {
+        try {
+            const logs = await db.logs.toArray();
+            displayLogs(logs);
+        } catch (error) {
+            alert('ログの読み込みに失敗しました。');
+        }
+    }
+    ```
 
 ### Error Handling
+
 - Use try/catch for async operations
 - Provide user-friendly error messages
 - Log detailed errors to console for debugging
 - Examples:
-  ```javascript
-  try {
-      await db.logs.add(log_data);
-      hideNewLogForm();
-      await loadLogs();
-  } catch (error) {
-      alert('ログの保存に失敗しました。');
-      console.error('Save error:', error);
-  }
-  ```
+    ```javascript
+    try {
+        await db.logs.add(logData);
+        hideNewLogForm();
+        await loadLogs();
+    } catch (error) {
+        alert('ログの保存に失敗しました。');
+        console.error('Save error:', error);
+    }
+    ```
 
 ### Event Listeners
+
 - Use named functions for event handlers when possible
 - Use event delegation for dynamically generated content
 - Remove event listeners when no longer needed to prevent memory leaks
 - Examples:
-  ```javascript
-  // Good: Named function
-  new_log_btn.addEventListener('click', showNewLogForm);
 
-  // Good: Event delegation
-  logs_container.addEventListener('click', (e) => {
-      if (e.target.classList.contains('btn-delete')) {
-          deleteLog(parseInt(e.target.dataset.logId));
-      }
-  });
-  ```
+    ```javascript
+    // Good: Named function
+    newLogBtn.addEventListener('click', showNewLogForm);
+
+    // Good: Event delegation
+    logsContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('btn-delete')) {
+            deleteLog(parseInt(e.target.dataset.logId));
+        }
+    });
+    ```
 
 ### Function Patterns
+
 - Keep functions focused on a single responsibility
 - Functions should be small and easy to understand
 - Use meaningful parameter names
 - Return early to avoid deep nesting
 
 ### Code Organization
+
 - Group related functionality together
 - Place constants at the top of files
 - Initialize service worker early
@@ -159,137 +175,160 @@ This document defines the comprehensive coding standards for the Radio Memo proj
 ## CSS Conventions
 
 ### Border Styling
+
 - **No border-radius**: Always use `border-radius: 0` for square corners
 - **No box-shadow**: Do not use shadows anywhere
 - **Subtle borders**: Use `#ccc` (light mode) or `#555` (dark mode)
 - Examples:
-  ```css
-  .btn-primary {
-      border: 1px solid #000;
-      border-radius: 0;  /* Always square */
-  }
-  ```
+    ```css
+    .btn-primary {
+        border: 1px solid #000;
+        border-radius: 0; /* Always square */
+    }
+    ```
 
 ### Dark Mode Support
+
 - Use `@media (prefers-color-scheme: dark)` for dark mode styles
 - Provide contrasting colors for readability
 - Light mode: `#fff` background, `#000` text, `#ccc` borders
 - Dark mode: `#1a1a1a` or `#2a2a2a` background, `#e0e0e0` text, `#555` borders
 - Examples:
-  ```css
-  body {
-      background-color: #fff;
-      color: #000;
-  }
 
-  @media (prefers-color-scheme: dark) {
-      body {
-          background-color: #1a1a1a;
-          color: #e0e0e0;
-      }
-  }
-  ```
+    ```css
+    body {
+        background-color: #fff;
+        color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+    }
+    ```
 
 ### Responsive Design
+
 - Mobile-first approach
 - Use flexbox and CSS Grid for layouts
 - Test on mobile (320px+), tablet (768px+), and desktop (1200px+)
 - Common breakpoints:
-  ```css
-  @media (max-width: 600px) { /* Mobile */ }
-  @media (min-width: 768px) { /* Tablet */ }
-  @media (min-width: 900px) { /* Desktop grid */ }
-  @media (min-width: 1200px) { /* Large desktop */ }
-  @media (min-width: 1600px) { /* Extra large */ }
-  ```
+    ```css
+    @media (max-width: 600px) {
+        /* Mobile */
+    }
+    @media (min-width: 768px) {
+        /* Tablet */
+    }
+    @media (min-width: 900px) {
+        /* Desktop grid */
+    }
+    @media (min-width: 1200px) {
+        /* Large desktop */
+    }
+    @media (min-width: 1600px) {
+        /* Extra large */
+    }
+    ```
 
 ### Typography
+
 - **Font family**: `'DotGothic16', monospace` for all elements
 - Apply to all form elements explicitly:
-  ```css
-  input, textarea, select, button {
-      font-family: 'DotGothic16', monospace;
-  }
-  ```
+    ```css
+    input,
+    textarea,
+    select,
+    button {
+        font-family: 'DotGothic16', monospace;
+    }
+    ```
 - Font sizes: Minimum 14px for body text, 16px for inputs (prevents iOS zoom)
 
 ### Hover States
+
 - Subtle background color changes
 - Light mode: Hover to `#e0e0e0`
 - Dark mode: Hover to `#3a3a3a`
 - No text decoration changes on buttons
 - Examples:
-  ```css
-  .btn-primary:hover {
-      background-color: #e0e0e0;
-  }
 
-  @media (prefers-color-scheme: dark) {
-      .btn-primary:hover {
-          background-color: #3a3a3a;
-      }
-  }
-  ```
+    ```css
+    .btn-primary:hover {
+        background-color: #e0e0e0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .btn-primary:hover {
+            background-color: #3a3a3a;
+        }
+    }
+    ```
 
 ---
 
 ## HTML Conventions
 
 ### Semantic HTML
+
 - Use semantic elements (`<header>`, `<main>`, `<footer>`, `<section>`)
 - Use proper heading hierarchy (`<h1>`, `<h2>`, etc.)
 - Use `<button>` for actions, `<a>` for navigation
 - Examples:
-  ```html
-  <header>
-      <h1>RADIO MEMO</h1>
-  </header>
-  <main>
-      <section id="logList">
-          <h2>ログ一覧</h2>
-      </section>
-  </main>
-  ```
+    ```html
+    <header>
+        <h1>RADIO MEMO</h1>
+    </header>
+    <main>
+        <section id="logList">
+            <h2>ログ一覧</h2>
+        </section>
+    </main>
+    ```
 
 ### Accessibility
+
 - Add ARIA roles where appropriate (`role="button"`)
 - Include `tabindex` for keyboard navigation
 - Provide `title` attributes for context
 - Use proper `<label>` elements for form inputs
 - Examples:
-  ```html
-  <h1 id="pageTitle" role="button" tabindex="0" title="最初のページに戻る">
-      RADIO MEMO
-  </h1>
-  <label for="frequency">周波数:</label>
-  <input type="number" id="frequency" name="frequency">
-  ```
+    ```html
+    <h1 id="pageTitle" role="button" tabindex="0" title="最初のページに戻る">RADIO MEMO</h1>
+    <label for="frequency">周波数:</label>
+    <input type="number" id="frequency" name="frequency" />
+    ```
 
 ### Form Structure
+
 - Group related inputs with class="form-group"
 - Use proper input types (`number`, `text`, `file`)
 - Include `required` attribute for mandatory fields
 - Use `placeholder` for helpful hints
 - Examples:
-  ```html
-  <div class="form-group">
-      <label for="callsign">相手局コールサイン:</label>
-      <input type="text" id="callsign" name="callsign" placeholder="例: JA1ABC">
-  </div>
-  ```
+    ```html
+    <div class="form-group">
+        <label for="callsign">相手局コールサイン:</label>
+        <input type="text" id="callsign" name="callsign" placeholder="例: JA1ABC" />
+    </div>
+    ```
 
 ### Data Attributes
+
 - Use `data-*` attributes for storing element-specific data
 - Examples:
-  ```html
-  <button class="btn-delete" data-log-id="${log.id}">削除</button>
-  ```
+    ```html
+    <button class="btn-delete" data-log-id="${log.id}">削除</button>
+    ```
 
 ---
 
 ## Documentation Requirements
 
 ### Function Documentation (JSDoc)
+
 - **All functions must have JSDoc comments**
 - Include a brief description of what the function does
 - Document all parameters with `@param` tags (include type and description)
@@ -298,6 +337,7 @@ This document defines the comprehensive coding standards for the Radio Memo proj
 - Add examples for complex functions (optional)
 
 #### JSDoc Format:
+
 ```javascript
 /**
  * Brief description of what the function does
@@ -312,6 +352,7 @@ function functionName(paramName, anotherParam) {
 ```
 
 #### Examples:
+
 ```javascript
 /**
  * Formats frequency with appropriate unit based on band
@@ -322,8 +363,8 @@ function functionName(paramName, anotherParam) {
  */
 function formatFrequencyWithUnit(frequency, band) {
     const unit = getFrequencyUnit(band);
-    const frequency_num = parseFloat(frequency);
-    return `${frequency_num.toFixed(3)} ${unit}`;
+    const frequencyNum = parseFloat(frequency);
+    return `${frequencyNum.toFixed(3)} ${unit}`;
 }
 
 /**
@@ -338,30 +379,34 @@ async function handleFormSubmit(event) {
 ```
 
 ### Inline Comments
+
 - Add comments where code intent is not immediately obvious
 - Explain "why" rather than "what" when possible
 - Keep comments concise and relevant
 - Use Japanese for user-facing strings, English for code comments
 - Examples:
-  ```javascript
-  // Skip if value hasn't changed (performance optimization)
-  if (current_value_key === last_frequency_value) {
-      return;
-  }
 
-  // Calculate total pages, ensuring at least 1 page exists
-  total_pages = Math.max(1, Math.ceil(total_count / ITEMS_PER_PAGE));
-  ```
+    ```javascript
+    // Skip if value hasn't changed (performance optimization)
+    if (currentValueKey === lastFrequencyValue) {
+        return;
+    }
+
+    // Calculate total pages, ensuring at least 1 page exists
+    totalPages = Math.max(1, Math.ceil(totalCount / ITEMS_PER_PAGE));
+    ```
 
 ### File Headers
+
 - Add a comment at the top of JavaScript files describing the file's purpose
 - Examples:
-  ```javascript
-  // Service Worker for offline functionality
-  // v38: Soften container border colors to subtle grays
-  ```
+    ```javascript
+    // Service Worker for offline functionality
+    // v38: Soften container border colors to subtle grays
+    ```
 
 ### When to Update Documentation
+
 - When adding new functions
 - When changing function signatures
 - When modifying behavior
@@ -372,38 +417,41 @@ async function handleFormSubmit(event) {
 ## Service Worker
 
 ### Cache Versioning Strategy
+
 - **Update cache version with every change** to HTML, CSS, or JS files
 - Use semantic naming: `radio-memo-v##`
 - Increment version number sequentially
 - Include a comment describing what changed in this version
 - Examples:
-  ```javascript
-  // v38: Soften container border colors to subtle grays
-  const CACHE_NAME = 'radio-memo-v38';
-  ```
+    ```javascript
+    // v38: Soften container border colors to subtle grays
+    const CACHE_NAME = 'radio-memo-v38';
+    ```
 
 ### Files to Cache
+
 - All HTML, CSS, and JS files
 - All PWA manifest and icon files
 - External dependencies (Dexie.js, Google Fonts)
 - Examples:
-  ```javascript
-  const urls_to_cache = [
-      './',
-      './index.html',
-      './style.css',
-      './app.js',
-      './manifest.json',
-      './icon-512.png',
-      './icon-192.png',
-      './apple-touch-icon.png',
-      './radio-memo.png',
-      'https://unpkg.com/dexie@3.2.4/dist/dexie.js',
-      'https://fonts.googleapis.com/css2?family=DotGothic16&display=swap'
-  ];
-  ```
+    ```javascript
+    const urlsToCache = [
+        './',
+        './index.html',
+        './style.css',
+        './app.js',
+        './manifest.json',
+        './icon-512.png',
+        './icon-192.png',
+        './apple-touch-icon.png',
+        './radio-memo.png',
+        'https://unpkg.com/dexie@3.2.4/dist/dexie.js',
+        'https://fonts.googleapis.com/css2?family=DotGothic16&display=swap',
+    ];
+    ```
 
 ### Cache Strategy
+
 - **Cache-first** for app resources (HTML, CSS, JS, icons)
 - **Network-first** would be used for API calls (not applicable in this app)
 - Skip caching for non-GET requests
@@ -411,6 +459,7 @@ async function handleFormSubmit(event) {
 - Only cache whitelisted CDN resources (unpkg.com, googleapis.com, gstatic.com)
 
 ### Service Worker Lifecycle
+
 - Use `self.skipWaiting()` in install event to activate immediately
 - Use `self.clients.claim()` in activate event to take control of all pages
 - Clean up old caches in activate event
@@ -420,29 +469,37 @@ async function handleFormSubmit(event) {
 ## Database
 
 ### IndexedDB with Dexie
+
 - Use Dexie.js for IndexedDB operations
 - Database name: `RadioMemoDatabase`
 - Single table: `logs`
 
 ### Schema Versioning
+
 - Increment version number for each schema change
 - Use `.upgrade()` to migrate existing data
 - Always provide default values for new fields
 - Examples:
-  ```javascript
-  // Version 2: Add UUID field
-  db.version(2).stores({
-      logs: '++id, uuid, band, frequency, memo, timestamp'
-  }).upgrade(tx => {
-      return tx.table('logs').toCollection().modify(log => {
-          if (!log.uuid) {
-              log.uuid = generateUUID();
-          }
-      });
-  });
-  ```
+    ```javascript
+    // Version 2: Add UUID field
+    db.version(2)
+        .stores({
+            logs: '++id, uuid, band, frequency, memo, timestamp',
+        })
+        .upgrade((tx) => {
+            return tx
+                .table('logs')
+                .toCollection()
+                .modify((log) => {
+                    if (!log.uuid) {
+                        log.uuid = generateUUID();
+                    }
+                });
+        });
+    ```
 
 ### Data Structure
+
 - Auto-incrementing `id` field (primary key)
 - `uuid` field for import/export and data portability
 - `timestamp` stored as ISO 8601 string (UTC)
@@ -450,6 +507,7 @@ async function handleFormSubmit(event) {
 - Optional fields use empty strings (not null)
 
 ### UUID Generation
+
 - Use `crypto.randomUUID()` for modern browsers (cryptographically secure)
 - Fallback to Math.random() for older browsers
 - Generate UUID for every new log entry
@@ -459,105 +517,119 @@ async function handleFormSubmit(event) {
 ## Performance
 
 ### Event Listener Optimization
+
 - **Avoid operations on input events** - they fire on every keystroke
 - Use `blur` or `change` events for calculations
 - Examples:
-  ```javascript
-  // Good: Use blur for formatting
-  frequency_input.addEventListener('blur', formatFrequencyInput);
 
-  // Bad: Would fire on every keystroke
-  // frequency_input.addEventListener('input', formatFrequencyInput);
-  ```
+    ```javascript
+    // Good: Use blur for formatting
+    frequencyInput.addEventListener('blur', formatFrequencyInput);
+
+    // Bad: Would fire on every keystroke
+    // frequencyInput.addEventListener('input', formatFrequencyInput);
+    ```
 
 ### Value Change Detection
+
 - Cache previous values to avoid unnecessary processing
 - Skip operations if value hasn't changed
 - Examples:
-  ```javascript
-  const current_value_key = `${value}|${frequency_unit.value}`;
 
-  // Skip if value hasn't changed (performance optimization)
-  if (current_value_key === last_frequency_value) {
-      return;
-  }
-  last_frequency_value = current_value_key;
-  ```
+    ```javascript
+    const currentValueKey = `${value}|${frequencyUnit.value}`;
+
+    // Skip if value hasn't changed (performance optimization)
+    if (currentValueKey === lastFrequencyValue) {
+        return;
+    }
+    lastFrequencyValue = currentValueKey;
+    ```
 
 ### Event Delegation
+
 - Use event delegation for dynamically generated content
 - Single listener on container instead of multiple listeners on children
 - Improves performance and prevents memory leaks
 - Examples:
-  ```javascript
-  // Good: Event delegation
-  logs_container.addEventListener('click', (e) => {
-      if (e.target.classList.contains('btn-delete')) {
-          deleteLog(parseInt(e.target.dataset.logId));
-      }
-  });
 
-  // Bad: Multiple listeners (avoid this)
-  // document.querySelectorAll('.btn-delete').forEach(btn => {
-  //     btn.addEventListener('click', handleDelete);
-  // });
-  ```
+    ```javascript
+    // Good: Event delegation
+    logsContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('btn-delete')) {
+            deleteLog(parseInt(e.target.dataset.logId));
+        }
+    });
+
+    // Bad: Multiple listeners (avoid this)
+    // document.querySelectorAll('.btn-delete').forEach(btn => {
+    //     btn.addEventListener('click', handleDelete);
+    // });
+    ```
 
 ### Database Optimization
+
 - Cache frequently accessed values (total count)
 - Invalidate cache when data changes
 - Use batch operations for bulk imports
 - Examples:
-  ```javascript
-  // Cache total count
-  if (cached_total_count === null) {
-      cached_total_count = await db.logs.count();
-  }
 
-  // Invalidate on data change
-  cached_total_count = null;
+    ```javascript
+    // Cache total count
+    if (cachedTotalCount === null) {
+        cachedTotalCount = await db.logs.count();
+    }
 
-  // Batch imports
-  await db.logs.bulkAdd(logs_to_import);
-  ```
+    // Invalidate on data change
+    cachedTotalCount = null;
+
+    // Batch imports
+    await db.logs.bulkAdd(logsToImport);
+    ```
 
 ### Prevent Concurrent Operations
+
 - Use flags to prevent concurrent database operations
 - Examples:
-  ```javascript
-  let is_loading_logs = false;
 
-  async function loadLogs() {
-      if (is_loading_logs) return;
-      is_loading_logs = true;
-      try {
-          // load logs
-      } finally {
-          is_loading_logs = false;
-      }
-  }
-  ```
+    ```javascript
+    let isLoadingLogs = false;
+
+    async function loadLogs() {
+        if (isLoadingLogs) return;
+        isLoadingLogs = true;
+        try {
+            // load logs
+        } finally {
+            isLoadingLogs = false;
+        }
+    }
+    ```
 
 ---
 
 ## Testing
 
 ### Browser Testing
+
 - **Test in Safari** (macOS and iOS) - primary target platform
 - Test in Chrome/Edge (secondary)
 - Test in Firefox (tertiary)
 
 ### Theme Testing
+
 - **Test in both light and dark modes**
 - Toggle system dark mode to verify all elements
 - Check border colors, text colors, backgrounds
 
 ### Device Testing
+
 - **Mobile**: iPhone (Safari), Android (Chrome)
 - **Tablet**: iPad (Safari)
 - **Desktop**: macOS (Safari, Chrome), Windows (Edge, Chrome)
 
 ### Screen Size Testing
+
 - Small mobile: 320px - 600px
 - Large mobile: 600px - 768px
 - Tablet: 768px - 900px
@@ -565,11 +637,13 @@ async function handleFormSubmit(event) {
 - Large desktop: 1200px+
 
 ### Offline Functionality
+
 - Test that app works offline after initial load
 - Verify service worker caches all resources
 - Test that database operations work offline
 
 ### Feature Testing Checklist
+
 - [ ] Create new log entry
 - [ ] Edit frequency and auto-detect band
 - [ ] Format frequency to 3 decimal places
@@ -588,6 +662,7 @@ async function handleFormSubmit(event) {
 ## File Structure
 
 ### Project Organization
+
 ```
 radio-memo/
 ├── index.html          # Main HTML file
@@ -606,18 +681,21 @@ radio-memo/
 ### File Purposes
 
 #### index.html
+
 - Main HTML structure
 - PWA meta tags and manifest links
 - External font links (DotGothic16)
 - Script includes (Dexie.js, app.js)
 
 #### style.css
+
 - All application styles
 - Light and dark mode support
 - Responsive breakpoints
 - Typography and layout
 
 #### app.js
+
 - Database setup and migrations (Dexie)
 - Event listener setup
 - Form handling and validation
@@ -627,6 +705,7 @@ radio-memo/
 - CSV parsing
 
 #### sw.js
+
 - Service worker registration
 - Cache management
 - Offline support
@@ -635,12 +714,14 @@ radio-memo/
 ### Dependencies
 
 #### External Dependencies
+
 - **Dexie.js** (v3.2.4) - IndexedDB wrapper
-  - URL: https://unpkg.com/dexie@3.2.4/dist/dexie.js
+    - URL: https://unpkg.com/dexie@3.2.4/dist/dexie.js
 - **DotGothic16 Font** - Google Fonts
-  - URL: https://fonts.googleapis.com/css2?family=DotGothic16&display=swap
+    - URL: https://fonts.googleapis.com/css2?family=DotGothic16&display=swap
 
 #### No Build Process
+
 - No bundler required (Webpack, Vite, etc.)
 - No transpilation needed
 - Pure vanilla JavaScript (ES6+)
@@ -651,6 +732,7 @@ radio-memo/
 ## Additional Best Practices
 
 ### Code Quality
+
 1. Keep functions small and focused
 2. Use meaningful variable and function names
 3. Avoid deep nesting (use early returns)
@@ -658,12 +740,14 @@ radio-memo/
 5. Validate user input
 
 ### Security
+
 - Escape HTML to prevent XSS attacks (use `escapeHtml()` function)
 - Use cryptographically secure UUIDs when available
 - No inline JavaScript in HTML
 - No eval() or similar dynamic code execution
 
 ### Maintainability
+
 - Follow DRY principle (Don't Repeat Yourself)
 - Comment complex logic
 - Keep related code together
@@ -671,12 +755,119 @@ radio-memo/
 - Update documentation when code changes
 
 ### Git Commit Messages
+
 - Use clear, descriptive commit messages
 - Start with action verb (Add, Update, Fix, Remove, etc.)
 - Examples:
-  - "Add DotGothic16 font and redesign page title"
-  - "Remove rounded borders for unified square aesthetic"
-  - "Soften container border colors to subtle grays"
+    - "Add DotGothic16 font and redesign page title"
+    - "Remove rounded borders for unified square aesthetic"
+    - "Soften container border colors to subtle grays"
+
+---
+
+## Linting and Formatting
+
+### Overview
+
+This project uses industry-standard tools to enforce code quality and consistent formatting:
+
+- **ESLint** - JavaScript linter for code quality and consistency
+- **Prettier** - Opinionated code formatter for automatic formatting
+
+### ESLint Configuration
+
+Location: `.eslintrc.json`
+
+Key rules enforced:
+
+- `camelcase`: Enforces camelCase for variables and properties
+- `no-var`: Disallows `var` (use `const`/`let` only)
+- `prefer-const`: Suggests `const` when variables aren't reassigned
+- `semi`: Requires semicolons
+- `quotes`: Enforces single quotes
+- `indent`: 4-space indentation
+- `eqeqeq`: Requires strict equality (`===` and `!==`)
+- `curly`: Requires curly braces for all control statements
+- And 40+ additional rules for code quality
+
+### Prettier Configuration
+
+Location: `.prettierrc.json`
+
+Key settings:
+
+- `printWidth: 100` - Maximum line length
+- `tabWidth: 4` - 4 spaces per indentation level
+- `singleQuote: true` - Use single quotes
+- `semi: true` - Always use semicolons
+- `trailingComma: "es5"` - Trailing commas where valid in ES5
+- `endOfLine: "lf"` - Unix-style line endings
+
+### NPM Scripts
+
+Run these commands for linting and formatting:
+
+```bash
+# Check for linting errors
+npm run lint
+
+# Auto-fix linting errors
+npm run lint:fix
+
+# Format all files
+npm run format
+
+# Check formatting without making changes
+npm run format:check
+```
+
+### IDE Integration
+
+#### VS Code (Recommended)
+
+Install these extensions:
+
+1. **ESLint** (dbaeumer.vscode-eslint)
+2. **Prettier** (esbenp.prettier-vscode)
+
+Add to `.vscode/settings.json`:
+
+```json
+{
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    }
+}
+```
+
+### Pre-Commit Workflow
+
+Before committing code:
+
+1. Run `npm run lint` to check for errors
+2. Run `npm run lint:fix` to auto-fix issues
+3. Run `npm run format` to format all files
+4. Verify changes with `git diff`
+5. Commit your changes
+
+### Files Excluded from Formatting
+
+The `.prettierignore` file excludes:
+
+- `node_modules/`
+- Build outputs (`dist/`, `build/`)
+- Images and icons (`*.png`, `*.jpg`, etc.)
+- `manifest.json`
+
+### Benefits
+
+- **Consistency**: All code follows the same style
+- **Quality**: ESLint catches potential bugs and bad patterns
+- **Productivity**: No time wasted on style debates
+- **Onboarding**: New contributors follow standards automatically
+- **CI/CD Ready**: Can enforce standards in automated pipelines
 
 ---
 
@@ -684,3 +875,4 @@ radio-memo/
 
 - **v1** - Initial conventions document
 - **v2** - Comprehensive update with all coding standards
+- **v3** - Adopted camelCase naming convention and added ESLint/Prettier tooling

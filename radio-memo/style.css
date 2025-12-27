@@ -13,7 +13,10 @@ body {
 }
 
 /* Apply DotGothic16 to all form elements and buttons */
-input, textarea, select, button {
+input,
+textarea,
+select,
+button {
     font-family: 'DotGothic16', monospace;
 }
 
@@ -132,14 +135,14 @@ h1 {
     }
 }
 
-
 h2 {
     color: #000;
     margin-bottom: 15px;
     font-size: 18px;
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
     padding: 10px 16px;
     border: 1px solid #000;
     border-radius: 0;
@@ -152,7 +155,10 @@ h2 {
 
 /* Desktop: Larger buttons for better usability */
 @media (min-width: 768px) {
-    .btn-primary, .btn-secondary, .btn-settings, .btn-load-more {
+    .btn-primary,
+    .btn-secondary,
+    .btn-settings,
+    .btn-load-more {
         padding: 10px 18px;
         font-size: 15px;
     }
@@ -349,7 +355,9 @@ label {
     color: #000;
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
     width: 100%;
     padding: 8px;
     border: 1px solid #ddd;
@@ -358,12 +366,12 @@ input, textarea, select {
 }
 
 /* Number input spinner styling - hide for consistency across browsers (especially Safari) */
-input[type="number"] {
+input[type='number'] {
     -moz-appearance: textfield; /* Firefox: hide spinners */
 }
 
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
     -webkit-appearance: none; /* Safari/Chrome: hide spinners */
     appearance: none;
     margin: 0;
@@ -421,7 +429,9 @@ select option {
     font-weight: bold;
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
     outline: none;
     border-color: #000;
 }
@@ -725,10 +735,10 @@ textarea {
         flex-direction: column;
     }
 
-    .btn-primary, .btn-secondary {
+    .btn-primary,
+    .btn-secondary {
         width: 100%;
     }
-
 }
 
 /* フッタースタイル */
@@ -765,7 +775,8 @@ footer a:hover {
         background-color: #2a2a2a;
     }
 
-    h1, h2 {
+    h1,
+    h2 {
         color: #e0e0e0;
     }
 
@@ -778,7 +789,11 @@ footer a:hover {
         outline-color: #e0e0e0;
     }
 
-    .log-band, .log-frequency, .log-callsign, .log-qth, .log-rst {
+    .log-band,
+    .log-frequency,
+    .log-callsign,
+    .log-qth,
+    .log-rst {
         color: #e0e0e0;
         border: 1px solid #e0e0e0;
     }
@@ -809,12 +824,19 @@ footer a:hover {
         background-color: #3a3a3a;
     }
 
-    .btn-primary, .btn-secondary, .btn-settings, .btn-load-more {
+    .btn-primary,
+    .btn-secondary,
+    .btn-settings,
+    .btn-load-more {
         color: #e0e0e0;
         border: 1px solid #e0e0e0;
     }
 
-    .btn-primary:hover, .btn-secondary:hover, .btn-settings:hover, .btn-load-more:hover, .btn-add-log:hover {
+    .btn-primary:hover,
+    .btn-secondary:hover,
+    .btn-settings:hover,
+    .btn-load-more:hover,
+    .btn-add-log:hover {
         background-color: #3a3a3a;
     }
 
@@ -841,7 +863,8 @@ footer a:hover {
         border: 1px solid #e0e0e0;
     }
 
-    .btn-delete:hover, .btn-delete:active {
+    .btn-delete:hover,
+    .btn-delete:active {
         background-color: #3a3a3a;
     }
 
@@ -881,14 +904,18 @@ footer a:hover {
         color: #e0e0e0;
     }
 
-    input, textarea, select {
+    input,
+    textarea,
+    select {
         background-color: #2a2a2a;
         color: #e0e0e0;
         border: 1px solid #666;
         color-scheme: dark; /* Enable dark mode for native form controls */
     }
 
-    input:focus, textarea:focus, select:focus {
+    input:focus,
+    textarea:focus,
+    select:focus {
         border: 1px solid #e0e0e0;
     }
 
