@@ -10,6 +10,7 @@ import { escapeHtml, coverGradient, showToast } from './utils.js';
 import { refreshCardProgress } from './library.js';
 import { saveBookmark, renderBookmarkList } from './bookmarks.js';
 import { loadSettings, resolveVoice, renderSettingsPanel } from './settings.js';
+import { dbg } from './debug.js';
 
 // ── Module state ──────────────────────────────────────────────
 
@@ -113,6 +114,7 @@ export async function openReader(book) {
   engine.rate  = s.rate;
   engine.pitch = s.pitch;
   engine.voice = resolveVoice(s.voiceURI);
+  dbg('reader', `openReader book=${book.id} rate=${s.rate} pitch=${s.pitch} voiceURI="${s.voiceURI}" engine.voice=${engine.voice ? engine.voice.name : 'null'}`);
 
   try {
     await engine.open(book.id);

@@ -5,6 +5,8 @@
  * TTSEngine instance; the engine picks them up on the next utterance.
  */
 
+import { dbg } from './debug.js';
+
 const GLOBAL_KEY = 'ereader-settings';
 const DEFAULTS = { rate: 1.0, pitch: 1.0, voiceURI: null };
 
@@ -22,9 +24,15 @@ function _parseStored(key) {
  */
 export function loadSettings(bookId) {
   const global = _parseStored(GLOBAL_KEY);
-  if (!bookId) return { ...DEFAULTS, ...global };
+  if (!bookId) {
+    const result = { ...DEFAULTS, ...global };
+    dbg('settings', 'loadSettings(global) →', result);
+    return result;
+  }
   const book = _parseStored(_bookKey(bookId));
-  return { ...DEFAULTS, ...global, ...book };
+  const result = { ...DEFAULTS, ...global, ...book };
+  dbg('settings', `loadSettings(book=${bookId}) global=`, global, `book=`, book, `→`, result);
+  return result;
 }
 
 /**
@@ -35,16 +43,26 @@ export function loadSettings(bookId) {
 export function saveSettings(patch, bookId) {
   if (bookId) {
     const current = _parseStored(_bookKey(bookId));
-    localStorage.setItem(_bookKey(bookId), JSON.stringify({ ...current, ...patch }));
+    const next = { ...current, ...patch };
+    localStorage.setItem(_bookKey(bookId), JSON.stringify(next));
+    dbg('settings', `saveSettings(book=${bookId}) patch=`, patch, '→', next);
   } else {
     const current = _parseStored(GLOBAL_KEY);
-    localStorage.setItem(GLOBAL_KEY, JSON.stringify({ ...current, ...patch }));
+    const next = { ...current, ...patch };
+    localStorage.setItem(GLOBAL_KEY, JSON.stringify(next));
+    dbg('settings', 'saveSettings(global) patch=', patch, '→', next);
   }
 }
 
 export function resolveVoice(voiceURI) {
-  if (!voiceURI) return null;
-  return speechSynthesis.getVoices().find(v => v.voiceURI === voiceURI) ?? null;
+  if (!voiceURI) {
+    dbg('settings', 'resolveVoice: no URI, using browser default');
+    return null;
+  }
+  const voices = speechSynthesis.getVoices();
+  const found  = voices.find(v => v.voiceURI === voiceURI) ?? null;
+  dbg('settings', `resolveVoice: URI="${voiceURI}" voices_available=${voices.length} found=${found ? found.name : 'null'}`);
+  return found;
 }
 
 /**
@@ -53,6 +71,7 @@ export function resolveVoice(voiceURI) {
  * Safe to call multiple times (re-renders in place).
  */
 export function renderSettingsPanel(panelEl, engine, bookId) {
+  dbg('settings', `renderSettingsPanel(book=${bookId})`);
   const voiceSelect = panelEl.querySelector('#settings-voice');
   const rateInput   = panelEl.querySelector('#settings-rate');
   const pitchInput  = panelEl.querySelector('#settings-pitch');
@@ -87,6 +106,7 @@ export function renderSettingsPanel(panelEl, engine, bookId) {
       .slice()
       .sort((a, b) => a.lang.localeCompare(b.lang) || a.name.localeCompare(b.name));
 
+    dbg('settings', `populateVoices: ${voices.length} voices, saved URI="${s.voiceURI}"`);
     voiceSelect.innerHTML = '<option value="">System default</option>';
     for (const v of voices) {
       const opt = document.createElement('option');
@@ -95,6 +115,7 @@ export function renderSettingsPanel(panelEl, engine, bookId) {
       if (v.voiceURI === s.voiceURI) opt.selected = true;
       voiceSelect.appendChild(opt);
     }
+    dbg('settings', `populateVoices: selected="${voiceSelect.value}"`);
   }
 
   populateVoices();
@@ -104,5 +125,6 @@ export function renderSettingsPanel(panelEl, engine, bookId) {
     const uri = voiceSelect.value || null;
     engine.voice = resolveVoice(uri);
     saveSettings({ voiceURI: uri }, bookId);
+    dbg('settings', `voice changed → URI="${uri}" engine.voice=${engine.voice ? engine.voice.name : 'null'}`);
   });
 }
