@@ -17,30 +17,59 @@
             border-bottom: 2px solid #eee;
             padding-bottom: 10px;
         }
-        .directory {
+        h2 {
+            color: #333;
+        }
+        .app-grid {
             list-style: none;
             padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin: 20px 0;
         }
-        .directory li {
-            margin: 10px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 5px;
-            border-left: 4px solid #007bff;
+        .app-grid li {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80px;
         }
-        .directory a {
+        .app-grid a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-decoration: none;
-            color: #007bff;
+            gap: 8px;
+        }
+        .app-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -1px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+        }
+        .app-grid a:hover .app-icon {
+            transform: scale(1.07);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+        .app-name {
+            font-size: 12px;
+            color: #333;
+            text-align: center;
             font-weight: 500;
+            line-height: 1.2;
         }
-        .directory a:hover {
-            text-decoration: underline;
-        }
-        .description {
-            color: #666;
-            font-size: 0.9em;
-            margin-top: 5px;
-        }
+        .icon-radio  { background: linear-gradient(145deg, #e84393, #b5179e); }
+        .icon-tenji  { background: linear-gradient(145deg, #4cc9f0, #4361ee); }
+        .icon-diplo  { background: linear-gradient(145deg, #f8961e, #f3722c); }
+        .icon-memo   { background: linear-gradient(145deg, #43aa8b, #277da1); }
     </style>
 </head>
 <body>
@@ -51,18 +80,30 @@
     <p>I'm nelforzo, a coder interested in retro computing, amateur radio and bicycles. You can find me writing short posts and stories across various platforms on the small web.</p>
     
     <h2>Projects</h2>
-    <ul class="directory">
+    <ul class="app-grid">
         <li>
-            <a href="radio-memo/">radio-memo</a>
-            <div class="description">A radio memo application</div>
+            <a href="radio-memo/">
+                <div class="app-icon icon-radio">R</div>
+                <span class="app-name">radio-memo</span>
+            </a>
         </li>
         <li>
-            <a href="tenji-touch/">tenji-touch</a>
-            <div class="description">A tenji touch application</div>
+            <a href="tenji-touch/">
+                <div class="app-icon icon-tenji">T</div>
+                <span class="app-name">tenji-touch</span>
+            </a>
         </li>
         <li>
-            <a href="diplodocus/">diplodocus</a>
-            <div class="description">Read your ebooks</div>
+            <a href="diplodocus/">
+                <div class="app-icon icon-diplo">D</div>
+                <span class="app-name">diplodocus</span>
+            </a>
+        </li>
+        <li>
+            <a href="memoria/">
+                <div class="app-icon icon-memo">M</div>
+                <span class="app-name">memoria</span>
+            </a>
         </li>
     </ul>
 </body>
