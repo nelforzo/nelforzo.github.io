@@ -9,6 +9,7 @@ import { TTSEngine } from './tts.js';
 import { escapeHtml, coverGradient, showToast } from './utils.js';
 import { refreshCardProgress } from './library.js';
 import { saveBookmark, renderBookmarkList } from './bookmarks.js';
+import { loadSettings, resolveVoice, renderSettingsPanel } from './settings.js';
 
 // ── Module state ──────────────────────────────────────────────
 
@@ -32,6 +33,9 @@ const btnBack            = document.getElementById('reader-back-btn');
 const btnRestart         = document.getElementById('ctrl-restart');
 const btnPlay            = document.getElementById('ctrl-play');
 const btnForward         = document.getElementById('ctrl-forward');
+const btnSettings        = document.getElementById('ctrl-settings');
+const settingsPanel      = document.getElementById('reader-settings-panel');
+const btnSettingsClose   = document.getElementById('settings-close-btn');
 const btnBookmarks       = document.getElementById('ctrl-bookmarks');
 const bookmarksPanel     = document.getElementById('reader-bookmarks-panel');
 const bookmarksList      = document.getElementById('bookmarks-list');
@@ -72,7 +76,8 @@ export async function openReader(book) {
 
   currentBookId = book.id;
 
-  // Reset bookmarks panel
+  // Reset panels
+  _closeSettingsPanel();
   _closeBookmarksPanel();
 
   // Show reader, hide library
@@ -87,8 +92,13 @@ export async function openReader(book) {
   kbAbort = new AbortController();
   document.addEventListener('keydown', _onKeyDown, { signal: kbAbort.signal });
 
-  // Start engine
+  // Apply persisted playback settings
+  const s = loadSettings();
   engine = new TTSEngine(_render);
+  engine.rate  = s.rate;
+  engine.pitch = s.pitch;
+  engine.voice = resolveVoice(s.voiceURI);
+
   try {
     await engine.open(book.id);
   } catch (err) {
@@ -213,12 +223,33 @@ function _onKeyDown(e) {
   }
 }
 
+// ── Settings ──────────────────────────────────────────────────
+
+btnSettings.addEventListener('click', () => {
+  const isOpen = settingsPanel.classList.toggle('open');
+  btnSettings.classList.toggle('active', isOpen);
+  if (isOpen) {
+    _closeBookmarksPanel();
+    renderSettingsPanel(settingsPanel, engine);
+  }
+});
+
+btnSettingsClose.addEventListener('click', _closeSettingsPanel);
+
+function _closeSettingsPanel() {
+  settingsPanel.classList.remove('open');
+  btnSettings.classList.remove('active');
+}
+
 // ── Bookmarks ─────────────────────────────────────────────────
 
 btnBookmarks.addEventListener('click', () => {
   const isOpen = bookmarksPanel.classList.toggle('open');
   btnBookmarks.classList.toggle('active', isOpen);
-  if (isOpen && currentBookId) _refreshBookmarkList();
+  if (isOpen) {
+    _closeSettingsPanel();
+    _refreshBookmarkList();
+  }
 });
 
 btnBookmarksClose.addEventListener('click', _closeBookmarksPanel);

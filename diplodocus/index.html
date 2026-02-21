@@ -86,6 +86,42 @@
 
     <div class="reader-bottom">
 
+      <!-- Settings panel — slides up when open -->
+      <div id="reader-settings-panel" class="reader-settings-panel">
+        <div class="settings-panel-header">
+          <span class="settings-panel-title">Settings</span>
+          <button id="settings-close-btn" class="settings-close-btn" aria-label="Close settings">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="settings-body">
+          <label class="settings-row">
+            <span class="settings-label">Voice</span>
+            <select id="settings-voice" class="settings-select"></select>
+          </label>
+          <label class="settings-row">
+            <span class="settings-label">Speed</span>
+            <div class="settings-slider-wrap">
+              <span class="settings-slider-min">0.5×</span>
+              <input type="range" id="settings-rate" min="0.5" max="2" step="0.1" value="1">
+              <span class="settings-slider-max">2×</span>
+              <span class="settings-slider-val" id="settings-rate-val">1.0×</span>
+            </div>
+          </label>
+          <label class="settings-row">
+            <span class="settings-label">Pitch</span>
+            <div class="settings-slider-wrap">
+              <span class="settings-slider-min">low</span>
+              <input type="range" id="settings-pitch" min="0.5" max="2" step="0.1" value="1">
+              <span class="settings-slider-max">high</span>
+              <span class="settings-slider-val" id="settings-pitch-val">1.0</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
       <!-- Bookmarks panel — slides up when open -->
       <div id="reader-bookmarks-panel" class="reader-bookmarks-panel">
         <div class="bookmarks-panel-header">
@@ -132,7 +168,14 @@
           </button>
         </div>
 
-        <button class="ctrl-btn ctrl-btn-side" id="ctrl-bookmarks" title="Bookmarks" aria-label="Bookmarks">
+        <button class="ctrl-btn ctrl-btn-side ctrl-btn-side-left" id="ctrl-settings" title="Settings" aria-label="Settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+
+        <button class="ctrl-btn ctrl-btn-side ctrl-btn-side-right" id="ctrl-bookmarks" title="Bookmarks" aria-label="Bookmarks">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
           </svg>

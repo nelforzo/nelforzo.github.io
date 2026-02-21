@@ -606,13 +606,14 @@ body {
   flex-direction: column;
 }
 
-/* Side bookmark toggle button */
+/* Side toggle buttons (settings left, bookmarks right) */
 .ctrl-btn-side {
   position: absolute;
-  right: 20px;
   color: var(--text-muted);
 }
-.ctrl-btn-side:hover { color: var(--text); }
+.ctrl-btn-side-left  { left: 20px; }
+.ctrl-btn-side-right { right: 20px; }
+.ctrl-btn-side:hover  { color: var(--text); }
 .ctrl-btn-side.active { color: var(--primary); }
 
 /* Make controls relative so the side button can be absolutely placed */
@@ -625,6 +626,100 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+/* ── Settings panel ───────────────────────────────────────────── */
+.reader-settings-panel {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.28s ease;
+}
+.reader-settings-panel.open {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.settings-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
+}
+.settings-panel-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.settings-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 4px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  transition: background 0.15s;
+}
+.settings-close-btn:hover { background: var(--surface-2); color: var(--text); }
+
+.settings-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+.settings-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.settings-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.settings-select {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.settings-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.settings-slider-min,
+.settings-slider-max {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.settings-slider-wrap input[type="range"] {
+  flex: 1;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+.settings-slider-val {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary);
+  min-width: 2.5rem;
+  text-align: right;
 }
 
 /* ── Bookmarks panel ──────────────────────────────────────────── */
