@@ -72,6 +72,13 @@ export function resolveVoice(voiceURI) {
  */
 export function renderSettingsPanel(panelEl, engine, bookId) {
   dbg('settings', `renderSettingsPanel(book=${bookId})`);
+
+  // Tear down any listeners registered by a previous call (stale book/engine)
+  panelEl._settingsAbort?.abort();
+  const ac = new AbortController();
+  panelEl._settingsAbort = ac;
+  const { signal } = ac;
+
   const voiceSelect = panelEl.querySelector('#settings-voice');
   const rateInput   = panelEl.querySelector('#settings-rate');
   const pitchInput  = panelEl.querySelector('#settings-pitch');
@@ -91,14 +98,14 @@ export function renderSettingsPanel(panelEl, engine, bookId) {
     rateVal.textContent = `${v.toFixed(1)}×`;
     engine.rate = v;
     saveSettings({ rate: v }, bookId);
-  });
+  }, { signal });
 
   pitchInput.addEventListener('input', () => {
     const v = parseFloat(pitchInput.value);
     pitchVal.textContent = v.toFixed(1);
     engine.pitch = v;
     saveSettings({ pitch: v }, bookId);
-  });
+  }, { signal });
 
   // ── Voice list ────────────────────────────────────────────────
   function populateVoices() {
@@ -119,12 +126,12 @@ export function renderSettingsPanel(panelEl, engine, bookId) {
   }
 
   populateVoices();
-  speechSynthesis.addEventListener('voiceschanged', populateVoices);
+  speechSynthesis.addEventListener('voiceschanged', populateVoices, { signal });
 
   voiceSelect.addEventListener('change', () => {
     const uri = voiceSelect.value || null;
     engine.voice = resolveVoice(uri);
     saveSettings({ voiceURI: uri }, bookId);
     dbg('settings', `voice changed → URI="${uri}" engine.voice=${engine.voice ? engine.voice.name : 'null'}`);
-  });
+  }, { signal });
 }
