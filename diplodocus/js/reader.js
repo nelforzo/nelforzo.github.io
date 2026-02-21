@@ -76,6 +76,21 @@ export async function openReader(book) {
 
   currentBookId = book.id;
 
+  // Media Session — lock-screen controls and OS media integration
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title:  book.title,
+      artist: book.author ?? '',
+      album:  book.title,
+    });
+    navigator.mediaSession.setActionHandler('play',          () => engine?.play());
+    navigator.mediaSession.setActionHandler('pause',         () => engine?.pause());
+    navigator.mediaSession.setActionHandler('nexttrack',     () => engine?.forward());
+    navigator.mediaSession.setActionHandler('previoustrack', () => engine?.rewind());
+    navigator.mediaSession.setActionHandler('seekforward',   () => engine?.forward());
+    navigator.mediaSession.setActionHandler('seekbackward',  () => engine?.rewind());
+  }
+
   // Reset panels
   _closeSettingsPanel();
   _closeBookmarksPanel();
@@ -92,8 +107,8 @@ export async function openReader(book) {
   kbAbort = new AbortController();
   document.addEventListener('keydown', _onKeyDown, { signal: kbAbort.signal });
 
-  // Apply persisted playback settings
-  const s = loadSettings();
+  // Apply persisted playback settings (per-book, falling back to global defaults)
+  const s = loadSettings(book.id);
   engine = new TTSEngine(_render);
   engine.rate  = s.rate;
   engine.pitch = s.pitch;
@@ -119,6 +134,10 @@ export function closeReader() {
   kbAbort?.abort();
   kbAbort       = null;
   currentBookId = null;
+
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = null;
+  }
 
   readerView.classList.add('hidden');
   document.getElementById('main').classList.remove('hidden');
@@ -147,6 +166,11 @@ function _render(update) {
       state === 'loading' ? 'Loading…' :
       state === 'stopped' && !currentSentence ? 'Press play to start.' :
       currentSentence;
+  }
+
+  // Keep lock-screen chapter title in sync
+  if ('mediaSession' in navigator && navigator.mediaSession.metadata && chapterTitle && chapterTitle !== '—') {
+    navigator.mediaSession.metadata.title = chapterTitle;
   }
 
   // Chapter progress
@@ -196,7 +220,12 @@ function _saveOnHide() {
 
 window.addEventListener('pagehide', _saveOnHide);
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') _saveOnHide();
+  if (document.visibilityState === 'hidden') {
+    _saveOnHide();
+  } else {
+    // Page returned to foreground — restart the playback loop if iOS dropped it
+    engine?.resumeIfStalled();
+  }
 });
 
 // ── Keyboard shortcuts ────────────────────────────────────────
@@ -230,7 +259,7 @@ btnSettings.addEventListener('click', () => {
   btnSettings.classList.toggle('active', isOpen);
   if (isOpen) {
     _closeBookmarksPanel();
-    renderSettingsPanel(settingsPanel, engine);
+    renderSettingsPanel(settingsPanel, engine, currentBookId);
   }
 });
 

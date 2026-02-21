@@ -5,21 +5,41 @@
  * TTSEngine instance; the engine picks them up on the next utterance.
  */
 
-const KEY = 'ereader-settings';
+const GLOBAL_KEY = 'ereader-settings';
 const DEFAULTS = { rate: 1.0, pitch: 1.0, voiceURI: null };
 
-export function loadSettings() {
-  try {
-    const stored = JSON.parse(localStorage.getItem(KEY) || '{}');
-    return { ...DEFAULTS, ...stored };
-  } catch {
-    return { ...DEFAULTS };
-  }
+function _bookKey(bookId) {
+  return `ereader-settings-book-${bookId}`;
 }
 
-export function saveSettings(patch) {
-  const current = loadSettings();
-  localStorage.setItem(KEY, JSON.stringify({ ...current, ...patch }));
+function _parseStored(key) {
+  try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch { return {}; }
+}
+
+/**
+ * Load settings for a given book (falls back to global defaults).
+ * If bookId is omitted, returns only the global defaults.
+ */
+export function loadSettings(bookId) {
+  const global = _parseStored(GLOBAL_KEY);
+  if (!bookId) return { ...DEFAULTS, ...global };
+  const book = _parseStored(_bookKey(bookId));
+  return { ...DEFAULTS, ...global, ...book };
+}
+
+/**
+ * Save a settings patch.
+ * If bookId is provided, saves to the per-book key (does not touch global).
+ * If omitted, saves to the global key.
+ */
+export function saveSettings(patch, bookId) {
+  if (bookId) {
+    const current = _parseStored(_bookKey(bookId));
+    localStorage.setItem(_bookKey(bookId), JSON.stringify({ ...current, ...patch }));
+  } else {
+    const current = _parseStored(GLOBAL_KEY);
+    localStorage.setItem(GLOBAL_KEY, JSON.stringify({ ...current, ...patch }));
+  }
 }
 
 export function resolveVoice(voiceURI) {
@@ -29,16 +49,17 @@ export function resolveVoice(voiceURI) {
 
 /**
  * Populates the settings panel controls and wires them to the engine.
+ * Pass bookId so changes are saved per-book.
  * Safe to call multiple times (re-renders in place).
  */
-export function renderSettingsPanel(panelEl, engine) {
+export function renderSettingsPanel(panelEl, engine, bookId) {
   const voiceSelect = panelEl.querySelector('#settings-voice');
   const rateInput   = panelEl.querySelector('#settings-rate');
   const pitchInput  = panelEl.querySelector('#settings-pitch');
   const rateVal     = panelEl.querySelector('#settings-rate-val');
   const pitchVal    = panelEl.querySelector('#settings-pitch-val');
 
-  const s = loadSettings();
+  const s = loadSettings(bookId);
 
   // ── Sliders ──────────────────────────────────────────────────
   rateInput.value  = s.rate;
@@ -50,14 +71,14 @@ export function renderSettingsPanel(panelEl, engine) {
     const v = parseFloat(rateInput.value);
     rateVal.textContent = `${v.toFixed(1)}×`;
     engine.rate = v;
-    saveSettings({ rate: v });
+    saveSettings({ rate: v }, bookId);
   });
 
   pitchInput.addEventListener('input', () => {
     const v = parseFloat(pitchInput.value);
     pitchVal.textContent = v.toFixed(1);
     engine.pitch = v;
-    saveSettings({ pitch: v });
+    saveSettings({ pitch: v }, bookId);
   });
 
   // ── Voice list ────────────────────────────────────────────────
@@ -82,6 +103,6 @@ export function renderSettingsPanel(panelEl, engine) {
   voiceSelect.addEventListener('change', () => {
     const uri = voiceSelect.value || null;
     engine.voice = resolveVoice(uri);
-    saveSettings({ voiceURI: uri });
+    saveSettings({ voiceURI: uri }, bookId);
   });
 }

@@ -12,6 +12,27 @@
 import { getChapters, loadChapterSentences } from './content.js';
 import db from './db.js';
 
+// ── Silent audio keep-alive ────────────────────────────────────────────────
+// A looping silent WAV keeps the iOS audio session active between utterances
+// so that speechSynthesis.speak() continues to work when the page is
+// backgrounded or the screen is locked.  Must be .play()-ed inside a user
+// gesture; .pause()-ed whenever TTS stops.
+const _silentAudio = (() => {
+  const sr  = 8000;                          // 8 kHz mono
+  const buf = new ArrayBuffer(44 + sr * 2);  // 44-byte header + 1 s PCM
+  const v   = new DataView(buf);
+  const s   = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+  s(0, 'RIFF'); v.setUint32( 4, 36 + sr * 2, true);
+  s(8, 'WAVE'); s(12, 'fmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true);
+  v.setUint16(32,  2, true); v.setUint16(34, 16, true);
+  s(36, 'data'); v.setUint32(40, sr * 2, true);  // data bytes stay 0 (silence)
+  const audio = new Audio(URL.createObjectURL(new Blob([buf], { type: 'audio/wav' })));
+  audio.loop = true;
+  return audio;
+})();
+
 export class TTSEngine {
   // ── Private state ───────────────────────────────────────────
   #bookId   = null;
@@ -60,6 +81,8 @@ export class TTSEngine {
   /** Release resources — call when leaving the reader. */
   destroy() {
     window.speechSynthesis.cancel();
+    _silentAudio.pause();
+    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'none';
     this.#state    = 'idle';
     this.#onUpdate = null;
   }
@@ -70,6 +93,8 @@ export class TTSEngine {
     if (this.#state === 'playing' || this.#state === 'loading' || this.#state === 'idle') return;
     this.#state = 'playing';
     this.#emit();
+    _silentAudio.play().catch(() => {});
+    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
     this.#advance().catch(err => this.#fail(err));
   }
 
@@ -79,6 +104,8 @@ export class TTSEngine {
     window.speechSynthesis.cancel();
     this.#state = 'paused';
     this.#emit();
+    _silentAudio.pause();
+    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
   }
 
   /** Cancel + save position to IndexedDB. */
@@ -86,6 +113,8 @@ export class TTSEngine {
     window.speechSynthesis.cancel();
     this.#state = 'stopped';
     this.#emit();
+    _silentAudio.pause();
+    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
     this.#persist().catch(console.error);
   }
 
@@ -95,6 +124,18 @@ export class TTSEngine {
    */
   savePosition() {
     return this.#persist();
+  }
+
+  /**
+   * Call when the page becomes visible again after being backgrounded.
+   * If the engine thinks it's playing but speechSynthesis stopped silently
+   * (iOS drops queued utterances in the background), this restarts the loop.
+   */
+  resumeIfStalled() {
+    if (this.#state !== 'playing') return;
+    if (!window.speechSynthesis.speaking) {
+      this.#advance().catch(err => this.#fail(err));
+    }
   }
 
   /** Returns the current position and sentence text (for bookmarking). */
