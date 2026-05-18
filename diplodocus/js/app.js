@@ -31,6 +31,13 @@ async function loadLibrary() {
 
 // ── Import ────────────────────────────────────────────────────
 
+async function restoreBookFile(book, file) {
+  await storeBook(book.id, file);
+  if (file.size !== book.fileSize) {
+    await db.books.update(book.id, { fileSize: file.size });
+  }
+}
+
 async function importFiles(fileList) {
   const files = [...fileList].filter(f => f.name.toLowerCase().endsWith('.epub'));
 
@@ -39,24 +46,42 @@ async function importFiles(fileList) {
     return;
   }
 
-  // Check for duplicates by filename
-  const existingFilenames = new Set(
-    (await db.books.toArray()).map(b => b.filename)
+  const byFilename = new Map(
+    (await db.books.toArray()).map(b => [b.filename, b])
   );
 
-  const newFiles = files.filter(f => !existingFilenames.has(f.name));
-  const skipped = files.length - newFiles.length;
+  const toRestore = [];
+  const toImport  = [];
 
-  if (newFiles.length === 0) {
-    showToast(`${skipped} book${skipped !== 1 ? 's' : ''} already in library`, '');
-    return;
+  for (const file of files) {
+    const existing = byFilename.get(file.name);
+    if (existing) toRestore.push({ file, book: existing });
+    else toImport.push(file);
   }
 
+  const total = toRestore.length + toImport.length;
   const progress = showProgress();
+  let restored = 0;
   let imported = 0;
-  let failed = 0;
+  let failed   = 0;
+  let done     = 0;
 
-  for (const file of newFiles) {
+  for (const { file, book } of toRestore) {
+    progress.setLabel(`Restoring "${shortenName(file.name)}"…`);
+
+    try {
+      await restoreBookFile(book, file);
+      restored++;
+    } catch (err) {
+      console.error(`Failed to restore "${file.name}":`, err);
+      failed++;
+    }
+
+    done++;
+    progress.setPercent((done / total) * 100);
+  }
+
+  for (const file of toImport) {
     progress.setLabel(`Importing "${shortenName(file.name)}"…`);
 
     try {
@@ -90,7 +115,8 @@ async function importFiles(fileList) {
       failed++;
     }
 
-    progress.setPercent(((imported + failed) / newFiles.length) * 100);
+    done++;
+    progress.setPercent((done / total) * 100);
   }
 
   progress.close();
@@ -98,10 +124,11 @@ async function importFiles(fileList) {
 
   // Summary toast
   const parts = [];
+  if (restored) parts.push(`${restored} book${restored !== 1 ? 's' : ''} restored`);
   if (imported) parts.push(`${imported} book${imported !== 1 ? 's' : ''} imported`);
-  if (skipped)  parts.push(`${skipped} already in library`);
   if (failed)   parts.push(`${failed} failed`);
-  showToast(parts.join(' · '), failed > 0 && imported === 0 ? 'error' : 'success');
+  const ok = restored + imported;
+  showToast(parts.join(' · '), failed > 0 && ok === 0 ? 'error' : 'success');
 }
 
 function shortenName(name, max = 40) {

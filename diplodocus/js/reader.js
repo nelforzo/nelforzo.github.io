@@ -6,6 +6,7 @@
  */
 
 import { TTSEngine } from './tts.js';
+import { getBook } from './storage.js';
 import { escapeHtml, coverGradient, showToast } from './utils.js';
 import { refreshCardProgress } from './library.js';
 import { saveBookmark, renderBookmarkList } from './bookmarks.js';
@@ -20,6 +21,7 @@ let lastState      = 'idle';
 let kbAbort        = null;   // AbortController for keyboard listener
 let currentBookId  = null;   // id of the book currently open
 let lastUpdate     = null;   // most recent onUpdate payload from engine
+let epubMissing    = false;  // true when EPUB blob is absent from Cache Storage
 
 // ── DOM refs ──────────────────────────────────────────────────
 
@@ -76,6 +78,7 @@ export async function openReader(book) {
   }
 
   currentBookId = book.id;
+  epubMissing   = !(await getBook(book.id));
 
   // Media Session — lock-screen controls and OS media integration
   if ('mediaSession' in navigator) {
@@ -136,6 +139,7 @@ export function closeReader() {
   kbAbort?.abort();
   kbAbort       = null;
   currentBookId = null;
+  epubMissing   = false;
 
   if ('mediaSession' in navigator) {
     navigator.mediaSession.metadata = null;
@@ -159,7 +163,10 @@ function _render(update) {
   lastState = state;
 
   // Chapter title / sentence
-  if (totalChapters === 0 && state !== 'loading') {
+  if (epubMissing) {
+    elChapter.textContent  = 'EPUB file missing';
+    elSentence.textContent = 'Import the same .epub file again to restore playback. Your bookmarks and progress are saved.';
+  } else if (totalChapters === 0 && state !== 'loading') {
     elChapter.textContent  = 'No chapters found';
     elSentence.textContent = 'Remove and re-import this book to enable playback.';
   } else {
@@ -187,7 +194,7 @@ function _render(update) {
   btnPlay.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
 
   // Enable / disable controls
-  const ready = state !== 'idle' && state !== 'loading' && totalChapters > 0;
+  const ready = !epubMissing && state !== 'idle' && state !== 'loading' && totalChapters > 0;
   btnPlay.disabled          = !ready;
   btnRestart.disabled       = !ready;
   btnForward.disabled       = !ready;
