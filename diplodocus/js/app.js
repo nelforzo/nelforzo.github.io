@@ -1,9 +1,13 @@
+import './debug.js';
 import db from './db.js';
 import { storeBook } from './storage.js';
 import { parseEpubMetadata } from './epub.js';
 import { createBookCard, updateEmptyState } from './library.js';
 import { showToast } from './utils.js';
 import { openReader } from './reader.js';
+import { APP_VERSION } from './version.js';
+
+document.getElementById('app-version').textContent = APP_VERSION;
 
 // ── Bootstrap ─────────────────────────────────────────────────
 

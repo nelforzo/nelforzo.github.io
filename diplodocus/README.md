@@ -129,6 +129,12 @@ Then open `http://localhost:8000`.
 
 ---
 
+## Publishing
+
+The live app is deployed via the [nelforzo.github.io](https://github.com/nelforzo/nelforzo.github.io) repo (`diplodocus/` subdirectory). See [CLAUDE.md](./CLAUDE.md) for sync, commit, and push steps.
+
+---
+
 ## Tech stack
 
 - **Vanilla JS** (ES modules, no framework)

@@ -25,6 +25,7 @@ let epubMissing    = false;  // true when EPUB blob is absent from Cache Storage
 
 // ── DOM refs ──────────────────────────────────────────────────
 
+const appHeader   = document.querySelector('.app-header');
 const readerView  = document.getElementById('reader-view');
 const elBookTitle = document.getElementById('reader-book-title');
 const elCover     = document.getElementById('reader-cover');
@@ -102,7 +103,7 @@ export async function openReader(book) {
   // Show reader, hide library
   readerView.classList.remove('hidden');
   document.getElementById('main').classList.add('hidden');
-  document.querySelector('.app-header').classList.add('hidden');
+  appHeader.classList.add('hidden');
 
   // Reset UI to loading state
   _render({ state: 'loading', chapIdx: 0, sentIdx: 0, totalChapters: 0, chapterTitle: '', currentSentence: '' });
@@ -147,7 +148,7 @@ export function closeReader() {
 
   readerView.classList.add('hidden');
   document.getElementById('main').classList.remove('hidden');
-  document.querySelector('.app-header').classList.remove('hidden');
+  appHeader.classList.remove('hidden');
 
   // Reflect the new position on the library card immediately
   if (bookId && finalUpdate?.totalChapters > 0) {

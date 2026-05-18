@@ -93,14 +93,4 @@ function _hide() {
 
 // ── Wire version tap ──────────────────────────────────────────
 
-function _wire() {
-  const ver = document.querySelector('.app-version');
-  if (!ver) return;
-  ver.addEventListener('click', _show);
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', _wire);
-} else {
-  _wire();
-}
+document.getElementById('app-version')?.addEventListener('click', _show);
