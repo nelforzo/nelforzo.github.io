@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#fef6e4">
+  <title>サイコロ</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="portrait-hint" aria-hidden="true">
+    <p>よこに まわして ね</p>
+  </div>
+
+  <main id="app">
+    <div class="dice-row" role="group" aria-label="サイコロ">
+      <button class="die" type="button" aria-label="サイコロ 1">
+        <span class="die-face">
+          <span class="die-char">?</span>
+        </span>
+      </button>
+      <button class="die" type="button" aria-label="サイコロ 2">
+        <span class="die-face">
+          <span class="die-char">?</span>
+        </span>
+      </button>
+      <button class="die" type="button" aria-label="サイコロ 3">
+        <span class="die-face">
+          <span class="die-char">?</span>
+        </span>
+      </button>
+    </div>
+  </main>
+
+  <script src="words.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
