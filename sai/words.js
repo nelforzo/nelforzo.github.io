@@ -47,8 +47,6 @@ const WORDS = [
   "だんご", // dumpling
   "あんこ", // sweet bean paste
   "あいす", // ice cream
-  "おにぎ", // onigiri (child speech)
-  "ぽてと", // potato
 
   // からだ
   "あたま", // head
@@ -60,7 +58,6 @@ const WORDS = [
   "おうち", // home
   "おふろ", // bath
   "くるま", // car
-  "ひこう", // airplane
   "ぼうし", // hat
   "まくら", // pillow
   "かばん", // bag
@@ -74,7 +71,6 @@ const WORDS = [
   "えほん", // picture book
   "はさみ", // scissors
   "えのぐ", // paint
-  "みずぎ", // swimsuit
 
   // いろ・かたち
   "きいろ", // yellow
@@ -85,8 +81,6 @@ const WORDS = [
   "まるい", // round
 
   // きもち・ようす
-  "おおき", // big (child speech)
-  "ちいさ", // small (child speech)
   "あつい", // hot
   "さむい", // cold
   "きれい", // pretty / clean
@@ -94,9 +88,6 @@ const WORDS = [
   "げんき", // healthy / energetic
   "きもち", // feeling
   "きぶん", // mood
-  "きらい", // dislike
-  "かわい", // cute (child speech)
-  "おいし", // yummy (child speech)
   "まずい", // bad taste
   "からい", // spicy
   "あまい", // sweet
