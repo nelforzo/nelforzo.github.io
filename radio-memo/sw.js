@@ -1,6 +1,6 @@
 // Service Worker for offline functionality
-// v56: Redesign header - make sticky and move add log button to header
-const CACHE_NAME = 'radio-memo-v56';
+// v57: Remove non-app doc file from offline cache
+const CACHE_NAME = 'radio-memo-v57';
 const urlsToCache = [
     './',
     './index.html',
@@ -11,7 +11,6 @@ const urlsToCache = [
     './icon-192.png',
     './apple-touch-icon.png',
     './radio-memo.png',
-    './CODING_CONVENTIONS.md',
     'https://unpkg.com/dexie@3.2.4/dist/dexie.js',
     'https://fonts.googleapis.com/css2?family=DotGothic16&display=swap',
 ];

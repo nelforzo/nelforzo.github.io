@@ -1,76 +1,23 @@
 // データベース設定
 const db = new Dexie('RadioMemoDatabase');
 
-// スキーマ定義
-db.version(1).stores({
-    logs: '++id, band, frequency, memo, timestamp',
-});
-
-// バージョン2: UUIDフィールドを追加
-db.version(2)
-    .stores({
-        logs: '++id, uuid, band, frequency, memo, timestamp',
-    })
-    .upgrade((tx) => {
-        // 既存のレコードにUUIDを追加
-        return tx
-            .table('logs')
-            .toCollection()
-            .modify((log) => {
-                if (!log.uuid) {
-                    log.uuid = generateUUID();
-                }
-            });
-    });
-
-// バージョン3: callsignフィールドを追加
-db.version(3)
-    .stores({
-        logs: '++id, uuid, band, frequency, callsign, memo, timestamp',
-    })
-    .upgrade((tx) => {
-        // 既存のレコードにcallsignを追加（空文字列で初期化）
-        return tx
-            .table('logs')
-            .toCollection()
-            .modify((log) => {
-                if (!log.callsign) {
-                    log.callsign = '';
-                }
-            });
-    });
-
-// バージョン4: rstフィールドを追加（信号強度報告）
-db.version(4)
-    .stores({
-        logs: '++id, uuid, band, frequency, callsign, rst, memo, timestamp',
-    })
-    .upgrade((tx) => {
-        // 既存のレコードにrstを追加（空文字列で初期化）
-        return tx
-            .table('logs')
-            .toCollection()
-            .modify((log) => {
-                if (!log.rst) {
-                    log.rst = '';
-                }
-            });
-    });
-
-// バージョン5: qthフィールドを追加（局の位置情報）
+// スキーマ定義（最新スキーマ。フィールド追加はバージョン履歴を踏まえ、
+// 単一のアップグレードで未登録フィールドを補完する）
 db.version(5)
     .stores({
         logs: '++id, uuid, band, frequency, callsign, qth, rst, memo, timestamp',
     })
     .upgrade((tx) => {
-        // 既存のレコードにqthを追加（空文字列で初期化）
         return tx
             .table('logs')
             .toCollection()
             .modify((log) => {
-                if (!log.qth) {
-                    log.qth = '';
-                }
+                // UUID、callsign、rst、qthを順次追加してきた旧バージョンから、
+                // 欠落しているフィールドを補完する
+                log.uuid = log.uuid ?? generateUUID();
+                log.callsign = log.callsign ?? '';
+                log.rst = log.rst ?? '';
+                log.qth = log.qth ?? '';
             });
     });
 
@@ -191,7 +138,7 @@ function setupEventListeners() {
     // トップに戻るリンク
     backToTopLink.addEventListener('click', (e) => {
         e.preventDefault();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        returnToFirstPage();
     });
 
     // フォーム送信
@@ -421,9 +368,9 @@ async function handleFormSubmit(event) {
     // 保存時に現在のUTC時刻を自動取得
     const now = new Date();
 
-    // 周波数を3桁の小数点にフォーマット
-    const frequencyRaw = formData.get('frequency');
-    const frequencyFormatted = parseFloat(frequencyRaw).toFixed(3);
+    // 周波数を3桁の小数点にフォーマット（数値以外は空欄にする）
+    const frequencyNum = parseFloat(formData.get('frequency'));
+    const frequencyFormatted = isNaN(frequencyNum) ? '' : frequencyNum.toFixed(3);
 
     const logData = {
         uuid: generateUUID(),
@@ -548,7 +495,7 @@ function displayLogs(logs, append = false) {
             </div>
             <div class="log-band-freq-row">
                 <span class="log-band">${escapeHtml(log.band)}</span>
-                <span class="log-frequency">${formatFrequencyWithUnit(escapeHtml(log.frequency), log.band)}</span>
+                <span class="log-frequency">${escapeHtml(formatFrequencyWithUnit(log.frequency, log.band))}</span>
             </div>
             <div class="log-header">
                 ${log.callsign ? `<span class="log-callsign">${escapeHtml(log.callsign)}</span>` : ''}
@@ -665,22 +612,25 @@ async function deleteLog(logId) {
 
     try {
         await db.logs.delete(logId);
+        const { logsContainer } = domCache;
+
         // 総カウントを更新
         totalCount--;
         // 読み込み済みカウントを減らす
         loadedCount--;
-
         // さらにログがあるかチェック
         hasMoreLogs = loadedCount < totalCount;
 
-        // ログをリロード（最初からではなく、現在表示されている分だけ）
-        const logs = await db.logs.orderBy('timestamp').reverse().limit(loadedCount).toArray();
+        // 対応するエントリをDOMから直接削除（DB再取得と再描画を回避し、スクロール位置を維持）
+        const entry = logsContainer.querySelector(`.log-entry[data-log-id="${logId}"]`);
+        if (entry) {
+            entry.remove();
+        }
 
-        // 実際に読み込めたログ数で更新
-        loadedCount = logs.length;
-        hasMoreLogs = loadedCount < totalCount;
-
-        displayLogs(logs, false);
+        // 表示が空になった場合は空メッセージを表示
+        if (!logsContainer.querySelector('.log-entry')) {
+            displayLogs([], false);
+        }
         updateEndOfListMessage();
     } catch (error) {
         alert('ログの削除に失敗しました。');
@@ -778,11 +728,12 @@ async function exportLogs() {
         ];
         const csvRows = [headers.join(',')];
 
+        // CSVフィールドのエスケープ（引用符を2重にする）
+        const escapeText = (text) => (text || '').replace(/"/g, '""');
+
         // CSVデータ行を作成
         allLogs.forEach((log) => {
             const unit = getFrequencyUnit(log.band);
-            // CSVフィールドのエスケープ（引用符を2重にする）
-            const escapeText = (text) => (text || '').replace(/"/g, '""');
             const row = [
                 `"${escapeText(log.uuid)}"`,
                 `"${escapeText(log.timestamp)}"`,
@@ -910,6 +861,11 @@ async function importLogs(csvText) {
             const timestamp = values[timestampIndex];
             const band = values[bandIndex];
             const frequency = parseFloat(values[frequencyIndex]);
+
+            // 数値に変換できない周波数は不正な行としてスキップ
+            if (isNaN(frequency)) {
+                continue;
+            }
             const callsign = callsignIndex >= 0 ? values[callsignIndex] : '';
             const qth = qthIndex >= 0 ? values[qthIndex] : '';
             const rst = rstIndex >= 0 ? values[rstIndex] : '';
@@ -1093,5 +1049,6 @@ function parseCSVLine(line) {
  * @returns {string} Hash string for duplicate detection
  */
 function createContentHash(timestamp, frequency, memo) {
-    return `${timestamp}|${frequency}|${memo || ''}`;
+    // JSONエンコードで区切り文字（|）を含む値が衝突しないようにする
+    return JSON.stringify([timestamp, frequency, memo || '']);
 }
