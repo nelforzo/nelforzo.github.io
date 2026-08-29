@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>patch</title></head>
-<body bgcolor="#e9e4d8" text="#1a1814" link="#1a0dab" vlink="#6b2d5c" marginheight="0" marginwidth="0">
+<body text="#1a1814" link="#1a0dab" vlink="#6b2d5c" marginheight="0" marginwidth="0">
 <iframe id="app" title="patch" width="100%" height="640" frameborder="0"></iframe>
 <script>
 (function(){"use strict";
 var fr=document.getElementById("app"),P="p1:";
-function fail(m){fr.srcdoc='<!DOCTYPE html><html><head><meta charset="utf-8"><title>patch — bad payload</title></head><body bgcolor="#e9e4d8" text="#1a1814" marginheight="20" marginwidth="14"><center><p><font size="6"><b>patch</b></font></p><p>'+m+'</p></center></body></html>';}
+function fail(m){fr.srcdoc='<!DOCTYPE html><html><head><meta charset="utf-8"><title>patch — bad payload</title></head><body text="#1a1814" marginheight="20" marginwidth="14"><center><p><font size="6"><b>patch</b></font></p><p>'+m+'</p></center></body></html>';}
 var h=(location.hash||"").replace(/^#/,"");
 if(!h.length||h.indexOf(P)!==0){fail("this booter needs a #p1:… payload — open a url that a patch produced.");return;}
 var s=h.slice(P.length).replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";
