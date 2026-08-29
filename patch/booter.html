@@ -1,0 +1,14 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>patch</title></head>
+<body bgcolor="#e9e4d8" text="#1a1814" link="#1a0dab" vlink="#6b2d5c" marginheight="0" marginwidth="0">
+<iframe id="app" title="patch" width="100%" height="640" frameborder="0"></iframe>
+<script>
+(function(){"use strict";
+var fr=document.getElementById("app"),P="p1:";
+function fail(m){fr.srcdoc='<!DOCTYPE html><html><head><meta charset="utf-8"><title>patch — bad payload</title></head><body bgcolor="#e9e4d8" text="#1a1814" marginheight="20" marginwidth="14"><center><p><font size="6"><b>patch</b></font></p><p>'+m+'</p></center></body></html>';}
+var h=(location.hash||"").replace(/^#/,"");
+if(!h.length||h.indexOf(P)!==0){fail("this booter needs a #p1:… payload — open a url that a patch produced.");return;}
+var s=h.slice(P.length).replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";
+var bytes;try{var bin=atob(s);bytes=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);}catch(e){fail("bad payload.");return;}
+(async function(){try{var ds=new DecompressionStream("deflate-raw"),ch=[],t=0;var w=ds.writable.getWriter();w.write(bytes);w.close();var rd=ds.readable.getReader();for(;;){var r=await rd.read();if(r.done)break;ch.push(r.value);t+=r.value.length;}var o=new Uint8Array(t),p=0;for(var i=0;i<ch.length;i++){o.set(ch[i],p);p+=ch[i].length;}fr.srcdoc=new TextDecoder().decode(o);}catch(e){fail("could not unpack: "+e.message);}})();
+})();
+</script></body></html>
