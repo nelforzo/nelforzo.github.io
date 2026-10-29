@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rando Maker</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f6f7f9;
+    --panel: #ffffff;
+    --text: #1c1e21;
+    --muted: #65676b;
+    --border: #d7dbe0;
+    --code-bg: #1e1f22;
+    --code-text: #e6e6e6;
+    --accent: #2f6fed;
+    --accent-hover: #1f5dd6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17181b;
+      --panel: #202225;
+      --text: #e9eaec;
+      --muted: #a5abb3;
+      --border: #363940;
+      --code-bg: #111214;
+      --code-text: #e6e6e6;
+      --accent: #5b8cff;
+      --accent-hover: #7aa1ff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+    max-width: 34rem;
+    line-height: 1.45;
+  }
+  h1 {
+    font-size: 1.5rem;
+    margin: 0 0 1.25rem;
+  }
+  h2 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+  .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+  }
+  .generate-btn {
+    font: inherit;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    padding: 0.55rem 0.9rem;
+    cursor: pointer;
+    transition: background 0.12s ease;
+  }
+  .generate-btn:hover { background: var(--accent-hover); }
+  .generate-btn:active { transform: translateY(1px); }
+  .code-wrap {
+    position: relative;
+  }
+  pre.code {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 1.05rem;
+    letter-spacing: 0.05em;
+    background: var(--code-bg);
+    color: var(--code-text);
+    border-radius: 8px;
+    padding: 0.9rem 3.8rem 0.9rem 0.9rem;
+    margin: 0;
+    min-height: 2.9rem;
+    display: flex;
+    align-items: center;
+    white-space: pre-wrap;
+    word-break: break-all;
+    user-select: all;
+  }
+  pre.code:empty::before {
+    content: "—";
+    color: #7d838c;
+    user-select: none;
+  }
+  .copy-btn {
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    transform: translateY(-50%);
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--code-text);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 0.35rem 0.55rem;
+    cursor: pointer;
+    transition: background 0.12s ease;
+  }
+  .copy-btn:hover { background: rgba(255, 255, 255, 0.22); }
+  .copy-btn:disabled { opacity: 0.7; cursor: default; }
+</style>
+</head>
+<body>
+<h1>Rando Maker</h1>
+
+<section class="card">
+  <div class="card-head">
+    <h2>Name</h2>
+    <button class="generate-btn" id="nameBtn">New Rando</button>
+  </div>
+  <div class="code-wrap">
+    <pre class="code" id="nameOut"></pre>
+    <button class="copy-btn" data-target="nameOut">Copy</button>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2>ID</h2>
+    <button class="generate-btn" id="idBtn">New ID</button>
+  </div>
+  <div class="code-wrap">
+    <pre class="code" id="idOut"></pre>
+    <button class="copy-btn" data-target="idOut">Copy</button>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2>Birthdate</h2>
+    <button class="generate-btn" id="dateBtn">New Birthdate</button>
+  </div>
+  <div class="code-wrap">
+    <pre class="code" id="dateOut"></pre>
+    <button class="copy-btn" data-target="dateOut">Copy</button>
+  </div>
+</section>
+
+<script>
+const firstNames = [
+  "Lukas", "Matteo", "Sofia", "Emma", "Noah", "Mia", "Liam", "Ana",
+  "Jan", "Elena", "Pierre", "Clara", "Marco", "Giulia", "Finn", "Freya",
+  "Oscar", "Ida", "Hugo", "Léa", "Milan", "Nora", "Tomas", "Zofia",
+  "Ivan", "Katarina", "Anders", "Ingrid", "Pavel", "Maja", "Stefan", "Anja"
+];
+
+const lastNames = [
+  "Müller", "Rossi", "García", "Dubois", "Nowak", "Jansen", "Andersson",
+  "Kowalski", "Petrov", "Nielsen", "Schmidt", "Fernández", "Moreau",
+  "Conti", "Horvat", "Novak", "Larsen", "Virtanen", "O'Sullivan", "Murphy",
+  "Weber", "Lopez", "Martin", "Bernard", "Kovač", "Sørensen", "Lindqvist",
+  "Popescu", "Ivanova", "Dimitrov", "Costa", "Silva"
+];
+
+// Characters that are easy to tell apart: no 0/O, 1/I/L.
+const idChars = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
+const ID_LENGTH = 16;
+
+function pick(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function randomName() {
+  return pick(firstNames) + " " + pick(lastNames);
+}
+
+function randomId() {
+  let out = "";
+  const values = new Uint32Array(ID_LENGTH);
+  if (window.crypto && window.crypto.getRandomValues) {
+    window.crypto.getRandomValues(values);
+  } else {
+    for (let i = 0; i < ID_LENGTH; i++) values[i] = Math.floor(Math.random() * 0xffffffff);
+  }
+  for (let i = 0; i < ID_LENGTH; i++) {
+    out += idChars[values[i] % idChars.length];
+  }
+  return out;
+}
+
+function pad2(n) {
+  return String(n).padStart(2, "0");
+}
+
+function formatDate(date) {
+  return date.getFullYear() + "-" + pad2(date.getMonth() + 1) + "-" + pad2(date.getDate());
+}
+
+function randomBirthdate() {
+  const now = new Date();
+  const oldest = new Date(now.getFullYear() - 50, now.getMonth(), now.getDate());
+  const youngest = new Date(now.getFullYear() - 20, now.getMonth(), now.getDate());
+  const timestamp = oldest.getTime() + Math.random() * (youngest.getTime() - oldest.getTime());
+  return formatDate(new Date(timestamp));
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return;
+  } catch (err) {
+    // Fall back to a temporary textarea for browsers without Clipboard API access.
+  }
+  const area = document.createElement("textarea");
+  area.value = text;
+  area.setAttribute("readonly", "");
+  area.style.position = "fixed";
+  area.style.opacity = "0";
+  document.body.appendChild(area);
+  area.select();
+  try {
+    document.execCommand("copy");
+  } finally {
+    document.body.removeChild(area);
+  }
+}
+
+const nameOut = document.getElementById("nameOut");
+const idOut = document.getElementById("idOut");
+const dateOut = document.getElementById("dateOut");
+
+document.getElementById("nameBtn").onclick = () => { nameOut.textContent = randomName(); };
+document.getElementById("idBtn").onclick = () => { idOut.textContent = randomId(); };
+document.getElementById("dateBtn").onclick = () => { dateOut.textContent = randomBirthdate(); };
+
+document.querySelectorAll(".copy-btn").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    const target = document.getElementById(btn.dataset.target);
+    const text = target ? target.textContent : "";
+    if (!text) return;
+    await copyText(text);
+    const original = btn.textContent;
+    btn.textContent = "Copied";
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.disabled = false;
+    }, 900);
+  });
+});
+</script>
+</body>
+</html>
